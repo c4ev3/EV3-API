@@ -24,6 +24,13 @@
  * \author John Hansen (bricxcc_at_comcast.net)
  * \date 2013-06-20
  * \version 1
+ * 
+ * ----------------------------------------------------------------------------
+ *
+ * \author Simón Rodriguez Perez(Hochschule Aschaffenburg)
+ * \date 2016-04-19
+ * \version 2
+ * \note Correction of function name [void ButtonWaitForPressAndRelease(byte Button)]
  */
 
 #ifdef __cplusplus
@@ -77,7 +84,7 @@ bool ButtonIsDown(byte Button);
 
 void ButtonWaitForPress(byte Button);
 
-void ButtonWaitForPressAndReleae(byte Button);
+void ButtonWaitForPressAndRelease(byte Button);
 
 // NXC-style API functions (no support for short press, long press,
 // short release, long release, or press counts
