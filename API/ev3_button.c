@@ -12,7 +12,13 @@
  * The Initial Developer of this code is John Hansen.
  * Portions created by John Hansen are Copyright (C) 2009-2013 John Hansen.
  * All Rights Reserved.
+ * 
+ * ----------------------------------------------------------------------------
  *
+ * \author Simón Rodriguez Perez(Hochschule Aschaffenburg)
+ * \date 2016-04-19
+ * \version 2
+ * \note Correction of function name [void ButtonWaitForPressAndRelease(byte Button)]
  */
 
 #include "ev3_button.h"
@@ -381,7 +387,7 @@ void ButtonWaitForPress(byte Button)
   }
 }
 
-void ButtonWaitForPressAndReleae(byte Button)
+void ButtonWaitForPressAndRelease(byte Button)
 {
   word tmp;
   ButtonWaitForPress(Button);
