@@ -7,7 +7,7 @@ This API supports the follwing functionallity:
 * Printing text on LCD
 
 The basis of this API was developed by [John Hansen](http://bricxcc.sourceforge.net/test_releases/)
-and [Carsten Zeiffert](https://github.com/carstenz/).
+and [Carsten Zeiffert](https://github.com/carstenz/ev3sensor/).
 These API's were merged and extended.
 
 # Acknowledgements
