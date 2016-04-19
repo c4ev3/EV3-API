@@ -1,4 +1,14 @@
 # EV3-API
+This API supports the follwing functionallity:
+* Easy initialistion with one header-file
+* Controlling LEGO motors
+* Reading out Touch-, Sonar- and Lightsensor
+* Controling Buttons and LED
+* Printing text on LCD
+
+The basis of this API was developed by [John Hansen](http://bricxcc.sourceforge.net/test_releases/)
+and [Carsten Zeiffert](https://github.com/carstenz/).
+These API's were merged and extended.
 
 # Acknowledgements
 This plugin has been originally written for use in the teaching of Informatics at the Hochschule Aschaffenburg.   
