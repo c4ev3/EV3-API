@@ -23,6 +23,13 @@
  * \version 2
  * \note Correct readout for Touch-, Sonar- and Lightsensor
  *
+ * ----------------------------------------------------------------------------
+ *
+ * \author Simón Rodriguez Perez
+ * \date 2016-04-20
+ * \version 3
+ * \note Correct readout for Gyroscop angle
+ *
  */
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -206,13 +213,17 @@ void* readSensorData(int sensorPort)
 * 		 note: now working for Touch-, Sonar- and Lightsensor
 *			   with calculation of the correct values
 *
+*----------------------------------------------------------------------------------
+*
+* modified by: Simón Rodriguez Perez
+* 		 date: 2016-04-20
+* 		 note: readout for Gyroscop angle 
+*
 */
 int readSensor(int sensorPort)
 {
 	uint64_t* data = readSensorData(sensorPort);
-	uint16_t help=0;
-	uint16_t help_1 = 1;
-	uint16_t help_2 = 100;
+	int16_t help=0;
 	if (!data)
 		return -1;
 
@@ -240,10 +251,12 @@ int readSensor(int sensorPort)
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
 		case GYRO_ANG:
-		//help_1 = *(data)/0x80;
-		//help_2 = *(data)/0x90;
-		//help = (help_1*256) + (help_2/100);
-			return -1;
+			help = *(data)&0xFFFF;
+			if(help & 0x8000)
+			{
+				help = ((help&0x7FFF) - 0x7FFF);
+			}
+			return help;
 		default: break;
 	}
 	return *((DATA16*)data);
