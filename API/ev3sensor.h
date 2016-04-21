@@ -102,27 +102,49 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4);
 #define COL_COLOR_TYPE 29
 #define COL_COLOR_MODE 2
 
-//Sonar
+//Gyro - CM
 #define US_DIST_CM 5
 #define US_DIST_CM_CON 122
 #define US_DIST_CM_TYPE 30
 #define US_DIST_CM_MODE 0
-
+//Gyro - MM
 #define US_DIST_MM 6
 #define US_DIST_MM_CON 122
 #define US_DIST_MM_TYPE 30
 #define US_DIST_MM_MODE 0
+//Gyro - IN
+#define US_DIST_IN 7
+#define US_DIST_IN_CON 122
+#define US_DIST_IN_TYPE 30
+#define US_DIST_IN_MODE 0
 
 //Gyro - angle
-#define GYRO_ANG 7
+#define GYRO_ANG 8
 #define GYRO_ANG_CON 122
 #define GYRO_ANG_TYPE 32
 #define GYRO_ANG_MODE 0
 //Gyro - rate
-#define GYRO_RATE 8
+#define GYRO_RATE 9
 #define GYRO_RATE_CON 122
 #define GYRO_RATE_TYPE 32
 #define GYRO_RATE_MODE 1
+
+//IR - Proximity
+#define IR_PROX 10 
+#define IR_PROX_CON  122
+#define IR_PROX_TYPE 33
+#define IR_PROX_MODE 0
+//IR - Seek
+#define IR_SEEK 10 
+#define IR_SEEK_CON  122
+#define IR_SEEK_TYPE 33
+#define IR_SEEK_MODE 1
+//IR - Remote Control
+#define IR_REMOTE 10 
+#define IR_REMOTE_CON  122
+#define IR_REMOTE_TYPE 33
+#define IR_REMOTE_MODE 2
+
 
 /*typedef   struct
 {

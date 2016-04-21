@@ -28,7 +28,7 @@
  * \author Simón Rodriguez Perez
  * \date 2016-04-20
  * \version 3
- * \note Correct readout for Gyroscop angle
+ * \note Correct readout for Gyroscop
  *
  */
 #include <fcntl.h>
@@ -182,6 +182,12 @@ void* readSensorUS(sensorPort)
 * 		 date: 2015-02-28
 * 		 note: changed for Touch-, Sonar- and Lightsensor
 *
+*----------------------------------------------------------------------------------
+*
+* modified by: Simón Rodriguez Perez
+* 		 date: 2016-04-21
+* 		 note: readout for Gyro and Infrared Sensor
+*
 */
 void* readSensorData(int sensorPort)
 {
@@ -191,15 +197,33 @@ void* readSensorData(int sensorPort)
 
 	switch (sensor_setup_NAME[sensorPort])
 	{
-		case CONN_NONE: case CONN_ERROR: case NO_SEN: return 0;
-		case TOUCH_PRESS:return readSensorTOUCH(sensorPort);
-		case COL_REFLECT: return readSensorUS(sensorPort);
-		case COL_AMBIENT: return readSensorUS(sensorPort);
-		case COL_COLOR: return readSensorUS(sensorPort);
-		case US_DIST_CM: return readSensorUS(sensorPort);
-		case US_DIST_MM: return readSensorUS(sensorPort);
-		case GYRO_ANG: return readSensorUS(sensorPort);
-		default: return readOldDumbSensor(sensorPort);
+		case CONN_NONE: 
+		case CONN_ERROR: 
+		case NO_SEN: 
+			return 0;
+		case TOUCH_PRESS:
+			return readSensorTOUCH(sensorPort);
+		case COL_REFLECT: 
+			return readSensorUS(sensorPort);
+		case COL_AMBIENT: 
+			return readSensorUS(sensorPort);
+		case COL_COLOR: 
+			return readSensorUS(sensorPort);
+		case US_DIST_CM: 
+			return readSensorUS(sensorPort);
+		case US_DIST_MM: 
+			return readSensorUS(sensorPort);
+		case US_DIST_IN: 
+			return 0;
+		case GYRO_ANG: 
+			return readSensorUS(sensorPort);
+		case GYRO_RATE: 
+			return readSensorUS(sensorPort);
+		case IR_PROX:
+		case IR_SEEK:
+		case IR_REMOTE:
+			return 0;
+		default: return 0;
 	}
 
 	return 0;
@@ -216,8 +240,8 @@ void* readSensorData(int sensorPort)
 *----------------------------------------------------------------------------------
 *
 * modified by: Simón Rodriguez Perez
-* 		 date: 2016-04-20
-* 		 note: readout for Gyroscop angle 
+* 		 date: 2016-04-21
+* 		 note: readout for Gyroscop 
 *
 */
 int readSensor(int sensorPort)
@@ -250,13 +274,20 @@ int readSensor(int sensorPort)
 			return (*((DATA16*)data)&0x0FFF)/10;
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
+		case US_DIST_IN:
+			return -1;
 		case GYRO_ANG:
+		case GYRO_RATE:
 			help = *(data)&0xFFFF;
 			if(help & 0x8000)
 			{
 				help = ((help&0x7FFF) - 0x7FFF);
 			}
 			return help;
+		case IR_PROX:
+		case IR_SEEK:
+		case IR_REMOTE:
+			return -1;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -326,6 +357,38 @@ int setSensorMode(int sensorPort, int name)
 			sensor_setup_CONN[sensorPort] = US_DIST_MM_CON;
 			sensor_setup_TYPE[sensorPort] = US_DIST_MM_TYPE;
 			sensor_setup_MODE[sensorPort] = US_DIST_MM_MODE;
+			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
+			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
+			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+			break;
+		case US_DIST_IN:
+			sensor_setup_CONN[sensorPort] = US_DIST_IN_CON;
+			sensor_setup_TYPE[sensorPort] = US_DIST_IN_TYPE;
+			sensor_setup_MODE[sensorPort] = US_DIST_IN_MODE;
+			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
+			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
+			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+			break;
+		case IR_PROX:
+			sensor_setup_CONN[sensorPort] = IR_PROX_CON;
+			sensor_setup_TYPE[sensorPort] = IR_PROX_TYPE;
+			sensor_setup_MODE[sensorPort] = IR_PROX_MODE;
+			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
+			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
+			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+			break;
+		case IR_SEEK:
+			sensor_setup_CONN[sensorPort] = IR_SEEK_CON;
+			sensor_setup_TYPE[sensorPort] = IR_SEEK_TYPE;
+			sensor_setup_MODE[sensorPort] = IR_SEEK_MODE;
+			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
+			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
+			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+			break;
+		case IR_REMOTE:
+			sensor_setup_CONN[sensorPort] = IR_REMOTE_CON;
+			sensor_setup_TYPE[sensorPort] = IR_REMOTE_TYPE;
+			sensor_setup_MODE[sensorPort] = IR_REMOTE_MODE;
 			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
 			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
 			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
@@ -418,6 +481,14 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				sensor_setup_CONN[sensorPort] = GYRO_ANG_CON;
 				sensor_setup_TYPE[sensorPort] = GYRO_ANG_TYPE;
 				sensor_setup_MODE[sensorPort] = GYRO_ANG_MODE;
+				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
+				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
+				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				break;
+			case GYRO_RATE:
+				sensor_setup_CONN[sensorPort] = GYRO_RATE_CON;
+				sensor_setup_TYPE[sensorPort] = GYRO_RATE_TYPE;
+				sensor_setup_MODE[sensorPort] = GYRO_RATE_MODE;
 				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
 				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
 				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
