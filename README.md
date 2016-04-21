@@ -2,7 +2,7 @@
 This API supports the follwing functionallity:
 * Easy initialistion with one header-file
 * Controlling LEGO motors
-* Reading out Touch-, Sonar- and Lightsensor
+* Reading out Touch, Ultrasonic, Color and Gyro Sensor
 * Controling Buttons and LED
 * Printing text on LCD
 
