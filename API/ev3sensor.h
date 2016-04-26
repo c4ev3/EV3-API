@@ -59,6 +59,8 @@ int setSensorMode(int sensorPort, int name);
  */
 int setAllSensorMode(int name_1, int name_2, int name_3, int name_4);
 
+//////////////////////////////////////////////////////////////////////////
+int setIRRemoteCH(int sensorPort, int channel);
 
 /***********************************/
 // Sensor Names
@@ -91,5 +93,24 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4);
 #define IR_SEEK 11
 //IR - Remote Control
 #define IR_REMOTE 12
+
+// Infrared Beacon Buttons
+#define BEACON_CH_1 0
+#define BEACON_CH_2 1
+#define BEACON_CH_3 2
+#define BEACON_CH_4 3
+#define BEACON_OFF 			0
+#define BEACON_UP_LEFT 		1
+#define BEACON_DOWN_LEFT 	2
+#define BEACON_UP_RIGHT 	3
+#define BEACON_DOWN_RIGHT 	4
+#define BEACON_UP			5
+#define BEACON_DIAG_UP_LEFT		6
+#define BEACON_DIAG_UP_RIGHT	7
+#define BEACON_DOWN 		8
+#define BEACON_ON			9
+#define BEACON_LEFT 		10
+#define BEACON_RIGHT 		11
+
 
 #endif // EV3SENSOR_H
