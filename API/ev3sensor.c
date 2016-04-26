@@ -111,6 +111,8 @@ DATA8 sensor_setup_CONN[INPUTS];
 DATA8 sensor_setup_TYPE[INPUTS];
 DATA8 sensor_setup_MODE[INPUTS];
 
+int ir_sensor_channel[INPUTS];
+
 /********************************************************************************************/
 /**
 * Initialisation of the Sensorfunctions
@@ -136,6 +138,7 @@ int initSensors()
 		sensor_setup_CONN[i] = 0;
 		sensor_setup_TYPE[i] = 0;
 		sensor_setup_MODE[i] = 0;
+		ir_sensor_channel[i] = 0;
 	}
 
 	if (g_uartFile && g_iicFile && g_analogFile &&
@@ -204,7 +207,6 @@ void* readNxtColor(int sensorPort, DATA8 index)
 */
 }
 
-
 /********************************************************************************************/
 /**
 * Get the Data from the Sensor
@@ -252,7 +254,7 @@ void* readSensorData(int sensorPort)
 		case IR_PROX:
 		case IR_SEEK:
 		case IR_REMOTE:
-			return 0;
+			return readUartSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -277,7 +279,7 @@ void* readSensorData(int sensorPort)
 int readSensor(int sensorPort)
 {
 	uint64_t* data = readSensorData(sensorPort);
-	int16_t help=0;
+	int32_t help=0;
 	if (!data)
 		return -1;
 
@@ -315,9 +317,13 @@ int readSensor(int sensorPort)
 			}
 			return help;
 		case IR_PROX:
+			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
-		case IR_REMOTE:
 			return -1;
+		case IR_REMOTE:
+			help = *(data)&0xFFFFFFFF;
+			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
+			return help;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -531,3 +537,21 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
 	return 0;
 }
+
+
+/********************************************************************************************/
+/**
+* I 
+* author: Simón Rodriguez Perez
+* note: channel can be modified while running
+*
+*/
+int setIRRemoteCH(int sensorPort, int channel)
+{
+	ir_sensor_channel[sensorPort] = channel;
+	
+	return 0;
+}
+
+
+
