@@ -68,35 +68,28 @@ int setIRBeaconCH(int sensorPort, int channel);
 
 /***********************************/
 // Sensor Names
-#define NO_SEN -1
-//TOUCH
-#define TOUCH_PRESS 1
+#define NO_SEN -1		// No sensor connected
+//Touchsenor
+#define TOUCH_PRESS 1	// Press
 
-//Light - Reflect
-#define COL_REFLECT 2
-//Light - Ambient
-#define COL_AMBIENT 3
-//Light - Color
-#define COL_COLOR 4
+//Lightsensor
+#define COL_REFLECT 2	// Reflect
+#define COL_AMBIENT 3	// Ambient
+#define COL_COLOR 4		// Color
 
-//Gyro - CM
-#define US_DIST_CM 5
-//Gyro - MM
-#define US_DIST_MM 6
-//Gyro - IN
-#define US_DIST_IN 7
+//Ultrasonic
+#define US_DIST_CM 5	// Dist in cm
+#define US_DIST_MM 6	// Dist in mm
+#define US_DIST_IN 7	// Dist in inch
 
-//Gyro - angle
-#define GYRO_ANG 8
-//Gyro - rate
-#define GYRO_RATE 9
+//Gyroskop
+#define GYRO_ANG 8		// angle
+#define GYRO_RATE 9		// rate
 
-//IR - Proximity
-#define IR_PROX 10
-//IR - Seek
-#define IR_SEEK 11
-//IR - Remote Control
-#define IR_REMOTE 12
+//Infrared
+#define IR_PROX 10		// Proximity
+#define IR_SEEK 11		// Seek
+#define IR_REMOTE 12	// Remote Control
 
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0

@@ -44,58 +44,32 @@
 
 /***********************************/
 // define of Sensor setup
-//TOUCH
-#define TOUCH_PRESS_CON 121
-#define TOUCH_PRESS_TYPE 16
-#define TOUCH_PRESS_MODE 0
+// TOUCH
+#define TOUCH_TYPE 16
+#define TOUCH_PRESS_MODE 0 	// Press
 
-//Light - Reflect
-#define COL_REFLECT_CON 122
-#define COL_REFLECT_TYPE 29
-#define COL_REFLECT_MODE 0
-//Light - Ambient
-#define COL_AMBIENT_CON 122
-#define COL_AMBIENT_TYPE 29
-#define COL_AMBIENT_MODE 1
-//Light - Color
-#define COL_COLOR_CON 122
-#define COL_COLOR_TYPE 29
-#define COL_COLOR_MODE 2
+// Light
+#define COL_TYPE 29
+#define COL_REFLECT_MODE 0 	// Reflect
+#define COL_AMBIENT_MODE 1 	// Ambient
+#define COL_COLOR_MODE 2 	//Color
 
-//Gyro - CM
-#define US_DIST_CM_CON 122
-#define US_DIST_CM_TYPE 30
-#define US_DIST_CM_MODE 0
-//Gyro - MM
-#define US_DIST_MM_CON 122
-#define US_DIST_MM_TYPE 30
-#define US_DIST_MM_MODE 0
-//Gyro - IN
-#define US_DIST_IN_CON 122
-#define US_DIST_IN_TYPE 30
-#define US_DIST_IN_MODE 0
+// Ultrasonic
+#define US_TYPE 30
+#define US_DIST_CM_MODE 0 	// Dist in cm
+#define US_DIST_MM_MODE 0 	// Dist in mm
+#define US_DIST_IN_MODE 1 	// Dist in inch
 
-//Gyro - angle
-#define GYRO_ANG_CON 122
-#define GYRO_ANG_TYPE 32
-#define GYRO_ANG_MODE 0
-//Gyro - rate
-#define GYRO_RATE_CON 122
-#define GYRO_RATE_TYPE 32
-#define GYRO_RATE_MODE 1
+// Gyroskop
+#define GYRO_TYPE 32
+#define GYRO_ANG_MODE 0 	// angle
+#define GYRO_RATE_MODE 1	// rate
 
-//IR - Proximity
-#define IR_PROX_CON  122
-#define IR_PROX_TYPE 33
-#define IR_PROX_MODE 0
-//IR - Seek
-#define IR_SEEK_CON  122
-#define IR_SEEK_TYPE 33
-#define IR_SEEK_MODE 1
-//IR - Remote Control
-#define IR_REMOTE_CON  122
-#define IR_REMOTE_TYPE 33
-#define IR_REMOTE_MODE 2
+// Infrared
+#define IR_TYPE 33
+#define IR_PROX_MODE 0		// Proximity
+#define IR_SEEK_MODE 1		// Seek
+#define IR_REMOTE_MODE 2	// Remote Control
 /***********************************/
 
 int g_uartFile = 0;
@@ -107,10 +81,6 @@ ANALOG* g_analogSensors = 0;
 
 // Mode of inputs
 int sensor_setup_NAME[INPUTS];
-DATA8 sensor_setup_CONN[INPUTS];
-DATA8 sensor_setup_TYPE[INPUTS];
-DATA8 sensor_setup_MODE[INPUTS];
-
 int ir_sensor_channel[INPUTS];
 
 /********************************************************************************************/
@@ -135,9 +105,6 @@ int initSensors()
 	int i;
 	for (i = 0; i < INPUTS; i++)
 	{
-		sensor_setup_CONN[i] = 0;
-		sensor_setup_TYPE[i] = 0;
-		sensor_setup_MODE[i] = 0;
 		ir_sensor_channel[i] = 0;
 	}
 
@@ -288,7 +255,7 @@ int readSensor(int sensorPort)
 		case NO_SEN:
 			return -1;
 		case TOUCH_PRESS:
-			help = *data;
+			help = *((DATA16*)data);
 			help = help/256;
 			if (help==0)
 				return 0;
@@ -353,54 +320,37 @@ int setSensorMode(int sensorPort, int name)
 	// Setup of Input
 	switch (name)
 	{
+		case NO_SEN:
+			break;
 		case TOUCH_PRESS:
-			sensor_setup_CONN[sensorPort] = TOUCH_PRESS_CON;
-			sensor_setup_TYPE[sensorPort] = TOUCH_PRESS_TYPE;
-			sensor_setup_MODE[sensorPort] = TOUCH_PRESS_MODE;
+			devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
+			devCon.Type[sensorPort] 		= TOUCH_TYPE;
+			devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
 			break;
 		case COL_REFLECT:
-			sensor_setup_CONN[sensorPort] = COL_REFLECT_CON;
-			sensor_setup_TYPE[sensorPort] = COL_REFLECT_TYPE;
-			sensor_setup_MODE[sensorPort] = COL_REFLECT_MODE;
-			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-			devCon.Mode[sensorPort] 		= 0;//sensor_setup_MODE[sensorPort];
-			ioctl(g_uartFile, UART_SET_CONN, &devCon);
+			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+			devCon.Type[sensorPort] 		= COL_TYPE;
+			devCon.Mode[sensorPort] 		= COL_REFLECT_MODE;
 			break;
 		case COL_AMBIENT:
-			sensor_setup_CONN[sensorPort] = COL_AMBIENT_CON;
-			sensor_setup_TYPE[sensorPort] = COL_AMBIENT_TYPE;
-			sensor_setup_MODE[sensorPort] = COL_AMBIENT_MODE;
-			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
-			ioctl(g_uartFile, UART_SET_CONN, &devCon);
+			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+			devCon.Type[sensorPort] 		= COL_TYPE;
+			devCon.Mode[sensorPort] 		= COL_AMBIENT_MODE;
 			break;
 		case COL_COLOR:
-			sensor_setup_CONN[sensorPort] = COL_COLOR_CON;
-			sensor_setup_TYPE[sensorPort] = COL_COLOR_TYPE;
-			sensor_setup_MODE[sensorPort] = COL_COLOR_MODE;
-			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
-			ioctl(g_uartFile, UART_SET_CONN, &devCon);
+			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+			devCon.Type[sensorPort] 		= COL_TYPE;
+			devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
 			break;
 		case US_DIST_CM:
-			sensor_setup_CONN[sensorPort] = US_DIST_CM_CON;
-			sensor_setup_TYPE[sensorPort] = US_DIST_CM_TYPE;
-			sensor_setup_MODE[sensorPort] = US_DIST_CM_MODE;
-			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
-			ioctl(g_uartFile, UART_SET_CONN, &devCon);
+			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+			devCon.Type[sensorPort] 		= US_TYPE;
+			devCon.Mode[sensorPort] 		= US_DIST_CM_MODE;
 			break;
 		case US_DIST_MM:
-			sensor_setup_CONN[sensorPort] = US_DIST_MM_CON;
-			sensor_setup_TYPE[sensorPort] = US_DIST_MM_TYPE;
-			sensor_setup_MODE[sensorPort] = US_DIST_MM_MODE;
-			devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-			devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-			devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+			devCon.Type[sensorPort] 		= US_TYPE;
+			devCon.Mode[sensorPort] 		= US_DIST_MM_MODE;
 			break;
 		default: return -1;
 	}
@@ -441,98 +391,64 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 			case NO_SEN:
 				break;
 			case TOUCH_PRESS:
-				sensor_setup_CONN[sensorPort] = TOUCH_PRESS_CON;
-				sensor_setup_TYPE[sensorPort] = TOUCH_PRESS_TYPE;
-				sensor_setup_MODE[sensorPort] = TOUCH_PRESS_MODE;
+				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
+				devCon.Type[sensorPort] 		= TOUCH_TYPE;
+				devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
 				break;
 			case COL_REFLECT:
-				sensor_setup_CONN[sensorPort] = COL_REFLECT_CON;
-				sensor_setup_TYPE[sensorPort] = COL_REFLECT_TYPE;
-				sensor_setup_MODE[sensorPort] = COL_REFLECT_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= 0;//sensor_setup_MODE[sensorPort];
-				
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= COL_TYPE;
+				devCon.Mode[sensorPort] 		= COL_REFLECT_MODE;
 				break;
 			case COL_AMBIENT:
-				sensor_setup_CONN[sensorPort] = COL_AMBIENT_CON;
-				sensor_setup_TYPE[sensorPort] = COL_AMBIENT_TYPE;
-				sensor_setup_MODE[sensorPort] = COL_AMBIENT_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= COL_TYPE;
+				devCon.Mode[sensorPort] 		= COL_AMBIENT_MODE;
 				break;
 			case COL_COLOR:
-				sensor_setup_CONN[sensorPort] = COL_COLOR_CON;
-				sensor_setup_TYPE[sensorPort] = COL_COLOR_TYPE;
-				sensor_setup_MODE[sensorPort] = COL_COLOR_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= COL_TYPE;
+				devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
 				break;
 			case US_DIST_CM:
-				sensor_setup_CONN[sensorPort] = US_DIST_CM_CON;
-				sensor_setup_TYPE[sensorPort] = US_DIST_CM_TYPE;
-				sensor_setup_MODE[sensorPort] = US_DIST_CM_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= US_TYPE;
+				devCon.Mode[sensorPort] 		= US_DIST_CM_MODE;
 				break;
 			case US_DIST_MM:
-				sensor_setup_CONN[sensorPort] = US_DIST_MM_CON;
-				sensor_setup_TYPE[sensorPort] = US_DIST_MM_TYPE;
-				sensor_setup_MODE[sensorPort] = US_DIST_MM_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
-				break;
-			case GYRO_ANG:
-				sensor_setup_CONN[sensorPort] = GYRO_ANG_CON;
-				sensor_setup_TYPE[sensorPort] = GYRO_ANG_TYPE;
-				sensor_setup_MODE[sensorPort] = GYRO_ANG_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
-				break;
-			case GYRO_RATE:
-				sensor_setup_CONN[sensorPort] = GYRO_RATE_CON;
-				sensor_setup_TYPE[sensorPort] = GYRO_RATE_TYPE;
-				sensor_setup_MODE[sensorPort] = GYRO_RATE_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= US_TYPE;
+				devCon.Mode[sensorPort] 		= US_DIST_MM_MODE;
 				break;
 			case US_DIST_IN:
-				sensor_setup_CONN[sensorPort] = US_DIST_IN_CON;
-				sensor_setup_TYPE[sensorPort] = US_DIST_IN_TYPE;
-				sensor_setup_MODE[sensorPort] = US_DIST_IN_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= US_TYPE;
+				devCon.Mode[sensorPort] 		= US_DIST_IN_MODE;
+				break;
+			case GYRO_ANG:
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= GYRO_TYPE;
+				devCon.Mode[sensorPort] 		= GYRO_ANG_MODE;
+				break;
+			case GYRO_RATE:
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= GYRO_TYPE;
+				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
 				break;
 			case IR_PROX:
-				sensor_setup_CONN[sensorPort] = IR_PROX_CON;
-				sensor_setup_TYPE[sensorPort] = IR_PROX_TYPE;
-				sensor_setup_MODE[sensorPort] = IR_PROX_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= IR_TYPE;
+				devCon.Mode[sensorPort] 		= IR_PROX_MODE;
 				break;
 			case IR_SEEK:
-				sensor_setup_CONN[sensorPort] = IR_SEEK_CON;
-				sensor_setup_TYPE[sensorPort] = IR_SEEK_TYPE;
-				sensor_setup_MODE[sensorPort] = IR_SEEK_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= IR_TYPE;
+				devCon.Mode[sensorPort] 		= IR_SEEK_MODE;
 				break;
 			case IR_REMOTE:
-				sensor_setup_CONN[sensorPort] = IR_REMOTE_CON;
-				sensor_setup_TYPE[sensorPort] = IR_REMOTE_TYPE;
-				sensor_setup_MODE[sensorPort] = IR_REMOTE_MODE;
-				devCon.Connection[sensorPort] 	= sensor_setup_CONN[sensorPort];
-				devCon.Type[sensorPort] 		= sensor_setup_TYPE[sensorPort];
-				devCon.Mode[sensorPort] 		= sensor_setup_MODE[sensorPort];
+				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
+				devCon.Type[sensorPort] 		= IR_TYPE;
+				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
 				break;
 			default: return -1;
 		}
