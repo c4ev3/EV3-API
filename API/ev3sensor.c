@@ -28,7 +28,7 @@
  * \author Simón Rodriguez Perez
  * \date 2016-04-20
  * \version 3
- * \note Correct readout for Gyroscop
+ * \note Correct readout for Gyroscop and Infrared Sensor
  *
  */
 #include <fcntl.h>
@@ -273,7 +273,7 @@ void* readSensorData(int sensorPort)
 *
 * modified by: Simón Rodriguez Perez
 * 		 date: 2016-04-21
-* 		 note: readout for Gyroscop 
+* 		 note: readout for Gyroscop and Infrared Sensor
 *
 */
 int readSensor(int sensorPort)
@@ -319,7 +319,12 @@ int readSensor(int sensorPort)
 		case IR_PROX:
 			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
-			return -1;
+			help = (*(data) >> (16*ir_sensor_channel[sensorPort]))& 0xFF;
+			if(help & 0x80)
+			{
+				help = ((help&0x7F) - 0x7F);
+			}
+			return help;
 		case IR_REMOTE:
 			help = *(data)&0xFFFFFFFF;
 			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
@@ -541,12 +546,12 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 
 /********************************************************************************************/
 /**
-* I 
+* Selection of the Beacon channel for IR Sensor
 * author: Simón Rodriguez Perez
 * note: channel can be modified while running
 *
 */
-int setIRRemoteCH(int sensorPort, int channel)
+int setIRBeaconCH(int sensorPort, int channel)
 {
 	ir_sensor_channel[sensorPort] = channel;
 	
