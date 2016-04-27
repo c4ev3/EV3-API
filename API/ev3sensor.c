@@ -213,7 +213,7 @@ void* readSensorData(int sensorPort)
 		case US_DIST_MM: 
 			return readUartSensor(sensorPort);
 		case US_DIST_IN: 
-			return 0;
+			return readUartSensor(sensorPort);
 		case GYRO_ANG: 
 			return readUartSensor(sensorPort);
 		case GYRO_RATE: 
@@ -274,7 +274,7 @@ int readSensor(int sensorPort)
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
-			return -1;
+			return *((DATA16*)data)&0x0FFF;
 		case GYRO_ANG:
 		case GYRO_RATE:
 			help = *(data)&0xFFFF;
