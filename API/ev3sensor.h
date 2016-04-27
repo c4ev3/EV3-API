@@ -59,8 +59,12 @@ int setSensorMode(int sensorPort, int name);
  */
 int setAllSensorMode(int name_1, int name_2, int name_3, int name_4);
 
-//////////////////////////////////////////////////////////////////////////
-int setIRRemoteCH(int sensorPort, int channel);
+/**
+ * Select channel for the Beacon control
+ * Note: Can be changed while running
+ * Example: setAllSensorMode(IN_2, BEACON_CH_1)
+ */
+int setIRBeaconCH(int sensorPort, int channel);
 
 /***********************************/
 // Sensor Names
