@@ -70,6 +70,10 @@
 #define IR_PROX_MODE 0		// Proximity
 #define IR_SEEK_MODE 1		// Seek
 #define IR_REMOTE_MODE 2	// Remote Control
+
+// IIC 
+#define IIC_TYPE 100
+#define IIC_BYTE_MODE 0
 /***********************************/
 
 int g_uartFile = 0;
@@ -222,6 +226,8 @@ void* readSensorData(int sensorPort)
 		case IR_SEEK:
 		case IR_REMOTE:
 			return readUartSensor(sensorPort);
+		case NXT_IR_SEEKER:
+			return readIicSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -296,6 +302,8 @@ int readSensor(int sensorPort)
 			help = *(data)&0xFFFFFFFF;
 			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return help;
+		case NXT_IR_SEEKER:
+			return *((DATA16*)data)&0x000F;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -449,6 +457,11 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= IR_TYPE;
 				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
+				break;
+			case NXT_IR_SEEKER:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= IIC_TYPE;
+				devCon.Mode[sensorPort] 		= IIC_BYTE_MODE;
 				break;
 			default: return -1;
 		}
