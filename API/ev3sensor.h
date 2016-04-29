@@ -91,6 +91,9 @@ int setIRBeaconCH(int sensorPort, int channel);
 #define IR_SEEK 11		// Seek
 #define IR_REMOTE 12	// Remote Control
 
+//NXT Infrared Seeker
+#define NXT_IR_SEEKER 20 // 
+
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0
 #define BEACON_CH_2 1
