@@ -74,6 +74,11 @@
 // IIC 
 #define IIC_TYPE 100
 #define IIC_BYTE_MODE 0
+
+//NXT Temperture
+#define NXT_TEMP_TYPE 6
+#define NXT_TEMP_C_MODE 0	// Temperature in C
+#define NXT_TEMP_C_MODE 1	// Temperature in F
 /***********************************/
 
 int g_uartFile = 0;
@@ -228,6 +233,10 @@ void* readSensorData(int sensorPort)
 			return readUartSensor(sensorPort);
 		case NXT_IR_SEEKER:
 			return readIicSensor(sensorPort);
+		case NXT_TEMP_C:
+			return readIicSensor(sensorPort);
+		case NXT_TEMP_F:
+			return readIicSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -304,6 +313,16 @@ int readSensor(int sensorPort)
 			return help;
 		case NXT_IR_SEEKER:
 			return *((DATA16*)data)&0x000F;
+		case NXT_TEMP_C:
+			help = (*data>>4) & 0x0FFF;
+			if(help & 0x800)
+			{
+				help = ((help&0x7FF) ^ 0x7FF) + 1;
+				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15));
+			}
+			return ((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15);
+		case NXT_TEMP_F:
+			return -1;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -462,6 +481,13 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= IIC_TYPE;
 				devCon.Mode[sensorPort] 		= IIC_BYTE_MODE;
+				break;
+			case NXT_TEMP_C:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
+				devCon.Mode[sensorPort] 		= NXT_TEMP_C_MODE;
+				break;
+			case NXT_TEMP_F:
 				break;
 			default: return -1;
 		}
