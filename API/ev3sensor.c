@@ -78,7 +78,7 @@
 //NXT Temperture
 #define NXT_TEMP_TYPE 6
 #define NXT_TEMP_C_MODE 0	// Temperature in C
-#define NXT_TEMP_C_MODE 1	// Temperature in F
+#define NXT_TEMP_F_MODE 1	// Temperature in F
 /***********************************/
 
 int g_uartFile = 0;
@@ -322,7 +322,13 @@ int readSensor(int sensorPort)
 			}
 			return ((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15);
 		case NXT_TEMP_F:
-			return -1;
+			help = (*data>>4) & 0x0FFF;
+			if(help & 0x800)
+			{
+				help = ((help&0x7FF) ^ 0x7FF) + 1;
+				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
+			}
+			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -488,6 +494,9 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Mode[sensorPort] 		= NXT_TEMP_C_MODE;
 				break;
 			case NXT_TEMP_F:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
+				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
 				break;
 			default: return -1;
 		}
