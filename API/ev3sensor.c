@@ -210,7 +210,7 @@ void* readSensorData(int sensorPort)
 		case CONN_ERROR: 
 		case NO_SEN: 
 			return 0;
-		// Touchsenor
+		// Touchsensor
 		case TOUCH_PRESS:
 			return readNewDumbSensor(sensorPort);
 		// Lightsensor
@@ -276,7 +276,7 @@ int readSensor(int sensorPort)
 	{
 		case NO_SEN:
 			return -1;
-		// Touchsenor
+		// Touchsensor
 		case TOUCH_PRESS:
 			help = *((DATA16*)data);
 			help = help/256;
@@ -436,7 +436,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 		{
 			case NO_SEN:
 				break;
-			// Touchsenor
+			// Touchsensor
 			case TOUCH_PRESS:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
 				devCon.Type[sensorPort] 		= TOUCH_TYPE;
