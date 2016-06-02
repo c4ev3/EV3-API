@@ -79,6 +79,7 @@
 #define NXT_TEMP_TYPE 6
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
+
 /***********************************/
 
 int g_uartFile = 0;
@@ -107,7 +108,7 @@ int initSensors()
 
     g_uartSensors = (UART*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
                                 MAP_FILE | MAP_SHARED, g_uartFile, 0);
-    g_iicSensors = (IIC*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
+    g_iicSensors = (IIC*)mmap(0, sizeof(IIC), PROT_READ | PROT_WRITE,
                               MAP_FILE | MAP_SHARED, g_iicFile, 0);
 	g_analogSensors = (ANALOG*)mmap(0, sizeof(ANALOG), PROT_READ | PROT_WRITE,
 									MAP_FILE | MAP_SHARED, g_analogFile, 0);
@@ -211,26 +212,31 @@ void* readSensorData(int sensorPort)
 			return 0;
 		case TOUCH_PRESS:
 			return readNewDumbSensor(sensorPort);
+		// Lightsensor
 		case COL_REFLECT: 
 			return readUartSensor(sensorPort);
 		case COL_AMBIENT: 
 			return readUartSensor(sensorPort);
 		case COL_COLOR: 
 			return readUartSensor(sensorPort);
+		// Ultrasonic
 		case US_DIST_CM: 
 			return readUartSensor(sensorPort);
 		case US_DIST_MM: 
 			return readUartSensor(sensorPort);
 		case US_DIST_IN: 
 			return readUartSensor(sensorPort);
+		// Gyroskop
 		case GYRO_ANG: 
 			return readUartSensor(sensorPort);
 		case GYRO_RATE: 
 			return readUartSensor(sensorPort);
+		// Infrared
 		case IR_PROX:
 		case IR_SEEK:
 		case IR_REMOTE:
 			return readUartSensor(sensorPort);
+		// NXT
 		case NXT_IR_SEEKER:
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_C:
@@ -278,18 +284,21 @@ int readSensor(int sensorPort)
 				return 1;
 			else
 				return -1;
+		// Lightsensor
 		case COL_REFLECT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_AMBIENT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_COLOR:
 			return *((DATA16*)data)&0x000F;
+		// Ultrasonic
 		case US_DIST_CM:
 			return (*((DATA16*)data)&0x0FFF)/10;
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
+		// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
 			help = *(data)&0xFFFF;
@@ -298,6 +307,7 @@ int readSensor(int sensorPort)
 				help = ((help&0x7FFF) - 0x7FFF);
 			}
 			return help;
+		// Infrared
 		case IR_PROX:
 			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
@@ -311,6 +321,7 @@ int readSensor(int sensorPort)
 			help = *(data)&0xFFFFFFFF;
 			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return help;
+		// NXT
 		case NXT_IR_SEEKER:
 			return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
@@ -423,11 +434,13 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 		{
 			case NO_SEN:
 				break;
+			// Touchsenor
 			case TOUCH_PRESS:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
 				devCon.Type[sensorPort] 		= TOUCH_TYPE;
 				devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
 				break;
+			// Lightsensor
 			case COL_REFLECT:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= COL_TYPE;
@@ -443,6 +456,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= COL_TYPE;
 				devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
 				break;
+			// Ultrasonic
 			case US_DIST_CM:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= US_TYPE;
@@ -458,6 +472,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= US_TYPE;
 				devCon.Mode[sensorPort] 		= US_DIST_IN_MODE;
 				break;
+			// Gyroskop
 			case GYRO_ANG:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
@@ -468,6 +483,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
 				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
 				break;
+			// Infrared
 			case IR_PROX:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= IR_TYPE;
@@ -483,6 +499,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= IR_TYPE;
 				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
 				break;
+			// NXT
 			case NXT_IR_SEEKER:
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= IIC_TYPE;
