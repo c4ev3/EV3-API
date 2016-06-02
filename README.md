@@ -11,8 +11,8 @@ and [Carsten Zeiffert](https://github.com/carstenz/ev3sensor/).
 These API's were merged and extended.
 
 # Acknowledgements
-This plugin has been originally written for use in the teaching of Informatics at the Hochschule Aschaffenburg.   
-The work is part of the EVELIN project, which was funded by the German Federal Ministry of Education and Research (Bundesministerium für Bildung und Forschung)	under grant number 01PL12022B.   
+This plugin has been originally written for use in the teaching of Informatics at the [Hochschule Aschaffenburg](https://www.h-ab.de/).   
+The work is part of the [EVELIN](http://www.evelinprojekt.de/en/) project, which was funded by the German Federal Ministry of Education and Research (Bundesministerium für Bildung und Forschung)	under grant number 01PL12022B.   
 The authors are responsible	for the content of this publication.
 
 In agreement with the university, it's hereby released under the terms of the Mozilla Public License Version 1.1 and GNU General Public License for the Sensors-API.
