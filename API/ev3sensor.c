@@ -117,7 +117,7 @@ int initSensors()
 
     g_uartSensors = (UART*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
                                 MAP_FILE | MAP_SHARED, g_uartFile, 0);
-    g_iicSensors = (IIC*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
+    g_iicSensors = (IIC*)mmap(0, sizeof(IIC), PROT_READ | PROT_WRITE,
                               MAP_FILE | MAP_SHARED, g_iicFile, 0);
 	g_analogSensors = (ANALOG*)mmap(0, sizeof(ANALOG), PROT_READ | PROT_WRITE,
 									MAP_FILE | MAP_SHARED, g_analogFile, 0);
