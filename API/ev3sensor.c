@@ -253,7 +253,7 @@ void* readSensorData(int sensorPort)
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
-		// Solarmodul
+		// Solarmodule
 		case ES_IN_VOLT:
 		case ES_IN_AMP:
 		case ES_OUT_VOLT:
@@ -360,7 +360,7 @@ int readSensor(int sensorPort)
 				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
 			}
 			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
-		// Solarmodul
+		// Solarmodule
 		case ES_IN_VOLT:
 		case ES_IN_AMP:
 		case ES_OUT_VOLT:
@@ -544,7 +544,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
 				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
 				break;
-			// Solarmodul
+			// Solarmodule
 			case ES_IN_VOLT:
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
