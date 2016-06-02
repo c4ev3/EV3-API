@@ -342,6 +342,7 @@ int readSensor(int sensorPort)
 				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
 			}
 			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
+		//Solarstation
 		default: break;
 	}
 	return *((DATA16*)data);
