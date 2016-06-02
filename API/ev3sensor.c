@@ -80,6 +80,15 @@
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
 
+//NXT Solarmodul
+#define NXT_ES_TYPE 99
+#define ES_IN_VOLT_MODE 0	// Volt - Input
+#define ES_IN_AMP_MODE 1	// Ampere - Input
+#define ES_OUT_VOLT_MODE 2	// Volt - Output
+#define ES_OUT_AMP_MODE 3	// Ampere - Output
+#define ES_JOULE_MODE 4		// Joule
+#define ES_IN_WATT_MODE 5	// Watt - Input
+#define ES_OUT_WATT_MODE 6	// Watt - Output
 /***********************************/
 
 int g_uartFile = 0;
@@ -244,6 +253,15 @@ void* readSensorData(int sensorPort)
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
+		// Solarmodul
+		case ES_IN_VOLT:
+		case ES_IN_AMP:
+		case ES_OUT_VOLT:
+		case ES_OUT_AMP:
+		case ES_JOULE:
+		case ES_IN_WATT:
+		case ES_OUT_WATT:
+			return readIicSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -342,7 +360,15 @@ int readSensor(int sensorPort)
 				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
 			}
 			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
-		//Solarstation
+		// Solarmodul
+		case ES_IN_VOLT:
+		case ES_IN_AMP:
+		case ES_OUT_VOLT:
+		case ES_OUT_AMP:
+		case ES_JOULE:
+		case ES_IN_WATT:
+		case ES_OUT_WATT:
+			return *((DATA16*)data)&0xFFFF;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -518,12 +544,48 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
 				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
 				break;
+			// Solarmodul
+			case ES_IN_VOLT:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_IN_VOLT_MODE;
+				break;
+			case ES_IN_AMP:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_IN_AMP_MODE;
+				break;
+			case ES_OUT_VOLT:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_OUT_VOLT_MODE;
+				break;
+			case ES_OUT_AMP:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_OUT_AMP_MODE;
+				break;
+			case ES_JOULE:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_JOULE_MODE;
+				break;
+			case ES_IN_WATT:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_IN_WATT_MODE;
+				break;
+			case ES_OUT_WATT:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= NXT_ES_TYPE;
+				devCon.Mode[sensorPort] 		= ES_OUT_WATT_MODE;
+				break;
 			default: return -1;
 		}
 	}
 	// Set actual device mode
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
-	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
+	ioctl(g_iicFile, IIC_SET_CONN, &devCon);
 	return 0;
 }
 

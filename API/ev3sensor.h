@@ -96,6 +96,15 @@ int setIRBeaconCH(int sensorPort, int channel);
 #define NXT_TEMP_C 21 	// Temperature in C
 #define NXT_TEMP_F 22 	// Temperature in F
 
+//Solarmodul
+#define ES_IN_VOLT 30 	// Volt - Input
+#define ES_IN_AMP 31	// Ampere - Input
+#define ES_OUT_VOLT 32	// Volt - Output
+#define ES_OUT_AMP 33	// Ampere - Output
+#define ES_JOULE 34		// Joule
+#define ES_IN_WATT 35	// Watt - Input
+#define ES_OUT_WATT 36	// Watt - Output
+
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0
 #define BEACON_CH_2 1
