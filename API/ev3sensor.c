@@ -210,6 +210,7 @@ void* readSensorData(int sensorPort)
 		case CONN_ERROR: 
 		case NO_SEN: 
 			return 0;
+		// Touchsenor
 		case TOUCH_PRESS:
 			return readNewDumbSensor(sensorPort);
 		// Lightsensor
@@ -275,6 +276,7 @@ int readSensor(int sensorPort)
 	{
 		case NO_SEN:
 			return -1;
+		// Touchsenor
 		case TOUCH_PRESS:
 			help = *((DATA16*)data);
 			help = help/256;
@@ -284,18 +286,21 @@ int readSensor(int sensorPort)
 				return 1;
 			else
 				return -1;
+		// Lightsensor
 		case COL_REFLECT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_AMBIENT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_COLOR:
 			return *((DATA16*)data)&0x000F;
+		// Ultrasonic
 		case US_DIST_CM:
 			return (*((DATA16*)data)&0x0FFF)/10;
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
+		// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
 			help = *(data)&0xFFFF;
@@ -304,6 +309,7 @@ int readSensor(int sensorPort)
 				help = ((help&0x7FFF) - 0x7FFF);
 			}
 			return help;
+		// Infrared
 		case IR_PROX:
 			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
@@ -317,6 +323,7 @@ int readSensor(int sensorPort)
 			help = *(data)&0xFFFFFFFF;
 			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return help;
+		// NXT
 		case NXT_IR_SEEKER:
 			return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
@@ -429,11 +436,13 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 		{
 			case NO_SEN:
 				break;
+			// Touchsenor
 			case TOUCH_PRESS:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
 				devCon.Type[sensorPort] 		= TOUCH_TYPE;
 				devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
 				break;
+			// Lightsensor
 			case COL_REFLECT:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= COL_TYPE;
@@ -449,6 +458,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= COL_TYPE;
 				devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
 				break;
+			// Ultrasonic
 			case US_DIST_CM:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= US_TYPE;
@@ -464,6 +474,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= US_TYPE;
 				devCon.Mode[sensorPort] 		= US_DIST_IN_MODE;
 				break;
+			// Gyroskop
 			case GYRO_ANG:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
@@ -474,6 +485,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
 				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
 				break;
+			// Infrared
 			case IR_PROX:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= IR_TYPE;
@@ -489,6 +501,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= IR_TYPE;
 				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
 				break;
+			// NXT
 			case NXT_IR_SEEKER:
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= IIC_TYPE;
