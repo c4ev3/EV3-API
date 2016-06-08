@@ -10,6 +10,12 @@ The basis of this API was developed by [John Hansen](http://bricxcc.sourceforge.
 and [Carsten Zeiffert](https://github.com/carstenz/ev3sensor/).
 These API's were merged and extended.
 
+## Building from source
+If you change something in the source, rebuild with a simple `make` (with MinGW, it's called `mingw32-make`).
+
+Unless you are using the Eclipse Plugin, you will also need to explicitly link against the static `.a` file generated like so: 
+`-L/path/to/libev3api -lev3api`.
+
 # Acknowledgements
 This plugin has been originally written for use in the teaching of Informatics at the [Hochschule Aschaffenburg](https://www.h-ab.de/).   
 The work is part of the [EVELIN](http://www.evelinprojekt.de/en/) project, which was funded by the German Federal Ministry of Education and Research (Bundesministerium für Bildung und Forschung)	under grant number 01PL12022B.   
