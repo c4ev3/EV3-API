@@ -24,6 +24,7 @@ int InitEV3()
 	ButtonLedInit();
 	LcdInit();
 	LcdClean();
+	SoundInit();
 
 	return 1;
 }
@@ -33,6 +34,7 @@ int CloseEV3()
 {
 	OutputClose();
 	ButtonLedClose();
+	SoundClose();
 
 	return 1;
 }
@@ -44,6 +46,7 @@ int ExitEV3()
 	OutputExit();
 	ButtonLedExit();
 	LcdExit();
+	SoundExit();
 
 	return 1;
 }
@@ -52,9 +55,11 @@ int FreeEV3()
 {
 	OutputClose();
 	ButtonLedClose();
+	SoundClose();
 	OutputExit();
 	ButtonLedExit();
 	LcdExit();
+	SoundExit();
 
 	return 1;
 }

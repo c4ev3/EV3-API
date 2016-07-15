@@ -5,6 +5,7 @@ This API supports the follwing functionallity:
 * Reading out of Touch, Ultrasonic, Color, Gyro, EV3-Infrared, NXT-Infrared Sensor and NXT Temperaturesensor
 * Controling Buttons and LED
 * Printing text on LCD
+* Playing sounds
 
 The basis of this API was developed by [John Hansen](http://bricxcc.sourceforge.net/test_releases/)
 and [Carsten Zeiffert](https://github.com/carstenz/ev3sensor/).
