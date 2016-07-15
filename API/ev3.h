@@ -45,6 +45,7 @@ extern "C" {
 #include <ev3sensor.h>
 #include <ev3_button.h>
 #include <ev3_lcd.h>
+#include <ev3_sound.h>
 
 int InitEV3(void);
 int CloseEV3(void);
