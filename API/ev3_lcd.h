@@ -212,7 +212,7 @@ char PointOutEx(int x, int y, unsigned long options);
  * \return The result of the drawing operation.
  */
 char RectOutEx(int x, int y, int width, int height, unsigned long options);
-#define RectOut(_x, _y, _w, _h) RectOutEx((_x), (_y), (_w), (_y), DRAW_OPT_NORMAL)
+#define RectOut(_x, _y, _w, _h) RectOutEx((_x), (_y), (_w), (_h), DRAW_OPT_NORMAL)
 
 /**
  * Draw text.
