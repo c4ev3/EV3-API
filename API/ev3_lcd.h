@@ -63,7 +63,7 @@ extern "C" {
 #define LCD_BYTE_WIDTH ((LCD_WIDTH + 7) / 8)
 #define LCD_BUFFER_SIZE (LCD_BYTE_WIDTH * LCD_HEIGHT)
 
-typedef byte     IMGDATA;    //!< Image base type
+typedef uint8_t     IMGDATA;    //!< Image base type
 typedef IMGDATA* IP;         //!< Instruction pointer type
 
 typedef struct {
@@ -132,15 +132,15 @@ bool LcdLine(char Color, short X0, short Y0, short X1, short Y1);
 bool LcdDotLine(char Color, short X0, short Y0, short X1, short Y1, short OnPix, short OffPix);
 bool LcdCircle(char Color, short X, short Y, short R);
 bool LcdFillCircle(char Color, short X, short Y, short R);
-bool LcdSelectFont(byte FontType);
-byte* LcdGetDisplay();
+bool LcdSelectFont(uint8_t FontType);
+uint8_t* LcdGetDisplay();
 bool LcdText(char Color, short X, short Y, char* Text);
 bool LcdIcon(char Color, short X, short Y, char IconType, char IconNum);
 bool LcdBmpFile(char Color, short X, short Y, char* Name);
 bool LcdPicture(char Color, short X, short Y, IP pBitmap);
 bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
 bool LcdFillWindow(char Color, short Y, short Y1);
-byte* LcdGetFrameBuffer();
+uint8_t* LcdGetFrameBuffer();
 void LcdWriteDisplayToFile(char* filename, ImageFormat fmt);
 void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt);
 
@@ -158,7 +158,7 @@ void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt);
  * \param options The drawing options.
  * \return The result of the drawing operation.
  */
-char CircleOutEx(int x, int y, byte radius, unsigned long options);
+char CircleOutEx(int x, int y, uint8_t radius, unsigned long options);
 #define CircleOut(_x, _y, _r) CircleOutEx((_x), (_y), (_r), DRAW_OPT_NORMAL)
 
 /**
@@ -269,7 +269,7 @@ char NumOutEx(int x, int y, int value, unsigned long options);
  * \param options The drawing options.
  * \return The result of the drawing operation.
  */
-char EllipseOutEx(int x, int y, byte radiusX, byte radiusY, unsigned long options);
+char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
 #define EllipseOut(_x, _y, _rx, _ry) EllipseOutEx((_x), (_y), (_rx), (_ry), DRAW_OPT_NORMAL)
 
 /**
@@ -322,7 +322,7 @@ char GraphicOutEx(int x, int y, char* filename, unsigned long options);
  * \param options The drawing options.
  * \return The result of the drawing operation.
  */
-char GraphicArrayOutEx(int x, int y, byte* data, unsigned long options);
+char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options);
 #define GraphicArrayOut(_x, _y, _d) GraphicArrayOutEx((_x), (_y), (_d), DRAW_OPT_NORMAL)
 
 

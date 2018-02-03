@@ -41,10 +41,10 @@ typedef struct {
   BUTTON ButtonSafe;
   BUTTON* pButton;
   int ButtonLedFile;
-  byte LedPattern;
+  uint8_t LedPattern;
   bool WarnLight;
-  word curButtonsS;
-  word curButtonsE;
+  uint16_t curButtonsS;
+  uint16_t curButtonsE;
 } ButtonLedGlobals;
 
 ButtonLedGlobals ButtonLedInstance;
@@ -65,11 +65,11 @@ int WriteToButtonLedDevice(char * bytes, int num_bytes)
   return result;
 }
 
-word checkButtons()
+uint16_t checkButtons()
 {
   int i;
-  byte p;
-  word Result = 0;
+  uint8_t p;
+  uint16_t Result = 0;
   for (i = 0; i < NUM_BUTTONS; i++)
   {
     p = (*ButtonLedInstance.pButton).Pressed[i];
@@ -81,9 +81,9 @@ word checkButtons()
   return Result;
 }
 
-word getButtons()
+uint16_t getButtons()
 {
-  word state1, state2;
+  uint16_t state1, state2;
   // read buttons and de-bounce them
   do
   {
@@ -102,9 +102,9 @@ void buttonClear()
   ButtonLedInstance.curButtonsE = ButtonLedInstance.curButtonsS;
 }
 
-word readButtons()
+uint16_t readButtons()
 {
-  word Result = getButtons();
+  uint16_t Result = getButtons();
   ButtonLedInstance.curButtonsS = Result;
   return Result;
 }
@@ -228,7 +228,7 @@ char* HardwareVersionString()
   return HwVers;
 }
 
-byte MappedPattern(byte Pattern)
+uint8_t MappedPattern(uint8_t Pattern)
 {
   if (ButtonLedInstance.WarnLight)
   {
@@ -252,14 +252,14 @@ byte MappedPattern(byte Pattern)
   return Pattern;
 }
 
-void UpdateLed(byte Pattern)
+void UpdateLed(uint8_t Pattern)
 {
   if (!ButtonLedInitialized())
     return;
 
-  const byte cmdLen = 2;
-  const byte zero = 48; // ASCII value of '0'
-  byte cmd[2];
+  const uint8_t cmdLen = 2;
+  const uint8_t zero = 48; // ASCII value of '0'
+  uint8_t cmd[2];
 
   if (Pattern < NUM_LED_PATTERNS)
   {
@@ -282,14 +282,14 @@ void SetLedWarning(bool Value)
   }
 }
 
-byte LedWarning()
+uint8_t LedWarning()
 {
   if (!ButtonLedInitialized())
     return FALSE;
   return ButtonLedInstance.WarnLight;
 }
 
-void SetLedPattern(byte Pattern)
+void SetLedPattern(uint8_t Pattern)
 {
   if (!ButtonLedInitialized())
     return;
@@ -300,20 +300,20 @@ void SetLedPattern(byte Pattern)
   }
 }
 
-byte LedPattern()
+uint8_t LedPattern()
 {
   if (!ButtonLedInitialized())
     return LED_BLACK;
   return MappedPattern(ButtonLedInstance.LedPattern);
 }
 
-word ButtonWaitForAnyEvent(unsigned int timeout)
+uint16_t ButtonWaitForAnyEvent(unsigned int timeout)
 {
   if (!ButtonLedInitialized())
     return 0;
     
   unsigned long long endms, curTime;
-  word oldDown, newDown;
+  uint16_t oldDown, newDown;
 
   if (timeout == 0)
     endms = 0x7fffffffffffffffULL;
@@ -337,13 +337,13 @@ word ButtonWaitForAnyEvent(unsigned int timeout)
   }
 }
 
-word ButtonWaitForAnyPress(unsigned int timeout)
+uint16_t ButtonWaitForAnyPress(unsigned int timeout)
 {
   if (!ButtonLedInitialized())
     return 0;
 
   unsigned long long endms, curTime;
-  word oldDown, newDown, pressed;
+  uint16_t oldDown, newDown, pressed;
 
   if (timeout == 0)
     endms = 0x7fffffffffffffffULL;
@@ -369,17 +369,17 @@ word ButtonWaitForAnyPress(unsigned int timeout)
   }
 }
 
-bool ButtonIsUp(byte Button)
+bool ButtonIsUp(uint8_t Button)
 {
   return (readButtons() & Button) == 0;
 }
 
-bool ButtonIsDown(byte Button)
+bool ButtonIsDown(uint8_t Button)
 {
   return !ButtonIsUp(Button);
 }
 
-void ButtonWaitForPress(byte Button)
+void ButtonWaitForPress(uint8_t Button)
 {
   while ((ButtonWaitForAnyPress(0) & Button) == 0)
   {
@@ -387,11 +387,11 @@ void ButtonWaitForPress(byte Button)
   }
 }
 
-void ButtonWaitForPressAndRelease(byte Button)
+void ButtonWaitForPressAndRelease(uint8_t Button)
 {
-  word tmp;
+  uint16_t tmp;
   ButtonWaitForPress(Button);
-  tmp = (word)Button << WAITFOR_RELEASE_SHIFT;
+  tmp = (uint16_t)Button << WAITFOR_RELEASE_SHIFT;
   while ((ButtonWaitForAnyEvent(0) & tmp) == 0)
   {
     // wait for next event
@@ -400,13 +400,13 @@ void ButtonWaitForPressAndRelease(byte Button)
 
 // NXC-style API functions (no support for short press, long press,
 // short release, long release, or press counts
-bool ButtonPressedEx(byte btn, bool resetCount)
+bool ButtonPressedEx(uint8_t btn, bool resetCount)
 {
   // resetCount parameter is ignored
   return ButtonIsDown(btn);
 }
 
-char ReadButtonEx(byte btn, bool reset, bool* pressed, word* count)
+char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count)
 {
   // reset parameter is ignored
   *count = 0;
@@ -414,7 +414,7 @@ char ReadButtonEx(byte btn, bool reset, bool* pressed, word* count)
   return 0; // okay
 }
 
-byte ButtonState(byte btn)
+uint8_t ButtonState(uint8_t btn)
 {
   if (ButtonIsDown(btn))
     return BTNSTATE_PRESSED_STATE | BTNSTATE_PRESSED_EV;

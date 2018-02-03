@@ -57,18 +57,18 @@ typedef void (*TimerCallback)(int sig);
 unsigned long TimerWait(unsigned long Time);
 void TimerReady(unsigned long Timer);
 
-unsigned long Timer(byte Timer);
-unsigned long FastTimer(byte Timer);
-void ClearTimer(byte Timer);
-void SetTimer(byte Timer, unsigned long Value);
+unsigned long Timer(uint8_t Timer);
+unsigned long FastTimer(uint8_t Timer);
+void ClearTimer(uint8_t Timer);
+void SetTimer(uint8_t Timer, unsigned long Value);
 
-unsigned long TimerMS(byte Timer);
-void ClearTimerMS(byte Timer);
-void SetTimerMS(byte Timer, unsigned long Value);
+unsigned long TimerMS(uint8_t Timer);
+void ClearTimerMS(uint8_t Timer);
+void SetTimerMS(uint8_t Timer, unsigned long Value);
 
-unsigned long TimerUS(byte Timer);
-void ClearTimerUS(byte Timer);
-void SetTimerUS(byte Timer, unsigned long Value);
+unsigned long TimerUS(uint8_t Timer);
+void ClearTimerUS(uint8_t Timer);
+void SetTimerUS(uint8_t Timer, unsigned long Value);
 
 void TimerInit();
 

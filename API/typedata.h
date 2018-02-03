@@ -16,7 +16,7 @@
 
 typedef   struct // if data type changes - remember to change "cInputTypeDataInit" !
 {
-  SBYTE     Name[TYPE_NAME_LENGTH + 1]; //!< Device name
+  int8_t     Name[TYPE_NAME_LENGTH + 1]; //!< Device name
   DATA8     Type;                       //!< Device type
   DATA8     Connection;
   DATA8     Mode;                       //!< Device mode
@@ -31,11 +31,11 @@ typedef   struct // if data type changes - remember to change "cInputTypeDataIni
   DATAF     PctMax;                     //!< Percent maximum value  (e.c. 100.0)
   DATAF     SiMin;                      //!< SI unit minimum value  (e.c. -100.0)
   DATAF     SiMax;                      //!< SI unit maximum value  (e.c. 100.0)
-  UWORD     InvalidTime;                //!< mS from type change to valid data
-  UWORD     IdValue;                    //!< Device id value        (e.c. 0 ~ UART)
+  uint16_t     InvalidTime;                //!< mS from type change to valid data
+  uint16_t     IdValue;                    //!< Device id value        (e.c. 0 ~ UART)
   DATA8     Pins;                       //!< Device pin setup
-  SBYTE     Symbol[SYMBOL_LENGTH + 1];  //!< SI unit symbol
-  UWORD     Align;
+  int8_t     Symbol[SYMBOL_LENGTH + 1];  //!< SI unit symbol
+  uint16_t     Align;
 }
 TYPES;
 

@@ -25,10 +25,10 @@ typedef   struct
   TYPES   TypeData[INPUTS][MAX_DEVICE_MODES]; //!< TypeData
 
 #ifndef DISABLE_FAST_DATALOG_BUFFER
-  UWORD   Repeat[INPUTS][DEVICE_LOGBUF_SIZE];
+  uint16_t   Repeat[INPUTS][DEVICE_LOGBUF_SIZE];
   DATA8   Raw[INPUTS][DEVICE_LOGBUF_SIZE][UART_DATA_LENGTH];      //!< Raw value from UART device
-  UWORD   Actual[INPUTS];
-  UWORD   LogIn[INPUTS];
+  uint16_t   Actual[INPUTS];
+  uint16_t   LogIn[INPUTS];
 #else
   DATA8   Raw[INPUTS][UART_DATA_LENGTH];      //!< Raw value from UART device
 #endif

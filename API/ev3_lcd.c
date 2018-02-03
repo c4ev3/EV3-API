@@ -48,9 +48,9 @@
 #define MAX(a,b)    (((a>b) ? (a) : (b)))
 #define MIN(a,b)    (((a<b) ? (a) : (b)))
 
-byte hwBuffer[LCD_BUFFER_LENGTH];
+uint8_t hwBuffer[LCD_BUFFER_LENGTH];
 
-byte PixelTab[] = {
+uint8_t PixelTab[] = {
     0x00, // 000 00000000
     0xE0, // 001 11100000
     0x1C, // 010 00011100
@@ -61,7 +61,7 @@ byte PixelTab[] = {
     0xFF  // 111 11111111
   };
 
-byte UnPixelTab[] = {
+uint8_t UnPixelTab[] = {
 // 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
    0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0
    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 6, // 1
@@ -84,11 +84,11 @@ byte UnPixelTab[] = {
 typedef struct {
   bool Dirty;
   int DispFile;
-  byte *pFB0;
-  byte displayBuf[LCD_BUFFER_SIZE];
-  byte *font;
-  byte *pLcd;
-  byte currentFont;
+  uint8_t *pFB0;
+  uint8_t displayBuf[LCD_BUFFER_SIZE];
+  uint8_t *font;
+  uint8_t *pLcd;
+  uint8_t currentFont;
   bool autoRefresh;
 } LCDGlobals;
 
@@ -160,12 +160,12 @@ FONTINFO FontInfo[] =
 
 };
 
-short dLcdGetFontWidth(byte Font)
+short dLcdGetFontWidth(uint8_t Font)
 {
   return (FontInfo[Font].FontWidth);
 }
 
-short dLcdGetFontHeight(byte Font)
+short dLcdGetFontHeight(uint8_t Font)
 {
   return (FontInfo[Font].FontHeight);
 }
@@ -218,27 +218,27 @@ ICONINFO IconInfo[] =
                   },
 };
 
-byte *dLcdGetIconBits(byte Icon)
+uint8_t *dLcdGetIconBits(uint8_t Icon)
 {
-  return (byte*)IconInfo[Icon].pIconBits;
+  return (uint8_t*)IconInfo[Icon].pIconBits;
 }
 
-short dLcdGetIconWidth(byte Icon)
+short dLcdGetIconWidth(uint8_t Icon)
 {
   return (IconInfo[Icon].IconWidth);
 }
 
-short dLcdGetIconHeight(byte Icon)
+short dLcdGetIconHeight(uint8_t Icon)
 {
   return (IconInfo[Icon].IconHeight);
 }
 
-short dLcdGetNumIcons(byte Icon)
+short dLcdGetNumIcons(uint8_t Icon)
 {
   return (IconInfo[Icon].IconSize / IconInfo[Icon].IconHeight);
 }
 
-void frameBufferToLcd(byte* pSrc, byte* pDst)
+void frameBufferToLcd(uint8_t* pSrc, uint8_t* pDst)
 {
   unsigned long Pixels;
   unsigned short X;
@@ -248,7 +248,7 @@ void frameBufferToLcd(byte* pSrc, byte* pDst)
   {
     for (X = 0; X < 7; X++)
     {
-      // read 8 bytes (3 bits per byte) into a 32-bit unsigned long from our source
+      // read 8 bytes (3 bits per uint8_t) into a 32-bit unsigned long from our source
       Pixels  = (unsigned long)UnPixelTab[*pSrc] << 0;  pSrc++;
       Pixels |= (unsigned long)UnPixelTab[*pSrc] << 3;  pSrc++;
       Pixels |= (unsigned long)UnPixelTab[*pSrc] << 6;  pSrc++;
@@ -259,21 +259,21 @@ void frameBufferToLcd(byte* pSrc, byte* pDst)
       Pixels |= (unsigned long)UnPixelTab[*pSrc] << 21; pSrc++;
 
       // now write the 24 bits to 3 8-bit bytes in our destination
-      *pDst = (byte)(Pixels >> 0);  pDst++;
-      *pDst = (byte)(Pixels >> 8);  pDst++;
-      *pDst = (byte)(Pixels >> 16); pDst++;
+      *pDst = (uint8_t)(Pixels >> 0);  pDst++;
+      *pDst = (uint8_t)(Pixels >> 8);  pDst++;
+      *pDst = (uint8_t)(Pixels >> 16); pDst++;
     }
     Pixels  = (unsigned long)UnPixelTab[*pSrc] << 0;  pSrc++;
     Pixels |= (unsigned long)UnPixelTab[*pSrc] << 3;  pSrc++;
     Pixels |= (unsigned long)UnPixelTab[*pSrc] << 6;  pSrc++;
     Pixels |= (unsigned long)UnPixelTab[*pSrc] << 9;  pSrc++;
 
-    *pDst = (byte)(Pixels >> 0);  pDst++;
-    *pDst = (byte)(Pixels >> 8);  pDst++;
+    *pDst = (uint8_t)(Pixels >> 0);  pDst++;
+    *pDst = (uint8_t)(Pixels >> 8);  pDst++;
   }
 }
 
-void lcdToFrameBuffer(byte* pSrc, byte* pDst)
+void lcdToFrameBuffer(uint8_t* pSrc, uint8_t* pDst)
 {
   unsigned long Pixels;
   unsigned short X;
@@ -350,7 +350,7 @@ void LcdCloseDevices()
 bool LcdInit()
 {
   int i;
-  byte * pTmp;
+  uint8_t * pTmp;
   if (LcdInitialized()) return true;
 
   LCDInstance.autoRefresh = true;
@@ -364,7 +364,7 @@ bool LcdInit()
   LCDInstance.DispFile = open(LMS_LCD_DEVICE_NAME, O_RDWR);
   if (LCDInstance.DispFile != -1)
   {
-    pTmp = (byte*)mmap(NULL, LCD_BUFFER_LENGTH, PROT_READ + PROT_WRITE, MAP_SHARED, LCDInstance.DispFile, 0);
+    pTmp = (uint8_t*)mmap(NULL, LCD_BUFFER_LENGTH, PROT_READ + PROT_WRITE, MAP_SHARED, LCDInstance.DispFile, 0);
     if (pTmp == MAP_FAILED)
     {
       LcdCloseDevices();
@@ -416,7 +416,7 @@ bool LcdInitialized()
          (LCDInstance.pFB0 != NULL);
 }
 
-void dLcdDrawPixel(byte *pImage, char Color, short X0, short Y0)
+void dLcdDrawPixel(uint8_t *pImage, char Color, short X0, short Y0)
 {
   if ((X0 >= 0) && (X0 < LCD_WIDTH) && (Y0 >= 0) && (Y0 < LCD_HEIGHT))
   {
@@ -431,7 +431,7 @@ void dLcdDrawPixel(byte *pImage, char Color, short X0, short Y0)
   }
 }
 
-char dLcdReadPixel(byte *pImage, short X0, short Y0)
+char dLcdReadPixel(uint8_t *pImage, short X0, short Y0)
 {
   char Result = 0;
   if ((X0 >= 0) && (X0 < LCD_WIDTH) && (Y0 >= 0) && (Y0 < LCD_HEIGHT))
@@ -444,15 +444,15 @@ char dLcdReadPixel(byte *pImage, short X0, short Y0)
   return (Result);
 }
 
-void dLcdDrawChar(byte *pImage, char Color, short X0, short Y0, char Font, char Char)
+void dLcdDrawChar(uint8_t *pImage, char Color, short X0, short Y0, char Font, char Char)
 {
   short CharWidth;
   short CharHeight;
   short CharByteIndex;
   short LcdByteIndex;
-  byte  CharByte;
+  uint8_t  CharByte;
   short Tmp,X,Y,TmpX,MaxX;
-  byte  bC1, bC2;
+  uint8_t  bC1, bC2;
 
   CharWidth  = FontInfo[Font].FontWidth;
   CharHeight = FontInfo[Font].FontHeight;
@@ -531,7 +531,7 @@ void dLcdDrawChar(byte *pImage, char Color, short X0, short Y0, char Font, char 
   }
 }
 
-void dLcdDrawText(byte *pImage, char Color, short X0, short Y0, char Font, char *pText)
+void dLcdDrawText(uint8_t *pImage, char Color, short X0, short Y0, char Font, char *pText)
 {
   while (*pText)
   {
@@ -544,12 +544,12 @@ void dLcdDrawText(byte *pImage, char Color, short X0, short Y0, char Font, char 
   }
 }
 
-void dLcdDrawPicture(byte *pImage,char Color,short X0,short Y0,short IconWidth,short IconHeight,byte *pIconBits)
+void dLcdDrawPicture(uint8_t *pImage,char Color,short X0,short Y0,short IconWidth,short IconHeight,uint8_t *pIconBits)
 {
   short IconByteIndex;
   short LcdByteIndex;
   short Tmp;
-  byte  IconByte;
+  uint8_t  IconByte;
 
   IconByteIndex = 0;
 
@@ -574,12 +574,12 @@ void dLcdDrawPicture(byte *pImage,char Color,short X0,short Y0,short IconWidth,s
   }
 }
 
-void dLcdDrawIcon(byte *pImage, char Color, short X0, short Y0, char Icon, char Num)
+void dLcdDrawIcon(uint8_t *pImage, char Color, short X0, short Y0, char Icon, char Num)
 {
   short IconByteIndex;
   short IconHeight;
   short IconWidth;
-  byte  *pIconBits;
+  uint8_t  *pIconBits;
 
   IconHeight = dLcdGetIconHeight(Icon);
   IconWidth  = dLcdGetIconWidth(Icon);
@@ -604,16 +604,16 @@ void dLcdGetBitmapSize(IP pBitmap, short *pWidth, short *pHeight)
   }
 }
 
-void dLcdDrawBitmap(byte *pImage, char Color, short X0, short Y0, IP pBitmap)
+void dLcdDrawBitmap(uint8_t *pImage, char Color, short X0, short Y0, IP pBitmap)
 {
   short  BitmapWidth;
   short  BitmapHeight;
   short  BitmapByteIndex;
-  byte   *pBitmapBytes;
-  byte   BitmapByte;
+  uint8_t   *pBitmapBytes;
+  uint8_t   BitmapByte;
   short  Tmp,X,Y,TmpX,MaxX;
   short  LcdByteIndex;
-  byte   bC1, bC2;
+  uint8_t   bC1, bC2;
 
   if (pBitmap)
   {
@@ -664,7 +664,7 @@ void dLcdDrawBitmap(byte *pImage, char Color, short X0, short Y0, IP pBitmap)
         }
       }
       else
-      { // X is byte aligned
+      { // X is uint8_t aligned
         BitmapByteIndex = 0;
         LcdByteIndex    = (X0 >> 3) + Y0 * LCD_BYTE_WIDTH;
         while (BitmapHeight)
@@ -749,7 +749,7 @@ bool LcdScroll(short Y)
   return false;
 }
 
-bool LcdSelectFont(byte FontType)
+bool LcdSelectFont(uint8_t FontType)
 {
   if (!LcdInitialized())
     return false;
@@ -765,7 +765,7 @@ bool LcdSelectFont(byte FontType)
   return true;
 }
 
-byte* LcdGetDisplay()
+uint8_t* LcdGetDisplay()
 {
   if (!LcdInitialized())
     return NULL;
@@ -773,7 +773,7 @@ byte* LcdGetDisplay()
   return LCDInstance.pLcd;
 }
 
-byte* LcdGetFrameBuffer()
+uint8_t* LcdGetFrameBuffer()
 {
   if (!LcdInitialized())
     return NULL;
@@ -805,12 +805,12 @@ static const unsigned char reverse_bits_table[] = {
   0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef, 0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff,
 };
 
-byte reverse_bits(byte b)
+uint8_t reverse_bits(uint8_t b)
 {
   return reverse_bits_table[b];
 }
 
-void _lcdWriteBytesToFile(ImageFormat fmt, byte* data, char* filename, byte width, byte height)
+void _lcdWriteBytesToFile(ImageFormat fmt, uint8_t* data, char* filename, uint8_t width, uint8_t height)
 {
   char fullname[128];
   char* fn_copy = strdup(filename);
@@ -818,7 +818,7 @@ void _lcdWriteBytesToFile(ImageFormat fmt, byte* data, char* filename, byte widt
   path = dirname(fn_copy);
   base = basename(filename);
 
-  byte len = strlen(base);
+  uint8_t len = strlen(base);
   // check for and remove extension if it exists
   char* ext = strrchr(base, '.');
   if (ext) {
@@ -859,18 +859,18 @@ void _lcdWriteBytesToFile(ImageFormat fmt, byte* data, char* filename, byte widt
         fprintf(pFile, "P1\n%d %d\n", width, height);
         for (i = 0; i < height; i++)
         {
-          byte b;
+          uint8_t b;
           for (j = 0; j < bw-1; j++)
           {
-            // get a byte
+            // get a uint8_t
             b = reverse_bits(data[i*bw+j]);
-            // output 8 bits per byte except for last byte per line
+            // output 8 bits per uint8_t except for last uint8_t per line
             for (k = 7; k >= 0; k--)
             {
               fprintf(pFile, "%c ", (b & (1 << k)) ? '1' : '0');
             }
           }
-          // handle last byte per line
+          // handle last uint8_t per line
           b = reverse_bits(data[i*bw+(bw-1)]);
           // how many bits are extra?
           cnt = bw*8 - width; // e.g., 6 if width = 178
@@ -886,7 +886,7 @@ void _lcdWriteBytesToFile(ImageFormat fmt, byte* data, char* filename, byte widt
         cnt = bw*height;
         for (i=0; i < cnt; i++)
         {
-          byte b = reverse_bits(data[i]);
+          uint8_t b = reverse_bits(data[i]);
           fwrite(&b, 1, 1, pFile);
         }
         break;
@@ -918,7 +918,7 @@ void LcdWriteDisplayToFile(char* filename, ImageFormat fmt)
   if (!LcdInitialized())
     return;
 
-  byte * pSrc = LcdGetDisplay();
+  uint8_t * pSrc = LcdGetDisplay();
   _lcdWriteBytesToFile(fmt, pSrc, filename, 178, 128);
 }
 
@@ -927,7 +927,7 @@ void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt)
   if (!LcdInitialized())
     return;
 
-  byte * pSrc = LcdGetFrameBuffer();
+  uint8_t * pSrc = LcdGetFrameBuffer();
   _lcdWriteBytesToFile(fmt, pSrc, filename, 178, 128);
 }
 
@@ -955,7 +955,7 @@ bool LcdBmpFile(char Color, short X, short Y, char* Name)
 {
   if (LcdInitialized())
   {
-    byte pBmp[LCD_BUFFER_SIZE];
+    uint8_t pBmp[LCD_BUFFER_SIZE];
     int File = -1;
     File = open(Name, O_RDONLY);
     if (File >= 0)
@@ -1060,7 +1060,7 @@ int DisplayLineHeight()
   return dLcdGetFontHeight(LCDInstance.currentFont);
 }
 
-void DisplayEraseLine(byte Line)
+void DisplayEraseLine(uint8_t Line)
 {
   int cnt = DisplayLineHeight()*LCD_BYTE_WIDTH;
   memset((void*)&(LCDInstance.pLcd[Line*cnt]), 0, cnt);
@@ -1073,7 +1073,7 @@ void DisplayErase()
   LCDInstance.Dirty = true;
 }
 
-void DisplaySetPixel(byte X, byte Y)
+void DisplaySetPixel(uint8_t X, uint8_t Y)
 {
   if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
   {
@@ -1082,7 +1082,7 @@ void DisplaySetPixel(byte X, byte Y)
   }
 }
 
-void DisplayClrPixel(byte X, byte Y)
+void DisplayClrPixel(uint8_t X, uint8_t Y)
 {
   if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
   {
@@ -1091,7 +1091,7 @@ void DisplayClrPixel(byte X, byte Y)
   }
 }
 
-void DisplayXorPixel(byte X, byte Y)
+void DisplayXorPixel(uint8_t X, uint8_t Y)
 {
   if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
   {
@@ -1100,17 +1100,17 @@ void DisplayXorPixel(byte X, byte Y)
   }
 }
 
-byte Masks[] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
+uint8_t Masks[] = {0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff};
 
-void DisplayFillScreen(byte StartX, byte StartY, byte PixelsX, byte PixelsY, byte PixelMode)
+void DisplayFillScreen(uint8_t StartX, uint8_t StartY, uint8_t PixelsX, uint8_t PixelsY, uint8_t PixelMode)
 {
-  byte X1, Y1, X2, Y2, X, Y, M;
-  byte* pDst;
+  uint8_t X1, Y1, X2, Y2, X, Y, M;
+  uint8_t* pDst;
 
   X1 = StartX;
   Y1 = StartY;
-  X2 = (byte)((int)StartX + (int)PixelsX - 1);
-  Y2 = (byte)((int)StartY + (int)PixelsY - 1);
+  X2 = (uint8_t)((int)StartX + (int)PixelsX - 1);
+  Y2 = (uint8_t)((int)StartY + (int)PixelsY - 1);
 
   if (X2 > (LCD_WIDTH-1))
     X2 = (LCD_WIDTH-1);
@@ -1156,10 +1156,10 @@ void DisplayFillScreen(byte StartX, byte StartY, byte PixelsX, byte PixelsY, byt
   LCDInstance.Dirty = true;
 }
 
-void DisplayLineX(byte X1, byte X2, byte Y, byte PixelMode)
+void DisplayLineX(uint8_t X1, uint8_t X2, uint8_t Y, uint8_t PixelMode)
 {
-  byte X, M, t;
-  byte* pDst;
+  uint8_t X, M, t;
+  uint8_t* pDst;
 
   if (Y > LCD_HEIGHT) return;
   if (X1 > X2)
@@ -1169,7 +1169,7 @@ void DisplayLineX(byte X1, byte X2, byte Y, byte PixelMode)
   if (X2 > (LCD_WIDTH-1))
     X2 = (LCD_WIDTH-1);
 
-  // starting point of X is the byte containing X1
+  // starting point of X is the uint8_t containing X1
   X = (X1 / 8) * 8;
 
   while (X <= X2)
@@ -1197,10 +1197,10 @@ void DisplayLineX(byte X1, byte X2, byte Y, byte PixelMode)
   LCDInstance.Dirty = true;
 }
 
-void DisplayLineY(byte X, byte Y1, byte Y2, byte PixelMode)
+void DisplayLineY(uint8_t X, uint8_t Y1, uint8_t Y2, uint8_t PixelMode)
 {
-  byte Y, M, t;
-  byte* pDst;
+  uint8_t Y, M, t;
+  uint8_t* pDst;
 
   if (X > LCD_WIDTH) return;
   if (Y1 > Y2)
@@ -1231,7 +1231,7 @@ void DisplayLineY(byte X, byte Y1, byte Y2, byte PixelMode)
   LCDInstance.Dirty = true;
 }
 
-void DisplayFrame(byte StartX, byte StartY, byte PixelsX, byte PixelsY, byte PixelMode)
+void DisplayFrame(uint8_t StartX, uint8_t StartY, uint8_t PixelsX, uint8_t PixelsY, uint8_t PixelMode)
 {
   DisplayLineX(StartX, StartX + PixelsX-1, StartY, PixelMode);
   if (PixelsY > 1)
@@ -1242,7 +1242,7 @@ void DisplayFrame(byte StartX, byte StartY, byte PixelsX, byte PixelsY, byte Pix
   LCDInstance.Dirty = true;
 }
 
-void DisplayDraw(byte Cmd, byte PixelMode, byte X1, byte Y1, byte X2, byte Y2)
+void DisplayDraw(uint8_t Cmd, uint8_t PixelMode, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2)
 {
   if (!LcdInitialized())
     return;
@@ -1287,7 +1287,7 @@ void DisplayDraw(byte Cmd, byte PixelMode, byte X1, byte Y1, byte X2, byte Y2)
   }
 }
 
-bool CmdResolveDrawingMode(unsigned short DrawingOptions, byte* pPixelMode, byte* pFillMode)
+bool CmdResolveDrawingMode(unsigned short DrawingOptions, uint8_t* pPixelMode, uint8_t* pFillMode)
 {
   // Extract shape fill option:
   if (DrawingOptions & DRAW_OPT_FILL_SHAPE)
@@ -1331,14 +1331,14 @@ bool CmdResolveDrawingMode(unsigned short DrawingOptions, byte* pPixelMode, byte
   return false;
 }
 
-void CmdSetPixel(int X, int Y, byte PixelMode)
+void CmdSetPixel(int X, int Y, uint8_t PixelMode)
 {
   Y = TRANSLATE_Y(Y);
   if ((X >= 0) && (X < LCD_WIDTH) && (Y >= 0) && (Y < LCD_HEIGHT))
-    DisplayDraw(DISPLAY_PIXEL, PixelMode, (byte)X, (byte)Y, 0, 0);
+    DisplayDraw(DISPLAY_PIXEL, PixelMode, (uint8_t)X, (uint8_t)Y, 0, 0);
 }
 
-void CmdDrawLine(int x1, int y1, int x2, int y2, byte PixelMode)
+void CmdDrawLine(int x1, int y1, int x2, int y2, uint8_t PixelMode)
 {
   int tx, ty, dx, dy;
   int d, x, y, ax, ay, sx, sy;
@@ -1401,7 +1401,7 @@ void CmdDrawLine(int x1, int y1, int x2, int y2, byte PixelMode)
     // vertical line or a single point
     if (y1 == y2)
     {
-      DisplayDraw(DISPLAY_PIXEL, PixelMode, (byte)x1, TRANSLATE_Y(y1), 0, 0);   //JJR
+      DisplayDraw(DISPLAY_PIXEL, PixelMode, (uint8_t)x1, TRANSLATE_Y(y1), 0, 0);   //JJR
     }
     else
     {
@@ -1429,7 +1429,7 @@ void CmdDrawLine(int x1, int y1, int x2, int y2, byte PixelMode)
       d = ay - (ax >> 1);
       while (true)
       {
-        DisplayDraw(DISPLAY_PIXEL, PixelMode, (byte)x, TRANSLATE_Y(y), 0, 0);   //JJR
+        DisplayDraw(DISPLAY_PIXEL, PixelMode, (uint8_t)x, TRANSLATE_Y(y), 0, 0);   //JJR
         if (x == x2) return;
         if (d >= 0)
         {
@@ -1445,7 +1445,7 @@ void CmdDrawLine(int x1, int y1, int x2, int y2, byte PixelMode)
       d = ax - (ay >> 1);
       while (true)
       {
-        DisplayDraw(DISPLAY_PIXEL, PixelMode, (byte)x, TRANSLATE_Y(y), 0, 0);   //JJR
+        DisplayDraw(DISPLAY_PIXEL, PixelMode, (uint8_t)x, TRANSLATE_Y(y), 0, 0);   //JJR
         if (y == y2) return;
         if (d >= 0)
         {
@@ -1459,7 +1459,7 @@ void CmdDrawLine(int x1, int y1, int x2, int y2, byte PixelMode)
   }
 }
 
-void CmdDrawRect(int left, int bottom, int width, int height, byte PixelMode, byte FillMode)
+void CmdDrawRect(int left, int bottom, int width, int height, uint8_t PixelMode, uint8_t FillMode)
 {
   int x1 = left;
   int x2 = left + width;
@@ -1519,7 +1519,7 @@ void CmdDrawRect(int left, int bottom, int width, int height, byte PixelMode, by
   }
 }
 
-void CmdDrawEllipse(short xc, short yc, short a, short b, byte PixelMode, byte FillMode)
+void CmdDrawEllipse(short xc, short yc, short a, short b, uint8_t PixelMode, uint8_t FillMode)
 {
 //			(* e(x,y) = b^2*x^2 + a^2*y^2 - a^2*b^2 *)
   short x  = 0;
@@ -1640,16 +1640,16 @@ void CmdDrawEllipse(short xc, short yc, short a, short b, byte PixelMode, byte F
   }
 }
 
-void CmdDrawCircle(int cx, int cy, int radius, byte PixelMode, byte FillMode)
+void CmdDrawCircle(int cx, int cy, int radius, uint8_t PixelMode, uint8_t FillMode)
 {
   CmdDrawEllipse(cx, cy, radius, radius, PixelMode, FillMode);
 }
 
-char CircleOutEx(int x, int y, byte radius, unsigned long options)
+char CircleOutEx(int x, int y, uint8_t radius, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-  byte pixelMode, fillMode;
+  uint8_t pixelMode, fillMode;
   if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
     CmdDrawCircle(x, y, radius, pixelMode, fillMode);
   return 0;
@@ -1659,7 +1659,7 @@ char LineOutEx(int x1, int y1, int x2, int y2, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-  byte pixelMode, fillMode;
+  uint8_t pixelMode, fillMode;
   if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
     CmdDrawLine(x1, y1, x2, y2, pixelMode);
   return 0;
@@ -1669,7 +1669,7 @@ char PointOutEx(int x, int y, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-  byte pixelMode, fillMode;
+  uint8_t pixelMode, fillMode;
   if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
     CmdSetPixel(x, y, pixelMode);
   return 0;
@@ -1679,7 +1679,7 @@ char RectOutEx(int x, int y, int width, int height, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-  byte pixelMode, fillMode;
+  uint8_t pixelMode, fillMode;
   if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
     CmdDrawRect(x, y, width, height, pixelMode, fillMode);
   return 0;
@@ -1689,7 +1689,7 @@ char TextOutEx(int x, int y, char* str, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-//  byte pixelMode, fillMode;
+//  uint8_t pixelMode, fillMode;
 //  if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
 //    CmdDrawRect(x, y, width, height, pixelMode);
   return 0;
@@ -1702,11 +1702,11 @@ char NumOutEx(int x, int y, int value, unsigned long options)
   return 0;
 }
 
-char EllipseOutEx(int x, int y, byte radiusX, byte radiusY, unsigned long options)
+char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options)
 {
   if (!LcdInitialized())
     return 1;
-  byte pixelMode, fillMode;
+  uint8_t pixelMode, fillMode;
   if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
     CmdDrawEllipse(x, y, radiusX, radiusY, pixelMode, fillMode);
   return 0;
@@ -1722,7 +1722,7 @@ char GraphicOutEx(int x, int y, char* filename, unsigned long options)
   return 0;
 }
 
-char GraphicArrayOutEx(int x, int y, byte* data, unsigned long options)
+char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options)
 {
   return 0;
 }

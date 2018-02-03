@@ -43,6 +43,7 @@ extern "C" {
 #include <stdbool.h>
 #include <limits.h>
 
+#include "ev3_command.h"
 #include "ev3_constants.h"
 
 bool OutputInit(void);
@@ -58,94 +59,94 @@ bool OutputProgramStop(void);
 bool OutputInitialized(void);
 
 // Stop outputs (brake or coast)
-bool OutputStop(byte Outputs, bool useBrake);
+bool OutputStop(uint8_t Outputs, bool useBrake);
 
 // Set output device type
-bool OutputSetType(byte Output, char DeviceType);
+bool OutputSetType(uint8_t Output, char DeviceType);
 
 bool OutputSetTypesArray(char *pTypes);
 
 bool OutputSetTypes(char OutputA, char OutputB, char OutputC, char OutputD);
 
 // Reset position  (POS=0)
-bool OutputReset(byte Outputs);
+bool OutputReset(uint8_t Outputs);
 
 // Set speed (relative to polarity - enables regulation if the output has a tachometer)
-bool OutputSpeed(byte Outputs, char Speed);
+bool OutputSpeed(uint8_t Outputs, char Speed);
 
 // Set power (suspend regulation and positioning)
-bool OutputPower(byte Outputs, char Power);
+bool OutputPower(uint8_t Outputs, char Power);
 
 // Starts outputs from present values
-bool OutputStartEx(byte Outputs, byte Owner);
+bool OutputStartEx(uint8_t Outputs, uint8_t Owner);
 
 #define OutputStart(_outputs) OutputStartEx((_outputs), OWNER_NONE)
 
 // Set polarity (0=toggle)
-bool OutputPolarity(byte Outputs, char Polarity);
+bool OutputPolarity(uint8_t Outputs, char Polarity);
 
 // Read actual speed and steps from last reset
-bool OutputRead(byte Output, char * Speed, int * TachoCount, int * TachoSensor);
+bool OutputRead(uint8_t Output, char * Speed, int * TachoCount, int * TachoSensor);
 
-//bool OutputReady(byte Outputs, byte * Busy, byte Owner);
+//bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner);
 
 // check whether any of the outputs are busy
-bool OutputTest(byte Outputs, bool * isBusy);
+bool OutputTest(uint8_t Outputs, bool * isBusy);
 
 // set bitmask of all the busy outputs
-bool OutputState(byte Outputs, byte * State);
+bool OutputState(uint8_t Outputs, uint8_t * State);
 
 // Clears the tacho count used when in sensor mode
-bool OutputClearCount(byte Outputs);
+bool OutputClearCount(uint8_t Outputs);
 
 // Gets the tacho count used in sensor mode
-bool OutputGetCount(byte Output, int * Tacho);
+bool OutputGetCount(uint8_t Output, int * Tacho);
 
 // Read steps from last reset
-bool OutputGetTachoCount(byte Output, int * Tacho);
+bool OutputGetTachoCount(uint8_t Output, int * Tacho);
 
 // Read actual speed
-bool OutputGetActualSpeed(byte Output, char * Speed);
+bool OutputGetActualSpeed(uint8_t Output, char * Speed);
 
-bool OutputStepPowerEx(byte Outputs, char Power, int Step1, int Step2, int Step3, bool useBrake, byte Owner);
+bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner);
 
 #define OutputStepPower(_outputs, _power, _step1, _step2, _step3) OutputStepPowerEx((_outputs), (_power), (_step1), (_step2), (_step3), TRUE, OWNER_NONE)
 
-bool OutputTimePowerEx(byte Outputs, char Power, int Time1, int Time2, int Time3, bool useBrake, byte Owner);
+bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner);
 
 #define OutputTimePower(_outputs, _power, _time1, _time2, _time3) OutputTimePowerEx((_outputs), (_power), (_time1), (_time2), (_time3), TRUE, OWNER_NONE)
 
-bool OutputStepSpeedEx(byte Outputs, char Speed, int Step1, int Step2, int Step3, bool useBrake, byte Owner);
+bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner);
 
 #define OutputStepSpeed(_outputs, _speed, _step1, _step2, _step3) OutputStepSpeedEx((_outputs), (_speed), (_step1), (_step2), (_step3), TRUE, OWNER_NONE)
 
-bool OutputTimeSpeedEx(byte Outputs, char Speed, int Time1, int Time2, int Time3, bool useBrake, byte Owner);
+bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner);
 
 #define OutputTimeSpeed(_outputs, _speed, _time1, _time2, _time3) OutputTimeSpeedEx((_outputs), (_speed), (_time1), (_time2), (_time3), TRUE, OWNER_NONE)
 
-bool OutputStepSyncEx(byte Outputs, char Speed, short Turn, int Step, bool useBrake, byte Owner);
+bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool useBrake, uint8_t Owner);
 
 #define OutputStepSync(_outputs, _speed, _turn, _step) OutputStepSyncEx((_outputs), (_speed), (_turn), (_step), TRUE, OWNER_NONE)
 
-bool OutputTimeSyncEx(byte Outputs, char Speed, short Turn, int Time, bool useBrake, byte Owner);
+bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool useBrake, uint8_t Owner);
 
 #define OutputTimeSync(_outputs, _speed, _turn, _time) OutputTimeSyncEx((_outputs), (_speed), (_turn), (_time), TRUE, OWNER_NONE)
 
-void SetOutputEx(byte Outputs, byte Mode, byte reset);
+void SetOutputEx(uint8_t Outputs, uint8_t Mode, uint8_t reset);
 
 #define SetOutput(_outputs, _mode) SetOutputEx((_outputs), (_mode), RESET_NONE)
 
-void SetDirection(byte Outputs, byte Dir);
+void SetDirection(uint8_t Outputs, uint8_t Dir);
 
-void SetPower(byte Outputs, char Power);
+void SetPower(uint8_t Outputs, char Power);
 
-void SetSpeed(byte Outputs, char Speed);
+void SetSpeed(uint8_t Outputs, char Speed);
 
-void OnEx(byte Outputs, byte reset);
+void OnEx(uint8_t Outputs, uint8_t reset);
 
-void OffEx(byte Outputs, byte reset);
+void OffEx(uint8_t Outputs, uint8_t reset);
 
-void FloatEx(byte Outputs, byte reset);
+void FloatEx(uint8_t Outputs, uint8_t reset);
 
 #define On(_outputs) OnEx((_outputs), RESET_NONE)
 
@@ -155,78 +156,78 @@ void FloatEx(byte Outputs, byte reset);
 
 #define Coast(_outputs) FloatEx((_outputs), RESET_NONE)
 
-void Toggle(byte Outputs);
+void Toggle(uint8_t Outputs);
 
-void Fwd(byte Outputs);
+void Fwd(uint8_t Outputs);
 
-void Rev(byte Outputs);
+void Rev(uint8_t Outputs);
 
-void OnFwdEx(byte Outputs, char Power, byte reset);
+void OnFwdEx(uint8_t Outputs, char Power, uint8_t reset);
 
-void OnRevEx(byte Outputs, char Power, byte reset);
+void OnRevEx(uint8_t Outputs, char Power, uint8_t reset);
 
 #define OnFwd(_outputs) OnFwdEx((_outputs), OUT_POWER_DEFAULT, RESET_NONE)
 
 #define OnRev(_outputs) OnRevEx((_outputs), OUT_POWER_DEFAULT, RESET_NONE)
 
-void OnFwdRegEx(byte Outputs, char Speed, byte RegMode, byte reset);
+void OnFwdRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset);
 
-void OnRevRegEx(byte Outputs, char Speed, byte RegMode, byte reset);
+void OnRevRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset);
 
 #define OnFwdReg(_outputs, _speed) OnFwdRegEx((_outputs), (_speed), OUT_REGMODE_SPEED, RESET_NONE)
 
 #define OnRevReg(_outputs, _speed) OnRevRegEx((_outputs), (_speed), OUT_REGMODE_SPEED, RESET_NONE)
 
-void OnFwdSyncEx(byte Outputs, char Speed, short Turn, byte reset);
+void OnFwdSyncEx(uint8_t Outputs, char Speed, short Turn, uint8_t reset);
 
-void OnRevSyncEx(byte Outputs, char Speed, short Turn, byte reset);
+void OnRevSyncEx(uint8_t Outputs, char Speed, short Turn, uint8_t reset);
 
 #define OnFwdSync(_outputs, _speed) OnFwdSyncEx((_outputs), (_speed), 0, RESET_NONE)
 
 #define OnRevSync(_outputs, _speed) OnRevSyncEx((_outputs), (_speed), 0, RESET_NONE)
 
-void RotateMotorNoWaitEx(byte Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop);
+void RotateMotorNoWaitEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop);
 
 #define RotateMotorNoWait(_outputs, _speed, _angle) RotateMotorNoWaitEx((_outputs), (_speed), (_angle), 0, TRUE, TRUE)
 
-void RotateMotorEx(byte Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop);
+void RotateMotorEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop);
 
 #define RotateMotor(_outputs, _speed, _angle) RotateMotorEx((_outputs), (_speed), (_angle), 0, TRUE, TRUE)
 
-void OnForSyncEx(byte Outputs, int Time, char Speed, short Turn, bool Stop);
+void OnForSyncEx(uint8_t Outputs, int Time, char Speed, short Turn, bool Stop);
 
 #define OnForSync(_outputs, _time, _speed) OnForSyncEx((_outputs), (_time), (_speed), 0, TRUE)
 
-void OnForEx(byte Outputs, int Time, char Power, byte reset);
+void OnForEx(uint8_t Outputs, int Time, char Power, uint8_t reset);
 
 #define OnFor(_outputs, _time) OnForEx((_outputs), (_time), OUT_POWER_DEFAULT, RESET_NONE)
 
-void ResetTachoCount(byte Outputs);
+void ResetTachoCount(uint8_t Outputs);
 
-void ResetBlockTachoCount(byte Outputs);
+void ResetBlockTachoCount(uint8_t Outputs);
 
-void ResetRotationCount(byte Outputs);
+void ResetRotationCount(uint8_t Outputs);
 
-void ResetAllTachoCounts(byte Outputs);
+void ResetAllTachoCounts(uint8_t Outputs);
 
-void ResetCount(byte Outputs, byte reset);
+void ResetCount(uint8_t Outputs, uint8_t reset);
 
-int MotorTachoCount(byte Output);
+int MotorTachoCount(uint8_t Output);
 
-int MotorBlockTachoCount(byte Output);
+int MotorBlockTachoCount(uint8_t Output);
 
-char MotorPower(byte Output);
+char MotorPower(uint8_t Output);
 
-char MotorActualSpeed(byte Output);
+char MotorActualSpeed(uint8_t Output);
 
-int MotorRotationCount(byte Output);
+int MotorRotationCount(uint8_t Output);
 
-bool MotorBusy(byte Output);
+bool MotorBusy(uint8_t Output);
 
 
-//byte MotorGetBusyFlags(void);
-//void MotorSetBusyFlags(byte Flags);
-//void ResetDelayCounter(byte Pattern);
+//uint8_t MotorGetBusyFlags(void);
+//void MotorSetBusyFlags(uint8_t Flags);
+//void ResetDelayCounter(uint8_t Pattern);
 
 #endif // ev3_output_h
 
