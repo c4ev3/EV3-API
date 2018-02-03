@@ -62,17 +62,17 @@ const short IndexTable[INDEX_TABLE_ENTRIES] = {
    };
 
 typedef struct {
-  byte Busy;
+  uint8_t Busy;
 } SOUND_BUSY;
 
 typedef struct {
   int SoundDriverDescriptor;
   int hSoundFile;
-  byte SoundOwner;
-  byte SoundState;
+  uint8_t SoundOwner;
+  uint8_t SoundState;
   SOUND_BUSY Sound;
   SOUND_BUSY *pSound;
-  byte SoundMuted;
+  uint8_t SoundMuted;
   unsigned short BytesLeft;
   unsigned short SoundFileFormat;
   int SoundDataLength;
@@ -82,11 +82,11 @@ typedef struct {
   short ValPrev;
   short Index;
   short Step;
-  byte BytesToWrite;
-  byte StopLoop;
+  uint8_t BytesToWrite;
+  uint8_t StopLoop;
   char PathBuffer[FILENAME_SIZE];
   struct stat FileStatus;
-  byte SoundData[SOUND_FILE_BUFFER_SIZE + 1];
+  uint8_t SoundData[SOUND_FILE_BUFFER_SIZE + 1];
 } SoundGlobals;
 
 SoundGlobals SoundInstance;
@@ -205,10 +205,10 @@ void _soundInitAdPcm()
   SoundInstance.Step    = StepSizeTable[SoundInstance.Index];
 }
 
-byte _soundGetAdPcmValue(byte Delta)
+uint8_t _soundGetAdPcmValue(uint8_t Delta)
 {
   short VpDiff;
-  byte Sign;
+  uint8_t Sign;
 
   // Call ONLY when _soundInitAdPcm has been called :-)
   SoundInstance.Step = StepSizeTable[SoundInstance.Index];
@@ -246,13 +246,13 @@ byte _soundGetAdPcmValue(byte Delta)
 
   // Update step value
   SoundInstance.Step = StepSizeTable[SoundInstance.Index];
-  // Return decoded byte (nibble xlated -> 8 bit)
-  return (byte)SoundInstance.ValPrev;
+  // Return decoded uint8_t (nibble xlated -> 8 bit)
+  return (uint8_t)SoundInstance.ValPrev;
 }
 
 #define MELODY_FMT 0x0600
 
-void _playRMDFile(char* pFileName, byte volume, bool loop)
+void _playRMDFile(char* pFileName, uint8_t volume, bool loop)
 {
   SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
   (*SoundInstance.pSound).Busy = TRUE;
@@ -269,7 +269,7 @@ void _playRMDFile(char* pFileName, byte volume, bool loop)
     
     if (SoundInstance.SoundFileLength >= 8)
     {
-      byte msb, lsb;
+      uint8_t msb, lsb;
 
       // read the rmd header
       read(SoundInstance.hSoundFile,&msb,1);
@@ -317,7 +317,7 @@ void _playRMDFile(char* pFileName, byte volume, bool loop)
 
 void _playSoundSamplesFromStream(int fileHandle)
 {
-  byte AdPcmData[SOUND_ADPCM_CHUNK];
+  uint8_t AdPcmData[SOUND_ADPCM_CHUNK];
   unsigned short BytesToRead, BytesRead, BytesWritten, Delta;
   int i;
 
@@ -340,7 +340,7 @@ void _playSoundSamplesFromStream(int fileHandle)
         SoundInstance.SoundData[2*i + 1] = _soundGetAdPcmValue((AdPcmData[i] >> 4) & 0x0F);
         SoundInstance.SoundData[2*i + 2] = _soundGetAdPcmValue(AdPcmData[i] & 0x0F);
       }
-      SoundInstance.BytesToWrite = (byte)(1 + (BytesRead * 2));
+      SoundInstance.BytesToWrite = (uint8_t)(1 + (BytesRead * 2));
     }
     else
     {
@@ -372,14 +372,14 @@ void _playSoundSamplesFromStream(int fileHandle)
         Delta = Delta / 2;
       SoundInstance.SoundDataLength -= Delta;
       // Buffer data incl. CMD
-      SoundInstance.BytesToWrite -= (byte)(BytesWritten + 1);
+      SoundInstance.BytesToWrite -= (uint8_t)(BytesWritten + 1);
     }
   }
 }
 
 int _readInt(int fileHandle, bool lsb)
 {
-  byte b1, b2, b3, b4;
+  uint8_t b1, b2, b3, b4;
   if (lsb)
   {
     read(fileHandle, &b1, 1);
@@ -403,7 +403,7 @@ int _readInt(int fileHandle, bool lsb)
 
 short _readShort(int fileHandle, bool lsb)
 {
-  byte b1, b2;
+  uint8_t b1, b2;
   if (lsb)
   {
     read(fileHandle, &b1, 1);
@@ -428,7 +428,7 @@ short _readShort(int fileHandle, bool lsb)
 #define RIFF_FMT_8BITS 0x0800
 #define RIFF_DATA_SIG  0x64617461
 
-void _playWAVFile(char* pFileName, byte volume, bool loop)
+void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 {
   SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
   (*SoundInstance.pSound).Busy = TRUE;
@@ -470,7 +470,7 @@ void _playWAVFile(char* pFileName, byte volume, bool loop)
     // Skip any data in this chunk after the 16 bytes above
     sz -= 16;
 
-    byte Tmp1;
+    uint8_t Tmp1;
     while (sz-- > 0)
       read(SoundInstance.hSoundFile, &Tmp1, 1);
 
@@ -492,9 +492,9 @@ void _playWAVFile(char* pFileName, byte volume, bool loop)
     SoundInstance.SoundFileFormat = SOUND_FILE_FORMAT_RAW_SOUND;
     SoundInstance.SoundState = SOUND_STATE_SETUP_FILE;
 
-    byte cmd[2];
+    uint8_t cmd[2];
     cmd[0] = SOUND_CMD_PLAY;
-    cmd[1] = (byte)((volume*8)/100);
+    cmd[1] = (uint8_t)((volume*8)/100);
     WriteToSoundDevice(cmd, 2); // write 2 bytes
 
     if (loop)
@@ -506,7 +506,7 @@ void _playWAVFile(char* pFileName, byte volume, bool loop)
   }
 }
 
-void _playRSOFile(char* pFileName, byte volume, bool loop)
+void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 {
   SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
   (*SoundInstance.pSound).Busy = TRUE;
@@ -522,7 +522,7 @@ void _playRSOFile(char* pFileName, byte volume, bool loop)
 
     // BIG Endianess
 
-    byte Tmp1, Tmp2;
+    uint8_t Tmp1, Tmp2;
 
     read(SoundInstance.hSoundFile,&Tmp1,1);
     read(SoundInstance.hSoundFile,&Tmp2,1);
@@ -545,9 +545,9 @@ void _playRSOFile(char* pFileName, byte volume, bool loop)
     if (SoundInstance.SoundFileFormat == SOUND_FILE_FORMAT_ADPCM_SOUND)
       _soundInitAdPcm();
 
-    byte cmd[2];
+    uint8_t cmd[2];
     cmd[0] = SOUND_CMD_PLAY;
-    cmd[1] = (byte)((volume*8)/100);
+    cmd[1] = (uint8_t)((volume*8)/100);
     WriteToSoundDevice(cmd, 2); // write 2 bytes
     if (loop)
       SoundInstance.SoundState = SOUND_STATE_FILE_LOOPING;
@@ -558,7 +558,7 @@ void _playRSOFile(char* pFileName, byte volume, bool loop)
   }
 }
 
-void PlayFileEx(char* pFileName, byte volume, bool loop)
+void PlayFileEx(char* pFileName, uint8_t volume, bool loop)
 {
   if (!SoundInitialized())
     return;
@@ -584,7 +584,7 @@ void PlayFileEx(char* pFileName, byte volume, bool loop)
   } while (loop && (SoundInstance.StopLoop != 1));
 }
 
-void PlayToneEx(unsigned short frequency, unsigned short duration, byte volume)
+void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volume)
 {
   if (!SoundInitialized())
     return;
@@ -594,18 +594,18 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, byte volume)
     return;
 
   (*SoundInstance.pSound).Busy = TRUE;
-  byte SoundData[6];
+  uint8_t SoundData[6];
   SoundData[0] = SOUND_CMD_TONE;
-  SoundData[1] = (byte)((volume*13)/100);
-  SoundData[2] = (byte)(frequency);
-  SoundData[3] = (byte)(frequency >> 8);
-  SoundData[4] = (byte)(duration);
-  SoundData[5] = (byte)(duration >> 8);
+  SoundData[1] = (uint8_t)((volume*13)/100);
+  SoundData[2] = (uint8_t)(frequency);
+  SoundData[3] = (uint8_t)(frequency >> 8);
+  SoundData[4] = (uint8_t)(duration);
+  SoundData[5] = (uint8_t)(duration >> 8);
   SoundInstance.SoundState = SOUND_STATE_TONE;
   WriteToSoundDevice(SoundData, sizeof(SoundData)); // write 6 bytes
 }
 
-void PlaySound(byte aCode)
+void PlaySound(uint8_t aCode)
 {
   int i;
   if (!SoundInitialized())
@@ -677,7 +677,7 @@ void StopSound()
 {
   if (!SoundInitialized())
     return;
-  byte cmd = SOUND_CMD_BREAK;
+  uint8_t cmd = SOUND_CMD_BREAK;
   SoundInstance.SoundState = SOUND_STATE_IDLE;
   if (SoundInstance.hSoundFile >= 0)
   {

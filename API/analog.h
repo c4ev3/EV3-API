@@ -17,11 +17,11 @@
 
 typedef   struct
 {
-  ULONG   Calibration[CALPOINTS][COLORS];
-  UWORD   CalLimits[CALPOINTS - 1];
-  UWORD   Crc;
-  UWORD   ADRaw[COLORS];
-  UWORD   SensorRaw[COLORS];
+  uint32_t   Calibration[CALPOINTS][COLORS];
+  uint16_t   CalLimits[CALPOINTS - 1];
+  uint16_t   Crc;
+  uint16_t   ADRaw[COLORS];
+  uint16_t   SensorRaw[COLORS];
 }
 COLORSTRUCT;
 
@@ -48,9 +48,9 @@ typedef   struct
 #ifndef DISABLE_FAST_DATALOG_BUFFER
   DATA16  Pin1[INPUTS][DEVICE_LOGBUF_SIZE];      //!< Raw value from analog device
   DATA16  Pin6[INPUTS][DEVICE_LOGBUF_SIZE];      //!< Raw value from analog device
-  UWORD   Actual[INPUTS];
-  UWORD   LogIn[INPUTS];
-  UWORD   LogOut[INPUTS];
+  uint16_t   Actual[INPUTS];
+  uint16_t   LogIn[INPUTS];
+  uint16_t   LogOut[INPUTS];
 #endif
 #ifndef   DISABLE_OLD_COLOR
   COLORSTRUCT  NxtCol[INPUTS];
@@ -65,7 +65,7 @@ typedef   struct
   DATA8   OutDcm[OUTPUTS];        //!< Output port device types
   DATA8   OutConn[OUTPUTS];
 #ifndef DISABLE_PREEMPTED_VM
-  UWORD   PreemptMilliSeconds;
+  uint16_t   PreemptMilliSeconds;
 #endif
 }
 ANALOG;

@@ -59,13 +59,13 @@ void TimerReady(unsigned long Timer)
   }
 }
 
-unsigned long Timer(byte Timer)
+unsigned long Timer(uint8_t Timer)
 {
   // slow timer 10 ticks per second
   return FastTimer(Timer) / 10;
 }
 
-unsigned long FastTimer(byte Timer)
+unsigned long FastTimer(uint8_t Timer)
 {
   // centisecond timer (100 ticks per second)
   if (Timer < NUM_CS_TIMERS)
@@ -73,51 +73,51 @@ unsigned long FastTimer(byte Timer)
   return 0;
 }
 
-void ClearTimer(byte Timer)
+void ClearTimer(uint8_t Timer)
 {
   if (Timer < NUM_CS_TIMERS)
     csTimers[Timer] = TimerGetCS();
 }
 
-void SetTimer(byte Timer, unsigned long Value)
+void SetTimer(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_CS_TIMERS)
     csTimers[Timer] = TimerGetCS() - Value;
 }
 
-unsigned long TimerMS(byte Timer)
+unsigned long TimerMS(uint8_t Timer)
 {
   if (Timer < NUM_MS_TIMERS)
     return TimerGetMS() - msTimers[Timer];
   return 0;
 }
 
-void ClearTimerMS(byte Timer)
+void ClearTimerMS(uint8_t Timer)
 {
   if (Timer < NUM_MS_TIMERS)
     msTimers[Timer] = TimerGetMS();
 }
 
-void SetTimerMS(byte Timer, unsigned long Value)
+void SetTimerMS(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_MS_TIMERS)
     msTimers[Timer] = TimerGetMS() - Value;
 }
 
-unsigned long TimerUS(byte Timer)
+unsigned long TimerUS(uint8_t Timer)
 {
   if (Timer < NUM_US_TIMERS)
     return TimerGetUS() - usTimers[Timer];
   return 0;
 }
 
-void ClearTimerUS(byte Timer)
+void ClearTimerUS(uint8_t Timer)
 {
   if (Timer < NUM_US_TIMERS)
     usTimers[Timer] = TimerGetUS();
 }
 
-void SetTimerUS(byte Timer, unsigned long Value)
+void SetTimerUS(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_US_TIMERS)
     usTimers[Timer] = TimerGetUS() - Value;

@@ -40,19 +40,13 @@ extern "C" {
 #ifndef ev3_constants_h
 #define ev3_constants_h
 
-#ifndef byte
-#define byte unsigned char
-#endif
-
-#ifndef word
-#define word unsigned short
-#endif
+#include <stdint.h>
 
 /** @addtogroup MiscConstants
  * @{
  */
-#define TRUE  1 /*!< A true value */
-#define FALSE 0 /*!< A false value */
+#define TRUE  true /*!< A true value */
+#define FALSE false /*!< A false value */
 
 #define NUM_INPUTS     4   /*!< Number of input  ports in the system */
 #define NUM_LEDS       4   /*!< Number of LEDs in the system */
