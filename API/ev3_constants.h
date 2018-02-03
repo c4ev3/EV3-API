@@ -56,7 +56,7 @@ extern "C" {
 
 #define OWNER_NONE 0x0000 /*!< The object id of the owner of a resource (no owner) */
 
-  // daisy chain constants
+// daisy chain constants
 #define LAYER_MASTER 0x00 /*!< The master layer */
 #define LAYER_SLAVE1 0x10 /*!< The first slave layer */
 #define LAYER_SLAVE2 0x20 /*!< The second slave layer */
@@ -418,7 +418,7 @@ extern "C" {
 /** @addtogroup SoundModule
  * @{
  */
- 
+
 /** @defgroup SoundModuleConstants Sound module constants
  * Constants that are part of the EV3 firmware's Sound module.
  * @{

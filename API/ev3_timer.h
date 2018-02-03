@@ -25,7 +25,7 @@
  * \date 2013-07-10
  * \version 1
  */
- 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,12 +43,12 @@ extern "C" {
 #include "ev3_constants.h"
 
 typedef enum {
-  ti10ms,
-  ti50ms,
-  ti100ms,
-  ti250ms,
-  ti500ms,
-  ti1sec
+	ti10ms,
+	ti50ms,
+	ti100ms,
+	ti250ms,
+	ti500ms,
+	ti1sec
 } TimerInterval;
 
 typedef void (*TimerCallback)(int sig);
