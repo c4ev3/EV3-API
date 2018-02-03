@@ -20,7 +20,7 @@
 int InitEV3()
 {
 	OutputInit();
-	initSensors();
+    InitSensors();
 	ButtonLedInit();
 	LcdInit();
 	LcdClean();

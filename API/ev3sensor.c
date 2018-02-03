@@ -100,7 +100,7 @@ int ir_sensor_channel[INPUTS];
 * 		 date: 2015-02-28
 *
 */
-int initSensors()
+int InitSensors()
 {
 	g_uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
 	g_iicFile =  open("/dev/lms_iic", O_RDWR | O_SYNC);
@@ -198,7 +198,7 @@ void* readNxtColor(int sensorPort, DATA8 index)
 * 		 note: readout for Gyro and Infrared Sensor
 *
 */
-void* readSensorData(int sensorPort)
+void* ReadSensorData(int sensorPort)
 {
 	if (!g_analogSensors || sensorPort < 0 || sensorPort >= INPUTS)
 		return 0;
@@ -265,9 +265,9 @@ void* readSensorData(int sensorPort)
 * 		 note: readout for Gyroscop and Infrared Sensor
 *
 */
-int readSensor(int sensorPort)
+int ReadSensor(int sensorPort)
 {
-	uint64_t* data = readSensorData(sensorPort);
+	uint64_t* data = ReadSensorData(sensorPort);
 	int32_t help=0;
 	if (!data)
 		return -1;
@@ -355,7 +355,7 @@ int readSensor(int sensorPort)
 * 		 note: Sensors are working now, but only one sensor is working at once
 *
 */
-int setSensorMode(int sensorPort, int name)
+int SetSensorMode(int sensorPort, int name)
 {
 	static DEVCON devCon;
 
@@ -411,7 +411,7 @@ int setSensorMode(int sensorPort, int name)
 * note: the function can only be called once at the beginning
 *
 */
-int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
+int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 {
 	static DEVCON devCon;
 	int sensorPort = 0;
@@ -534,7 +534,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 * note: channel can be modified while running
 *
 */
-int setIRBeaconCH(int sensorPort, int channel)
+int SetIRBeaconCH(int sensorPort, int channel)
 {
 	ir_sensor_channel[sensorPort] = channel;
 
