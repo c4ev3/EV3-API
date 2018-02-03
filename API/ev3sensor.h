@@ -30,41 +30,41 @@
 /**
  * Initializes sensor I/O.
  */
-int initSensors();
+int InitSensors();
 
 /**
  * Reads the sensor value from a specific port.
  * Example: readSensor(INPUT_1)
  * Returns a raw sensor value.
  */
-int readSensor(int sensorPort);
+int ReadSensor(int sensorPort);
 
 /**
  * Returns pointer to the current sensor value.
  * The sensor value may be up to 32 bytes long - this function
  * can be used to access it if readSensor() is inadequate.
  */
-void* readSensorData(int sensorPort);
+void* ReadSensorData(int sensorPort);
 
 /**
  * Set sensor mode for a specific port.
  * Example: setSensorMode(INPUT_1, COL_REFLECT)
  */
-int setSensorMode(int sensorPort, int name);
+int SetSensorMode(int sensorPort, int name);
 
 /**
  * Set sensor mode for a all ports
  * Note: Can be only called once
  * Example: setAllSensorMode(TOUCH_PRESS, US_DIST_MM, NO_SEN, COL_COLOR)
  */
-int setAllSensorMode(int name_1, int name_2, int name_3, int name_4);
+int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4);
 
 /**
  * Select channel for the Beacon control
  * Note: Can be changed while running
  * Example: setAllSensorMode(IN_2, BEACON_CH_1)
  */
-int setIRBeaconCH(int sensorPort, int channel);
+int SetIRBeaconCH(int sensorPort, int channel);
 
 /***********************************/
 // Sensor Names
@@ -113,6 +113,41 @@ int setIRBeaconCH(int sensorPort, int channel);
 #define BEACON_ON			9
 #define BEACON_LEFT 		10
 #define BEACON_RIGHT 		11
+
+
+/**
+ * COMPATIBILITY FUNCTION NAMES
+ */
+
+/*!
+ * @deprecated
+*/
+#define initSensors() InitSensors()
+
+/*!
+ * @deprecated
+*/
+#define readSensor(_sensorPort) ReadSensor(_sensorPort)
+
+/*!
+ * @deprecated
+*/
+#define readSensorData(_sensorPort) ReadSensorData(_sensorPort)
+
+/*!
+ * @deprecated
+*/
+#define setSensorMode(_sensorPort, _name) SetSensorMode(_sensorPort, _name)
+
+/*!
+ * @deprecated
+*/
+#define setAllSensorMode(_name_1, _name_2, _name_3, _name_4) SetAllSensorMode(_name_1, _name_2, _name_3, _name_4)
+
+/*!
+ * @deprecated
+*/
+#define setIRBeaconCH(_sensorPort, _channel) SetIRBeaconCH(_sensorPort, _channel)
 
 
 #endif // EV3SENSOR_H
