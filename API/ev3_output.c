@@ -24,42 +24,42 @@ static int __RAMP_DOWN_DEGREES = 0;
 
 typedef struct
 {
-  int TachoCounts;
-  char Speed;
-  int TachoSensor;
+	int TachoCounts;
+	char Speed;
+	int TachoSensor;
 } MOTORDATA;
 
 typedef struct
 {
-  uint8_t Cmd;
-  uint8_t Outputs;
-  char PwrOrSpd;
-  int  StepOrTime1;
-  int  StepOrTime2;
-  int  StepOrTime3;
-  uint8_t Brake;
+	uint8_t Cmd;
+	uint8_t Outputs;
+	char PwrOrSpd;
+	int  StepOrTime1;
+	int  StepOrTime2;
+	int  StepOrTime3;
+	uint8_t Brake;
 } StepOrTimePwrOrSpd;
 
 typedef struct
 {
-  uint8_t  Cmd;
-  uint8_t  Outputs;
-  char  Speed;
-  short Turn;
-  int   StepOrTime;
-  uint8_t  Brake;
+	uint8_t  Cmd;
+	uint8_t  Outputs;
+	char  Speed;
+	short Turn;
+	int   StepOrTime;
+	uint8_t  Brake;
 } StepOrTimeSync;
 
 typedef struct
 {
-  char  OutputTypes[NUM_OUTPUTS];
-  short Owners[NUM_OUTPUTS];
+	char  OutputTypes[NUM_OUTPUTS];
+	short Owners[NUM_OUTPUTS];
 
-  int PwmFile;
-  int MotorFile;
+	int PwmFile;
+	int MotorFile;
 
-  MOTORDATA MotorData[NUM_OUTPUTS];
-  MOTORDATA *pMotor;
+	MOTORDATA MotorData[NUM_OUTPUTS];
+	MOTORDATA *pMotor;
 } OutputGlobals;
 
 OutputGlobals OutputInstance;
@@ -68,14 +68,14 @@ uint8_t OutputToMotorNum(uint8_t Output)
 {
   switch(Output)
   {
-    case OUT_A:
-      return 0;
-    case OUT_B:
-      return 1;
-    case OUT_C:
-      return 2;
-    case OUT_D:
-      return 3;
+	case OUT_A:
+	  return 0;
+	case OUT_B:
+	  return 1;
+	case OUT_C:
+	  return 2;
+	case OUT_D:
+	  return 3;
   }
   return NUM_OUTPUTS;
 }
@@ -91,11 +91,11 @@ int WriteToPWMDevice(char * bytes, int num_bytes)
   int result = -1;
   if (OutputInstance.PwmFile >= 0)
   {
-    // for some reason write is not returning num_bytes -
-    // it usually returns zero
-    result = write(OutputInstance.PwmFile, bytes, num_bytes);
-    if (result >= 0)
-      return num_bytes;
+	// for some reason write is not returning num_bytes -
+	// it usually returns zero
+	result = write(OutputInstance.PwmFile, bytes, num_bytes);
+	if (result >= 0)
+	  return num_bytes;
   }
   return result;
 }
@@ -106,7 +106,7 @@ bool ResetOutputs(void)
   int i;
   for (i=0; i < NUM_OUTPUTS; i++)
   {
-    OutputInstance.Owners[i] = OWNER_NONE;
+	OutputInstance.Owners[i] = OWNER_NONE;
   }
 
   return OutputStop(OUT_ALL, false);
@@ -115,13 +115,13 @@ bool ResetOutputs(void)
 bool OutputInitialized(void)
 {
   return (OutputInstance.PwmFile != -1) &&
-            (OutputInstance.pMotor != NULL);
+		 (OutputInstance.pMotor != NULL);
 }
 
 bool OutputInit(void)
 {
   if (OutputInitialized())
-    return true;
+	return true;
 
   MOTORDATA * pTmp;
 
@@ -133,25 +133,25 @@ bool OutputInit(void)
 
   if (OutputInstance.PwmFile >= 0)
   {
-    // Open the handle for reading motor values - shared memory
-    OutputInstance.MotorFile = open(LMS_MOTOR_DEVICE_NAME, O_RDWR | O_SYNC);
-    if (OutputInstance.MotorFile >= 0)
-    {
-      pTmp = (MOTORDATA*)mmap(0, sizeof(OutputInstance.MotorData), PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, OutputInstance.MotorFile, 0);
-      if (pTmp == MAP_FAILED)
-      {
+	// Open the handle for reading motor values - shared memory
+	OutputInstance.MotorFile = open(LMS_MOTOR_DEVICE_NAME, O_RDWR | O_SYNC);
+	if (OutputInstance.MotorFile >= 0)
+	{
+	  pTmp = (MOTORDATA*)mmap(0, sizeof(OutputInstance.MotorData), PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, OutputInstance.MotorFile, 0);
+	  if (pTmp == MAP_FAILED)
+	  {
 //        LogErrorNumber(OUTPUT_SHARED_MEMORY);
-        close(OutputInstance.MotorFile);
-        close(OutputInstance.PwmFile);
-        OutputInstance.MotorFile = -1;
-        OutputInstance.PwmFile = -1;
-      }
-      else
-      {
-        OutputInstance.pMotor = pTmp;
-        return OutputOpen();
-      }
-    }
+		close(OutputInstance.MotorFile);
+		close(OutputInstance.PwmFile);
+		OutputInstance.MotorFile = -1;
+		OutputInstance.PwmFile = -1;
+	  }
+	  else
+	  {
+		OutputInstance.pMotor = pTmp;
+		return OutputOpen();
+	  }
+	}
   }
   return false;
 }
@@ -159,15 +159,15 @@ bool OutputInit(void)
 bool OutputOpen(void)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   char cmd;
 
   bool result = ResetOutputs();
   if (result)
   {
-    cmd = opProgramStart;
-    return WriteToPWMDevice(&cmd, 1) == 1;
+	cmd = opProgramStart;
+	return WriteToPWMDevice(&cmd, 1) == 1;
   }
 
   return result;
@@ -176,7 +176,7 @@ bool OutputOpen(void)
 bool OutputClose(void)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   return ResetOutputs();
 }
@@ -185,21 +185,21 @@ bool OutputClose(void)
 bool OutputExit(void)
 {
   if (!OutputInitialized())
-    return true;
+	return true;
 
   // otherwise, close down the output module
 
   bool result = ResetOutputs();
   if (OutputInstance.MotorFile >= 0)
   {
-    munmap(OutputInstance.pMotor, sizeof(OutputInstance.MotorData));
-    close(OutputInstance.MotorFile);
-    OutputInstance.MotorFile = -1;
+	munmap(OutputInstance.pMotor, sizeof(OutputInstance.MotorData));
+	close(OutputInstance.MotorFile);
+	OutputInstance.MotorFile = -1;
   }
   if (OutputInstance.PwmFile >= 0)
   {
-    close(OutputInstance.PwmFile);
-    OutputInstance.PwmFile = -1;
+	close(OutputInstance.PwmFile);
+	OutputInstance.PwmFile = -1;
   }
   return result;
 }
@@ -208,7 +208,7 @@ bool OutputExit(void)
 bool OutputStop(uint8_t Outputs, bool useBrake)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
   int cmdLen = 3;
   char cmd[3];
   uint8_t Layer;
@@ -217,38 +217,38 @@ bool OutputStop(uint8_t Outputs, bool useBrake)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputStop;
-    cmd[1] = Outputs;
-    cmd[2] = useBrake;
-    return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	cmd[0] = opOutputStop;
+	cmd[1] = Outputs;
+	cmd[2] = useBrake;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
-    return false;
-    // support for daisychaining not yet implemented
+	return false;
+	// support for daisychaining not yet implemented
 /*
 
-      if (cDaisyReady() != BUSY)
+	  if (cDaisyReady() != BUSY)
 
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_STOP;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Brake, &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_STOP;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Brake, &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -256,7 +256,7 @@ bool OutputStop(uint8_t Outputs, bool useBrake)
 bool OutputProgramStop(void)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   char cmd;
   cmd = opProgramStop;
@@ -266,7 +266,7 @@ bool OutputProgramStop(void)
 bool OutputSetType(uint8_t Output, char DeviceType)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   uint8_t Layer;
   // opOutputSetType (output, type)  </b>
@@ -274,42 +274,42 @@ bool OutputSetType(uint8_t Output, char DeviceType)
   DecodeOutputs(&Output, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    Output = OutputToMotorNum(Output);
-    if (Output < NUM_OUTPUTS)
-    {
-      if (OutputInstance.OutputTypes[Output] != DeviceType)
-      {
-        OutputInstance.OutputTypes[Output] = DeviceType;
-        // shouldn't this also write the information to the device?
-        return OutputSetTypesArray(OutputInstance.OutputTypes);
-      }
-    }
-    return false;
+	Output = OutputToMotorNum(Output);
+	if (Output < NUM_OUTPUTS)
+	{
+	  if (OutputInstance.OutputTypes[Output] != DeviceType)
+	  {
+		OutputInstance.OutputTypes[Output] = DeviceType;
+		// shouldn't this also write the information to the device?
+		return OutputSetTypesArray(OutputInstance.OutputTypes);
+	  }
+	}
+	return false;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_RESET;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)No, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Type, &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_RESET;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)No, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Type, &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -322,7 +322,7 @@ bool OutputSetTypesArray(char * pTypes)
 bool OutputSetTypes(char OutputA, char OutputB, char OutputC, char OutputD)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
   int cmdLen = 5;
   char cmd[5];
   cmd[0] = opOutputSetType;
@@ -333,12 +333,12 @@ bool OutputSetTypes(char OutputA, char OutputB, char OutputC, char OutputD)
   bool result = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   if (result)
   {
-    int i;
-    for (i = 0; i < NUM_OUTPUTS; i++)
-    {
-      if (OutputInstance.OutputTypes[i] != cmd[i+1])
-        OutputInstance.OutputTypes[i] = cmd[i+1];
-    }
+	int i;
+	for (i = 0; i < NUM_OUTPUTS; i++)
+	{
+	  if (OutputInstance.OutputTypes[i] != cmd[i+1])
+		OutputInstance.OutputTypes[i] = cmd[i+1];
+	}
   }
   return result;
 }
@@ -346,7 +346,7 @@ bool OutputSetTypes(char OutputA, char OutputB, char OutputC, char OutputD)
 bool OutputReset(uint8_t Outputs)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = 2;
   uint8_t Layer;
@@ -356,33 +356,33 @@ bool OutputReset(uint8_t Outputs)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputReset;
-    cmd[1] = Outputs;
-    return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	cmd[0] = opOutputReset;
+	cmd[1] = Outputs;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_RESET;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_RESET;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -390,7 +390,7 @@ bool OutputReset(uint8_t Outputs)
 bool OutputSpeed(uint8_t Outputs, char Speed)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = 3;
   uint8_t Layer;
@@ -401,34 +401,34 @@ bool OutputSpeed(uint8_t Outputs, char Speed)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputSpeed;
-    cmd[1] = Outputs;
-    cmd[2] = Speed;
-    return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	cmd[0] = opOutputSpeed;
+	cmd[1] = Outputs;
+	cmd[2] = Speed;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_SPEED;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Speed, &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_SPEED;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Speed, &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -436,7 +436,7 @@ bool OutputSpeed(uint8_t Outputs, char Speed)
 bool OutputPower(uint8_t Outputs, char Power)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
   int cmdLen = 3;
   uint8_t Layer;
   char cmd[3];
@@ -445,40 +445,40 @@ bool OutputPower(uint8_t Outputs, char Power)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputPower;
-    cmd[1] = Outputs;
-    cmd[2] = Power;
-    return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	cmd[0] = opOutputPower;
+	cmd[1] = Outputs;
+	cmd[2] = Power;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_POWER;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Power, &(DaisyBuf[Len]));
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_POWER;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Power, &(DaisyBuf[Len]));
 
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        else
-        {
-          // printf("cOutPut @ opOUTPUT_POWER after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		else
+		{
+		  // printf("cOutPut @ opOUTPUT_POWER after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -486,7 +486,7 @@ bool OutputPower(uint8_t Outputs, char Power)
 bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = 2;
   uint8_t Layer;
@@ -496,48 +496,48 @@ bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputStart;
-    cmd[1] = Outputs;
-    bool result = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	cmd[0] = opOutputStart;
+	cmd[1] = Outputs;
+	bool result = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_START;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        else
-        {
-          //printf("cOutPut @ opOUTPUT_START after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_START;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		else
+		{
+		  //printf("cOutPut @ opOUTPUT_START after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
 
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -545,7 +545,7 @@ bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
 bool OutputPolarity(uint8_t Outputs, char Polarity)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = 3;
   uint8_t Layer;
@@ -558,35 +558,35 @@ bool OutputPolarity(uint8_t Outputs, char Polarity)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputPolarity;
-    cmd[1] = Outputs;
-    cmd[2] = Polarity;
-    return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	cmd[0] = opOutputPolarity;
+	cmd[1] = Outputs;
+	cmd[2] = Polarity;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_POLARITY;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Polarity[1], &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)Polarity[2], &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_POLARITY;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Polarity[1], &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)Polarity[2], &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -594,7 +594,7 @@ bool OutputPolarity(uint8_t Outputs, char Polarity)
 bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimePwrOrSpd);
   uint8_t Layer;
@@ -611,50 +611,50 @@ bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int St
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_STEP_POWER;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Power, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Step1, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Step2, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Step3, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepPower.Brake, &(DaisyBuf[Len]));
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_STEP_POWER;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Power, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Step1, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Step2, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Step3, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepPower.Brake, &(DaisyBuf[Len]));
 
-        //if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
+		//if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
 
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos);
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos);
 
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -662,7 +662,7 @@ bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int St
 bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimePwrOrSpd);
   uint8_t Layer;
@@ -679,46 +679,46 @@ bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Ti
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_TIME_POWER;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Power, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Time1, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Time2, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Time3, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimePower.Brake, &(DaisyBuf[Len]));
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_TIME_POWER;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Power, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Time1, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Time2, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Time3, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimePower.Brake, &(DaisyBuf[Len]));
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -726,7 +726,7 @@ bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Ti
 bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimePwrOrSpd);
   uint8_t Layer;
@@ -743,51 +743,51 @@ bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int St
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_STEP_SPEED;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Speed, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Step1, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Step2, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Step3, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSpeed.Brake, &(DaisyBuf[Len]));
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_STEP_SPEED;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Speed, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step1, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step2, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step3, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSpeed.Brake, &(DaisyBuf[Len]));
 
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos))
-        {
-          printf("NOT ok txed cOutputStepSpeed\n\r");
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        else
-        {
-        }
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos))
+		{
+		  printf("NOT ok txed cOutputStepSpeed\n\r");
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		else
+		{
+		}
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -795,7 +795,7 @@ bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int St
 bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimePwrOrSpd);
   uint8_t Layer;
@@ -812,46 +812,46 @@ bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Ti
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_TIME_SPEED;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Speed, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time1, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time2, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time3, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSpeed.Brake, &(DaisyBuf[Len]));
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_TIME_SPEED;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Speed, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time1, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time2, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time3, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Brake, &(DaisyBuf[Len]));
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
 
   }
@@ -861,7 +861,7 @@ bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Ti
 bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimeSync);
   uint8_t Layer;
@@ -871,8 +871,8 @@ bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool us
   // it is invalid to call this function with anything other than 2 motors:
   // i.e., OUT_AB, OUT_AC, OUT_AD, OUT_BC, OUT_BD, or OUT_CD
   if (!(Outputs == OUT_AB || Outputs == OUT_AC || Outputs == OUT_AD ||
-        Outputs == OUT_BC || Outputs == OUT_BD || Outputs == OUT_CD))
-    return false;
+		Outputs == OUT_BC || Outputs == OUT_BD || Outputs == OUT_CD))
+	return false;
   cmd.Cmd = opOutputStepSync;
   cmd.Outputs = Outputs;
   cmd.Speed = Speed;
@@ -881,45 +881,45 @@ bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool us
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_STEP_SYNC;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSync.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSync.Speed, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSync.Turn,  &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSync.Step,  &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)StepSync.Brake, &(DaisyBuf[Len]));
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_STEP_SYNC;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSync.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSync.Speed, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSync.Turn,  &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSync.Step,  &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)StepSync.Brake, &(DaisyBuf[Len]));
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -927,7 +927,7 @@ bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool us
 bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = sizeof(StepOrTimeSync);
   uint8_t Layer;
@@ -937,8 +937,8 @@ bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool us
   // it is invalid to call this function with anything other than 2 motors:
   // i.e., OUT_AB, OUT_AC, OUT_AD, OUT_BC, OUT_BD, or OUT_CD
   if (!(Outputs == OUT_AB || Outputs == OUT_AC || Outputs == OUT_AD ||
-        Outputs == OUT_BC || Outputs == OUT_BD || Outputs == OUT_CD))
-    return false;
+		Outputs == OUT_BC || Outputs == OUT_BD || Outputs == OUT_CD))
+	return false;
   cmd.Cmd = opOutputTimeSync;
   cmd.Outputs = Outputs;
   cmd.Speed = Speed;
@@ -947,45 +947,45 @@ bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool us
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-    bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.Owners[i] = Owner;
-      }
-    }
-    return result;
+	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.Owners[i] = Owner;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_TIME_SYNC;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSync.Nos,   &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSync.Speed, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSync.Turn,  &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSync.Time,  &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)TimeSync.Brake, &(DaisyBuf[Len]));
-        if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_TIME_SYNC;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSync.Nos,   &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSync.Speed, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSync.Turn,  &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSync.Time,  &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)TimeSync.Brake, &(DaisyBuf[Len]));
+		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -993,7 +993,7 @@ bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool us
 bool OutputRead(uint8_t Output, char * Speed, int * TachoCount, int * TachoSensor)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   uint8_t Layer;
   // opOutputRead (output, *speed, *tachocount, *tachosensor)
@@ -1006,14 +1006,14 @@ bool OutputRead(uint8_t Output, char * Speed, int * TachoCount, int * TachoSenso
   DecodeOutputs(&Output, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    Output = OutputToMotorNum(Output);
-    if (Output < NUM_OUTPUTS)
-    {
-      *Speed = OutputInstance.pMotor[Output].Speed;
-      *TachoCount = OutputInstance.pMotor[Output].TachoCounts;
-      *TachoSensor = OutputInstance.pMotor[Output].TachoSensor;
-      return true;
-    }
+	Output = OutputToMotorNum(Output);
+	if (Output < NUM_OUTPUTS)
+	{
+	  *Speed = OutputInstance.pMotor[Output].Speed;
+	  *TachoCount = OutputInstance.pMotor[Output].TachoCounts;
+	  *TachoSensor = OutputInstance.pMotor[Output].TachoSensor;
+	  return true;
+	}
   }
   return false;
   // the firmware code does not contain any sign of letting you read
@@ -1027,7 +1027,7 @@ bool OutputRead(uint8_t Output, char * Speed, int * TachoCount, int * TachoSenso
 bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   bool Result = true;
   *Busy = 0;
@@ -1039,45 +1039,45 @@ bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner)
   if (Layer == LAYER_MASTER)
   {
 
-    if (OutputInstance.PwmFile >= 0)
+	if (OutputInstance.PwmFile >= 0)
 
-    {
+	{
 
-      read(OutputInstance.PwmFile, busyReturn, 4);
+	  read(OutputInstance.PwmFile, busyReturn, 4);
 
-      sscanf(busyReturn,"%u %u",&test,&test2);
+	  sscanf(busyReturn,"%u %u",&test,&test2);
 
-      int Tmp;
+	  int Tmp;
 
-      for (Tmp = 0; Tmp < NUM_OUTPUTS - 1; Tmp++)
+	  for (Tmp = 0; Tmp < NUM_OUTPUTS - 1; Tmp++)
 
-      {
+	  {
 
-        // Check resources for NOTREADY
+		// Check resources for NOTREADY
 
-        if (Outputs & (0x01 << Tmp))
+		if (Outputs & (0x01 << Tmp))
 
-        {
+		{
 
-          // Only relevant ones
+		  // Only relevant ones
 
-          if (test & (0x01 << Tmp))
+		  if (test & (0x01 << Tmp))
 
-          {
+		  {
 
-            // If BUSY check for OVERRULED
+			// If BUSY check for OVERRULED
 
-            if (OutputInstance.Owners[Tmp] == Owner)
+			if (OutputInstance.Owners[Tmp] == Owner)
 
-              break;
+			  break;
 
-          }
+		  }
 
-        }
+		}
 
-      }
+	  }
 
-    }
+	}
 
   }
 
@@ -1113,7 +1113,7 @@ bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner)
 bool OutputTest(uint8_t Outputs, bool * isBusy)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   uint8_t Layer;
   int  test;
@@ -1126,18 +1126,18 @@ bool OutputTest(uint8_t Outputs, bool * isBusy)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    if (OutputInstance.PwmFile >= 0)
-    {
-      size_t bytes_read = read(OutputInstance.PwmFile, busyReturn, 10);
-      result = bytes_read > 0;
-      sscanf(busyReturn, "%u %u", &test, &test2);
-      *isBusy = ((Outputs & (uint8_t)test2) != 0);
-    }
+	if (OutputInstance.PwmFile >= 0)
+	{
+	  size_t bytes_read = read(OutputInstance.PwmFile, busyReturn, 10);
+	  result = bytes_read > 0;
+	  sscanf(busyReturn, "%u %u", &test, &test2);
+	  *isBusy = ((Outputs & (uint8_t)test2) != 0);
+	}
   }
   else
   {
 //    if cDaisyCheckBusyBit(Layer, Outputs) )
-      *isBusy = false;
+	*isBusy = false;
   }
   return result;
 }
@@ -1145,7 +1145,7 @@ bool OutputTest(uint8_t Outputs, bool * isBusy)
 bool OutputState(uint8_t Outputs, uint8_t * State)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   uint8_t Layer;
   int  test;
@@ -1159,18 +1159,18 @@ bool OutputState(uint8_t Outputs, uint8_t * State)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    if (OutputInstance.PwmFile >= 0)
-    {
-      size_t bytes_read = read(OutputInstance.PwmFile, busyReturn, 10);
-      result = bytes_read > 0;
-      sscanf(busyReturn, "%u %u", &test, &test2);
-      *State = test2;
-    }
+	if (OutputInstance.PwmFile >= 0)
+	{
+	  size_t bytes_read = read(OutputInstance.PwmFile, busyReturn, 10);
+	  result = bytes_read > 0;
+	  sscanf(busyReturn, "%u %u", &test, &test2);
+	  *State = test2;
+	}
   }
   else
   {
 //    if cDaisyCheckBusyBit(Layer, Outputs) )
-      *State = 0;
+	*State = 0;
   }
   return result;
 }
@@ -1178,7 +1178,7 @@ bool OutputState(uint8_t Outputs, uint8_t * State)
 bool OutputClearCount(uint8_t Outputs)
 {
   if (!OutputInitialized())
-    return false;
+	return false;
 
   int cmdLen = 2;
   uint8_t Layer;
@@ -1186,43 +1186,43 @@ bool OutputClearCount(uint8_t Outputs)
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
-    cmd[0] = opOutputClearCount;
-    cmd[1] = Outputs;
-    bool result = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
-    if (result)
-    {
-      int i;
-      for (i = 0; i < NUM_OUTPUTS; i++)
-      {
-        if (Outputs & (0x01 << i))
-          OutputInstance.pMotor[i].TachoSensor = 0;
-      }
-    }
-    return result;
+	cmd[0] = opOutputClearCount;
+	cmd[1] = Outputs;
+	bool result = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	if (result)
+	{
+	  int i;
+	  for (i = 0; i < NUM_OUTPUTS; i++)
+	  {
+		if (Outputs & (0x01 << i))
+		  OutputInstance.pMotor[i].TachoSensor = 0;
+	  }
+	}
+	return result;
   }
   else
   {
-    return false;
+	return false;
 /*
-      if (cDaisyReady() != BUSY)
-      {
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  0;
-        DaisyBuf[Len++]  =  opOUTPUT_CLR_COUNT;
-        Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-        Len             +=  cOutputPackParam((DATA32)ClrCnt[1], &(DaisyBuf[Len]));
-        if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-        {
-          SetObjectIp(TmpIp - 1);
-          DspStat  =  BUSYBREAK;
-        }
-        //cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-      }
-      else
-      {
-        SetObjectIp(TmpIp - 1);
-        DspStat  =  BUSYBREAK;
-      }
+	  if (cDaisyReady() != BUSY)
+	  {
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  0;
+		DaisyBuf[Len++]  =  opOUTPUT_CLR_COUNT;
+		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
+		Len             +=  cOutputPackParam((DATA32)ClrCnt[1], &(DaisyBuf[Len]));
+		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
+		{
+		  SetObjectIp(TmpIp - 1);
+		  DspStat  =  BUSYBREAK;
+		}
+		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
+	  }
+	  else
+	  {
+		SetObjectIp(TmpIp - 1);
+		DspStat  =  BUSYBREAK;
+	  }
 */
   }
 }
@@ -1265,12 +1265,12 @@ UBYTE     cMotorGetBusyFlags(void)
 
   if (OutputInstance.PwmFile >= 0)
   {
-    read(OutputInstance.PwmFile,BusyReturn,4);
-    sscanf(BusyReturn,"%u %u",&test,&test2);
+	read(OutputInstance.PwmFile,BusyReturn,4);
+	sscanf(BusyReturn,"%u %u",&test,&test2);
   }
   else
   {
-    test = 0;
+	test = 0;
   }
   if(DELAY_COUNTER < 25)
   {
@@ -1286,7 +1286,7 @@ void      cMotorSetBusyFlags(UBYTE Flags)
 {
   if (OutputInstance.MotorFile >= 0)
   {
-    write(OutputInstance.MotorFile, &Flags, sizeof(Flags));
+	write(OutputInstance.MotorFile, &Flags, sizeof(Flags));
   }
 }
 */
@@ -1295,18 +1295,18 @@ void SetOutputEx(uint8_t Outputs, uint8_t Mode, uint8_t reset)
 {
   switch (Mode)
   {
-    case OUT_FLOAT :
-      OutputStop(Outputs, false);
-      ResetCount(Outputs, reset);
-      break;
-    case OUT_OFF :
-      OutputStop(Outputs, true);
-      ResetCount(Outputs, reset);
-      break;
-    case OUT_ON :
-      ResetCount(Outputs, reset);
-      OutputStart(Outputs);
-      break;
+	case OUT_FLOAT :
+	  OutputStop(Outputs, false);
+		  ResetCount(Outputs, reset);
+		  break;
+	case OUT_OFF :
+	  OutputStop(Outputs, true);
+		  ResetCount(Outputs, reset);
+		  break;
+	case OUT_ON :
+	  ResetCount(Outputs, reset);
+		  OutputStart(Outputs);
+		  break;
   }
 }
 
@@ -1315,15 +1315,15 @@ void SetDirection(uint8_t Outputs, uint8_t Dir)
   char Polarity;
   switch (Dir)
   {
-    case OUT_REV :
-      Polarity = -1;
-      break;
-    case OUT_TOGGLE :
-      Polarity = 0;
-      break;
-    default:
-      Polarity = 1;
-      break;
+	case OUT_REV :
+	  Polarity = -1;
+		  break;
+	case OUT_TOGGLE :
+	  Polarity = 0;
+		  break;
+	default:
+	  Polarity = 1;
+		  break;
   }
   OutputPolarity(Outputs, Polarity);
 }
@@ -1372,7 +1372,7 @@ void OnFwdEx(uint8_t Outputs, char Power, uint8_t reset)
 {
   Fwd(Outputs);
   if (Power != OUT_POWER_DEFAULT)
-    SetPower(Outputs, Power);
+	SetPower(Outputs, Power);
   OnEx(Outputs, reset);
 }
 
@@ -1380,7 +1380,7 @@ void OnRevEx(uint8_t Outputs, char Power, uint8_t reset)
 {
   Rev(Outputs);
   if (Power != OUT_POWER_DEFAULT)
-    SetPower(Outputs, Power);
+	SetPower(Outputs, Power);
   OnEx(Outputs, reset);
 }
 
@@ -1417,15 +1417,15 @@ void RotateMotorNoWaitEx(uint8_t Outputs, char Speed, int Angle, short Turn, boo
 {
   if (Sync)
   {
-    uint8_t Layer, tmpOuts;
-    tmpOuts = Outputs;
-    DecodeOutputs(&tmpOuts, &Layer);
-    if (tmpOuts == OUT_AB || tmpOuts == OUT_AC || tmpOuts == OUT_AD ||
-        tmpOuts == OUT_BC || tmpOuts == OUT_BD || tmpOuts == OUT_CD)
-    {
-      OutputStepSyncEx(Outputs, Speed, Turn, Angle, Stop, OWNER_NONE);
-      return;
-    }
+	uint8_t Layer, tmpOuts;
+	tmpOuts = Outputs;
+	DecodeOutputs(&tmpOuts, &Layer);
+	if (tmpOuts == OUT_AB || tmpOuts == OUT_AC || tmpOuts == OUT_AD ||
+		tmpOuts == OUT_BC || tmpOuts == OUT_BD || tmpOuts == OUT_CD)
+	{
+	  OutputStepSyncEx(Outputs, Speed, Turn, Angle, Stop, OWNER_NONE);
+	  return;
+	}
   }
   // otherwise use a non-synchronized API call
   int s3 = MIN(Angle / __RAMP_DOWN_PCT, __RAMP_DOWN_DEGREES), s1 = MIN(Angle / __RAMP_UP_PCT, __RAMP_UP_DEGREES), s2 = Angle - s3 - s1;
@@ -1438,10 +1438,10 @@ void RotateMotorEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync
   bool busy;
   while (true)
   {
-    Wait(MS_2); // 2ms between checks
-    busy = false;
-    OutputTest(Outputs, &busy);
-    if (!busy) break;
+	Wait(MS_2); // 2ms between checks
+	busy = false;
+	OutputTest(Outputs, &busy);
+	if (!busy) break;
   }
 }
 
@@ -1453,7 +1453,7 @@ void OnForSyncEx(uint8_t Outputs, int Time, char Speed, short Turn, bool Stop)
 void OnForEx(uint8_t Outputs, int Time, char Power, uint8_t reset)
 {
   if (Power != OUT_POWER_DEFAULT)
-    SetPower(Outputs, Power);
+	SetPower(Outputs, Power);
   OnEx(Outputs, reset);
   usleep(Time);
   OffEx(Outputs, reset);
@@ -1495,21 +1495,21 @@ void ResetCount(uint8_t Outputs, uint8_t reset)
   // reset tacho counter(s)
   switch (reset)
   {
-    case RESET_COUNT :
-      ResetTachoCount(Outputs);
-      return;
-    case RESET_BLOCK_COUNT :
-      ResetBlockTachoCount(Outputs);
-      return;
-    case RESET_ROTATION_COUNT :
-      ResetRotationCount(Outputs);
-      return;
-    case RESET_BLOCKANDTACHO :
-      ResetBlockAndTachoCount(Outputs);
-      return;
-    case RESET_ALL :
-      ResetAllTachoCounts(Outputs);
-      return;
+	case RESET_COUNT :
+	  ResetTachoCount(Outputs);
+		  return;
+	case RESET_BLOCK_COUNT :
+	  ResetBlockTachoCount(Outputs);
+		  return;
+	case RESET_ROTATION_COUNT :
+	  ResetRotationCount(Outputs);
+		  return;
+	case RESET_BLOCKANDTACHO :
+	  ResetBlockAndTachoCount(Outputs);
+		  return;
+	case RESET_ALL :
+	  ResetAllTachoCounts(Outputs);
+		  return;
   }
 }
 

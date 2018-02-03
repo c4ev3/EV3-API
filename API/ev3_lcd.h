@@ -32,7 +32,7 @@
  * \version 2
  * \note printf function added
  */
- 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -67,20 +67,20 @@ typedef uint8_t     IMGDATA;    //!< Image base type
 typedef IMGDATA* IP;         //!< Instruction pointer type
 
 typedef struct {
-  int X;  /*!< The X coordinate. Valid range is from 0 to 177 inclusive.  */
-  int Y;  /*!< The Y coordinate. Valid range is from 0 to 127 inclusive. */
+	int X;  /*!< The X coordinate. Valid range is from 0 to 177 inclusive.  */
+	int Y;  /*!< The Y coordinate. Valid range is from 0 to 127 inclusive. */
 } LocationType;
 
 typedef LocationType* PLocationType;
 
 typedef enum {
-  ifRAW_FB0,
-  ifRAW_BUF,
-  ifXBM,
-  ifP1,
-  ifP4,
-  ifBMP,
-  ifPNG
+	ifRAW_FB0,
+	ifRAW_BUF,
+	ifXBM,
+	ifP1,
+	ifP4,
+	ifBMP,
+	ifPNG
 } ImageFormat;
 
 /*

@@ -55,7 +55,7 @@ void TimerReady(unsigned long Timer)
   // do not block other threads
   while (Timer > TimerGetMS())
   {
-    usleep(1000);
+	usleep(1000);
   }
 }
 
@@ -69,58 +69,58 @@ unsigned long FastTimer(uint8_t Timer)
 {
   // centisecond timer (100 ticks per second)
   if (Timer < NUM_CS_TIMERS)
-    return TimerGetCS() - csTimers[Timer];
+	return TimerGetCS() - csTimers[Timer];
   return 0;
 }
 
 void ClearTimer(uint8_t Timer)
 {
   if (Timer < NUM_CS_TIMERS)
-    csTimers[Timer] = TimerGetCS();
+	csTimers[Timer] = TimerGetCS();
 }
 
 void SetTimer(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_CS_TIMERS)
-    csTimers[Timer] = TimerGetCS() - Value;
+	csTimers[Timer] = TimerGetCS() - Value;
 }
 
 unsigned long TimerMS(uint8_t Timer)
 {
   if (Timer < NUM_MS_TIMERS)
-    return TimerGetMS() - msTimers[Timer];
+	return TimerGetMS() - msTimers[Timer];
   return 0;
 }
 
 void ClearTimerMS(uint8_t Timer)
 {
   if (Timer < NUM_MS_TIMERS)
-    msTimers[Timer] = TimerGetMS();
+	msTimers[Timer] = TimerGetMS();
 }
 
 void SetTimerMS(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_MS_TIMERS)
-    msTimers[Timer] = TimerGetMS() - Value;
+	msTimers[Timer] = TimerGetMS() - Value;
 }
 
 unsigned long TimerUS(uint8_t Timer)
 {
   if (Timer < NUM_US_TIMERS)
-    return TimerGetUS() - usTimers[Timer];
+	return TimerGetUS() - usTimers[Timer];
   return 0;
 }
 
 void ClearTimerUS(uint8_t Timer)
 {
   if (Timer < NUM_US_TIMERS)
-    usTimers[Timer] = TimerGetUS();
+	usTimers[Timer] = TimerGetUS();
 }
 
 void SetTimerUS(uint8_t Timer, unsigned long Value)
 {
   if (Timer < NUM_US_TIMERS)
-    usTimers[Timer] = TimerGetUS() - Value;
+	usTimers[Timer] = TimerGetUS() - Value;
 }
 
 void _timerSigHandler(int sig)
@@ -131,54 +131,54 @@ void _timerSigHandler(int sig)
   // Handle the 10ms ones first
   if (counter % TIMER_10MS == 0)
   {
-    for (index = 0; index < callBack10ms_count; index++)
-    {
-      callBack10ms[index](sig);
-    }
+	for (index = 0; index < callBack10ms_count; index++)
+	{
+	  callBack10ms[index](sig);
+	}
   }
   // Handle the 50ms ones
   if (counter % TIMER_50MS == 0)
   {
-    for (index = 0; index < callBack50ms_count; index++)
-    {
-      callBack50ms[index](sig);
-    }
+	for (index = 0; index < callBack50ms_count; index++)
+	{
+	  callBack50ms[index](sig);
+	}
   }
 
   // Handle the 100ms ones
   if (counter % TIMER_100MS == 0)
   {
-    for (index = 0; index < callBack100ms_count; index++)
-    {
-      callBack100ms[index](sig);
-    }
+	for (index = 0; index < callBack100ms_count; index++)
+	{
+	  callBack100ms[index](sig);
+	}
   }
 
   // Handle the 250ms ones
   if (counter % TIMER_250MS == 0)
   {
-    for (index = 0; index < callBack250ms_count; index++)
-    {
-      callBack250ms[index](sig);
-    }
+	for (index = 0; index < callBack250ms_count; index++)
+	{
+	  callBack250ms[index](sig);
+	}
   }
 
   // Handle the 500ms ones
   if (counter % TIMER_500MS == 0)
   {
-    for (index = 0; index < callBack500ms_count; index++)
-    {
-      callBack500ms[index](sig);
-    }
+	for (index = 0; index < callBack500ms_count; index++)
+	{
+	  callBack500ms[index](sig);
+	}
   }
 
   // Handle the 1s ones
   if (counter % TIMER_1SEC == 0)
   {
-    for (index = 0; index < callBack1s_count; index++)
-    {
-      callBack1s[index](sig);
-    }
+	for (index = 0; index < callBack1s_count; index++)
+	{
+	  callBack1s[index](sig);
+	}
   }
   counter++;
 }
@@ -217,15 +217,15 @@ void SetTimerCallback(TimerInterval interval, TimerCallback callback)
 {
   if (callback != NULL)
   {
-    switch(interval)
-    {
-      case ti10ms:  callBack10ms[callBack10ms_count++] = callback; break;
-      case ti50ms:  callBack50ms[callBack50ms_count++] = callback; break;
-      case ti100ms: callBack100ms[callBack100ms_count++] = callback; break;
-      case ti250ms: callBack250ms[callBack250ms_count++] = callback; break;
-      case ti500ms: callBack500ms[callBack500ms_count++] = callback; break;
-      case ti1sec:  callBack1s[callBack1s_count++] = callback; break;
-    }
+	switch(interval)
+	{
+	  case ti10ms:  callBack10ms[callBack10ms_count++] = callback; break;
+	  case ti50ms:  callBack50ms[callBack50ms_count++] = callback; break;
+	  case ti100ms: callBack100ms[callBack100ms_count++] = callback; break;
+	  case ti250ms: callBack250ms[callBack250ms_count++] = callback; break;
+	  case ti500ms: callBack500ms[callBack500ms_count++] = callback; break;
+	  case ti1sec:  callBack1s[callBack1s_count++] = callback; break;
+	}
   }
 }
 
@@ -237,11 +237,11 @@ void TimerInit()
   msTick = usTick / 1000;
   csTick = msTick / 10;
   for (i=0; i < NUM_US_TIMERS; i++)
-    usTimers[i] = usTick;
+	usTimers[i] = usTick;
   for (i=0; i < NUM_MS_TIMERS; i++)
-    msTimers[i] = msTick;
+	msTimers[i] = msTick;
   for (i=0; i < NUM_CS_TIMERS; i++)
-    csTimers[i] = csTick;
+	csTimers[i] = csTick;
   // also initialize our callback timers
   _timerCallbackInit();
 }

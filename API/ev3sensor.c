@@ -1,36 +1,36 @@
- /*
- * EV3 Sensor API
- *
- * Copyright (C) 2014 Carsten Zeiffert
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/
- *
- * ----------------------------------------------------------------------------
- *
- * \author Simón Rodriguez Perez(Hochschule Aschaffenburg)
- * \date 2015-02-28
- * \version 2
- * \note Correct readout for Touch-, Sonar- and Lightsensor
- *
- * ----------------------------------------------------------------------------
- *
- * \author Simón Rodriguez Perez
- * \date 2016-04-20
- * \version 3
- * \note Correct readout for Gyroscop and Infrared Sensor
- *
- */
+/*
+* EV3 Sensor API
+*
+* Copyright (C) 2014 Carsten Zeiffert
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/
+*
+* ----------------------------------------------------------------------------
+*
+* \author Simón Rodriguez Perez(Hochschule Aschaffenburg)
+* \date 2015-02-28
+* \version 2
+* \note Correct readout for Touch-, Sonar- and Lightsensor
+*
+* ----------------------------------------------------------------------------
+*
+* \author Simón Rodriguez Perez
+* \date 2016-04-20
+* \version 3
+* \note Correct readout for Gyroscop and Infrared Sensor
+*
+*/
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
@@ -102,14 +102,14 @@ int ir_sensor_channel[INPUTS];
 */
 int initSensors()
 {
-    g_uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
+	g_uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
 	g_iicFile =  open("/dev/lms_iic", O_RDWR | O_SYNC);
 	g_analogFile = open("/dev/lms_analog", O_RDWR | O_SYNC);
 
-    g_uartSensors = (UART*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
-                                MAP_FILE | MAP_SHARED, g_uartFile, 0);
-    g_iicSensors = (IIC*)mmap(0, sizeof(IIC), PROT_READ | PROT_WRITE,
-                              MAP_FILE | MAP_SHARED, g_iicFile, 0);
+	g_uartSensors = (UART*)mmap(0, sizeof(UART), PROT_READ | PROT_WRITE,
+								MAP_FILE | MAP_SHARED, g_uartFile, 0);
+	g_iicSensors = (IIC*)mmap(0, sizeof(IIC), PROT_READ | PROT_WRITE,
+							  MAP_FILE | MAP_SHARED, g_iicFile, 0);
 	g_analogSensors = (ANALOG*)mmap(0, sizeof(ANALOG), PROT_READ | PROT_WRITE,
 									MAP_FILE | MAP_SHARED, g_analogFile, 0);
 	int i;
@@ -143,15 +143,15 @@ void* readUartSensor(int sensorPort)
 {
 	if (!g_uartSensors)
 		return 0;
-    return g_uartSensors->Raw[sensorPort][g_uartSensors->Actual[sensorPort]];
+	return g_uartSensors->Raw[sensorPort][g_uartSensors->Actual[sensorPort]];
 }
 
 void* readIicSensor(int sensorPort)
 {
 	if (!g_iicSensors)
 		return 0;
-    uint16_t currentSensorSlot = g_iicSensors->Actual[sensorPort];
-    return g_iicSensors->Raw[sensorPort][currentSensorSlot];
+	uint16_t currentSensorSlot = g_iicSensors->Actual[sensorPort];
+	return g_iicSensors->Raw[sensorPort][currentSensorSlot];
 }
 
 void* readNewDumbSensor(int sensorPort)
@@ -174,11 +174,11 @@ void* readNxtColor(int sensorPort, DATA8 index)
 	switch (g_sensorMode[sensorPort])
 	{
 	case 2: return cInputCalculateColor(g_analogSensors->NxtCol[sensorPort]); //NXT-COL-COL
-    case 1: return g_analogSensors->NxtCol[sensorPort].ADRaw[BLANK]; // NXT-COL-AMB
-    case 0: return g_analogSensors->NxtCol[sensorPort].ADRaw[RED]; // NXT-COL-RED
-    case 3: return g_analogSensors->NxtCol[sensorPort].ADRaw[GREEN]; // NXT-COL-GRN
-    case 4: return g_analogSensors->NxtCol[sensorPort].ADRaw[BLUE]; // NXT-COL-BLU
-    case 5: return g_analogSensors->NxtCol[sensorPort].SensorRaw[Index]; // NXT-COL-RAW
+	case 1: return g_analogSensors->NxtCol[sensorPort].ADRaw[BLANK]; // NXT-COL-AMB
+	case 0: return g_analogSensors->NxtCol[sensorPort].ADRaw[RED]; // NXT-COL-RED
+	case 3: return g_analogSensors->NxtCol[sensorPort].ADRaw[GREEN]; // NXT-COL-GRN
+	case 4: return g_analogSensors->NxtCol[sensorPort].ADRaw[BLUE]; // NXT-COL-BLU
+	case 5: return g_analogSensors->NxtCol[sensorPort].SensorRaw[Index]; // NXT-COL-RAW
 	}
 	return result;
 */
@@ -206,38 +206,38 @@ void* readSensorData(int sensorPort)
 
 	switch (sensor_setup_NAME[sensorPort])
 	{
-		case CONN_NONE: 
-		case CONN_ERROR: 
-		case NO_SEN: 
+		case CONN_NONE:
+		case CONN_ERROR:
+		case NO_SEN:
 			return 0;
-		// Touchsensor
+			// Touchsensor
 		case TOUCH_PRESS:
 			return readNewDumbSensor(sensorPort);
-		// Lightsensor
-		case COL_REFLECT: 
+			// Lightsensor
+		case COL_REFLECT:
 			return readUartSensor(sensorPort);
-		case COL_AMBIENT: 
+		case COL_AMBIENT:
 			return readUartSensor(sensorPort);
-		case COL_COLOR: 
+		case COL_COLOR:
 			return readUartSensor(sensorPort);
-		// Ultrasonic
-		case US_DIST_CM: 
+			// Ultrasonic
+		case US_DIST_CM:
 			return readUartSensor(sensorPort);
-		case US_DIST_MM: 
+		case US_DIST_MM:
 			return readUartSensor(sensorPort);
-		case US_DIST_IN: 
+		case US_DIST_IN:
 			return readUartSensor(sensorPort);
-		// Gyroskop
-		case GYRO_ANG: 
+			// Gyroskop
+		case GYRO_ANG:
 			return readUartSensor(sensorPort);
-		case GYRO_RATE: 
+		case GYRO_RATE:
 			return readUartSensor(sensorPort);
-		// Infrared
+			// Infrared
 		case IR_PROX:
 		case IR_SEEK:
 		case IR_REMOTE:
 			return readUartSensor(sensorPort);
-		// NXT
+			// NXT
 		case NXT_IR_SEEKER:
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_C:
@@ -276,7 +276,7 @@ int readSensor(int sensorPort)
 	{
 		case NO_SEN:
 			return -1;
-		// Touchsensor
+			// Touchsensor
 		case TOUCH_PRESS:
 			help = *((DATA16*)data);
 			help = help/256;
@@ -286,21 +286,21 @@ int readSensor(int sensorPort)
 				return 1;
 			else
 				return -1;
-		// Lightsensor
+			// Lightsensor
 		case COL_REFLECT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_AMBIENT:
 			return *((DATA16*)data)&0x00FF;
 		case COL_COLOR:
 			return *((DATA16*)data)&0x000F;
-		// Ultrasonic
+			// Ultrasonic
 		case US_DIST_CM:
 			return (*((DATA16*)data)&0x0FFF)/10;
 		case US_DIST_MM:
 			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
-		// Gyroskop
+			// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
 			help = *(data)&0xFFFF;
@@ -309,7 +309,7 @@ int readSensor(int sensorPort)
 				help = ((help&0x7FFF) - 0x7FFF);
 			}
 			return help;
-		// Infrared
+			// Infrared
 		case IR_PROX:
 			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
@@ -323,7 +323,7 @@ int readSensor(int sensorPort)
 			help = *(data)&0xFFFFFFFF;
 			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return help;
-		// NXT
+			// NXT
 		case NXT_IR_SEEKER:
 			return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
@@ -415,7 +415,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 {
 	static DEVCON devCon;
 	int sensorPort = 0;
-	
+
 	int name[4] = {};
 
 	name[0] = name_1;
@@ -427,7 +427,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 	{
 		return -1;
 	}
-	
+
 	// Setup of Input
 	for(sensorPort=0; sensorPort<4; sensorPort++)
 	{
@@ -436,13 +436,13 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 		{
 			case NO_SEN:
 				break;
-			// Touchsensor
+				// Touchsensor
 			case TOUCH_PRESS:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
 				devCon.Type[sensorPort] 		= TOUCH_TYPE;
 				devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
 				break;
-			// Lightsensor
+				// Lightsensor
 			case COL_REFLECT:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= COL_TYPE;
@@ -458,7 +458,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= COL_TYPE;
 				devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
 				break;
-			// Ultrasonic
+				// Ultrasonic
 			case US_DIST_CM:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= US_TYPE;
@@ -474,7 +474,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= US_TYPE;
 				devCon.Mode[sensorPort] 		= US_DIST_IN_MODE;
 				break;
-			// Gyroskop
+				// Gyroskop
 			case GYRO_ANG:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
@@ -485,7 +485,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
 				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
 				break;
-			// Infrared
+				// Infrared
 			case IR_PROX:
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= IR_TYPE;
@@ -501,7 +501,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Type[sensorPort] 		= IR_TYPE;
 				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
 				break;
-			// NXT
+				// NXT
 			case NXT_IR_SEEKER:
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= IIC_TYPE;
@@ -537,7 +537,7 @@ int setAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 int setIRBeaconCH(int sensorPort, int channel)
 {
 	ir_sensor_channel[sensorPort] = channel;
-	
+
 	return 0;
 }
 
