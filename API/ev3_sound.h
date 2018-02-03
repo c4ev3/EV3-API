@@ -50,8 +50,8 @@ extern "C" {
 
 typedef struct
 {
-   unsigned short Frequency;
-   unsigned short Duration;
+	unsigned short Frequency;
+	unsigned short Duration;
 } Tone;
 
 bool SoundInit();

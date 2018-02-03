@@ -42,7 +42,7 @@ int CloseEV3()
 
 int ExitEV3()
 {
-	
+
 	OutputExit();
 	ButtonLedExit();
 	LcdExit();
