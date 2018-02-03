@@ -150,7 +150,7 @@ void* readIicSensor(int sensorPort)
 {
 	if (!g_iicSensors)
 		return 0;
-    UWORD currentSensorSlot = g_iicSensors->Actual[sensorPort];
+    uint16_t currentSensorSlot = g_iicSensors->Actual[sensorPort];
     return g_iicSensors->Raw[sensorPort][currentSensorSlot];
 }
 
