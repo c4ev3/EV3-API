@@ -1,5 +1,5 @@
 ## Copyright (c) 2015 Ahmad Fatoum
-override PREFIX = C:/CSLite/bin/arm-none-linux-gnueabi-
+PREFIX ?= C:/CSLite/bin/arm-none-linux-gnueabi-
 CC = $(PREFIX)gcc
 AR = $(PREFIX)ar
 SRCS = $(wildcard *.c)

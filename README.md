@@ -1,4 +1,5 @@
-# EV3-API
+# EV3-API [![Build Status](https://travis-ci.org/c4ev3/EV3-API.svg?branch=master)](https://travis-ci.org/c4ev3/EV3-API)
+
 This API supports the follwing functionallity:
 * Easy initialistion with one header-file
 * Controlling LEGO motors
