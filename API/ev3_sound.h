@@ -45,12 +45,13 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 
+#include "ev3_command.h"
 #include "ev3_constants.h"
 
 typedef struct
 {
-   unsigned short Frequency;
-   unsigned short Duration;
+	unsigned short Frequency;
+	unsigned short Duration;
 } Tone;
 
 bool SoundInit();
@@ -59,11 +60,11 @@ bool SoundClose();
 bool SoundExit();
 bool SoundInitialized();
 
-void PlayFileEx(char* pFileName, byte volume, bool loop);
+void PlayFileEx(char* pFileName, uint8_t volume, bool loop);
 
 #define PlayFile(_f) PlayFileEx((_f), 100, FALSE)
 
-void PlayToneEx(unsigned short frequency, unsigned short duration, byte volume);
+void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volume);
 
 #define PlayTone(_f, _d) PlayToneEx((_f), (_d), 100)
 
@@ -82,7 +83,7 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, byte volume);
  * </TABLE>
  * \param aCode The system sound to play.  See \ref RCXSoundConstants.
  */
-void PlaySound(byte aCode);
+void PlaySound(uint8_t aCode);
 
 /**
  * Play multiple tones.
