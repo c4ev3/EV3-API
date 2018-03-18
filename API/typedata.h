@@ -16,26 +16,26 @@
 
 typedef   struct // if data type changes - remember to change "cInputTypeDataInit" !
 {
-  SBYTE     Name[TYPE_NAME_LENGTH + 1]; //!< Device name
-  DATA8     Type;                       //!< Device type
-  DATA8     Connection;
-  DATA8     Mode;                       //!< Device mode
-  DATA8     DataSets;
-  DATA8     Format;
-  DATA8     Figures;
-  DATA8     Decimals;
-  DATA8     Views;
-  DATAF     RawMin;                     //!< Raw minimum value      (e.c. 0.0)
-  DATAF     RawMax;                     //!< Raw maximum value      (e.c. 1023.0)
-  DATAF     PctMin;                     //!< Percent minimum value  (e.c. -100.0)
-  DATAF     PctMax;                     //!< Percent maximum value  (e.c. 100.0)
-  DATAF     SiMin;                      //!< SI unit minimum value  (e.c. -100.0)
-  DATAF     SiMax;                      //!< SI unit maximum value  (e.c. 100.0)
-  UWORD     InvalidTime;                //!< mS from type change to valid data
-  UWORD     IdValue;                    //!< Device id value        (e.c. 0 ~ UART)
-  DATA8     Pins;                       //!< Device pin setup
-  SBYTE     Symbol[SYMBOL_LENGTH + 1];  //!< SI unit symbol
-  UWORD     Align;
+	int8_t     Name[TYPE_NAME_LENGTH + 1]; //!< Device name
+	DATA8     Type;                       //!< Device type
+	DATA8     Connection;
+	DATA8     Mode;                       //!< Device mode
+	DATA8     DataSets;
+	DATA8     Format;
+	DATA8     Figures;
+	DATA8     Decimals;
+	DATA8     Views;
+	DATAF     RawMin;                     //!< Raw minimum value      (e.c. 0.0)
+	DATAF     RawMax;                     //!< Raw maximum value      (e.c. 1023.0)
+	DATAF     PctMin;                     //!< Percent minimum value  (e.c. -100.0)
+	DATAF     PctMax;                     //!< Percent maximum value  (e.c. 100.0)
+	DATAF     SiMin;                      //!< SI unit minimum value  (e.c. -100.0)
+	DATAF     SiMax;                      //!< SI unit maximum value  (e.c. 100.0)
+	uint16_t     InvalidTime;                //!< mS from type change to valid data
+	uint16_t     IdValue;                    //!< Device id value        (e.c. 0 ~ UART)
+	DATA8     Pins;                       //!< Device pin setup
+	int8_t     Symbol[SYMBOL_LENGTH + 1];  //!< SI unit symbol
+	uint16_t     Align;
 }
 TYPES;
 
@@ -52,30 +52,30 @@ TYPES;
 
 typedef   enum
 {
-  CONN_UNKNOWN                  = 111,  //!< Connection is fake (test)
+	CONN_UNKNOWN                  = 111,  //!< Connection is fake (test)
 
-  CONN_DAISYCHAIN               = 117,  //!< Connection is daisy chained
-  CONN_NXT_COLOR                = 118,  //!< Connection type is NXT color sensor
-  CONN_NXT_DUMB                 = 119,  //!< Connection type is NXT analog sensor
-  CONN_NXT_IIC                  = 120,  //!< Connection type is NXT IIC sensor
+	CONN_DAISYCHAIN               = 117,  //!< Connection is daisy chained
+	CONN_NXT_COLOR                = 118,  //!< Connection type is NXT color sensor
+	CONN_NXT_DUMB                 = 119,  //!< Connection type is NXT analog sensor
+	CONN_NXT_IIC                  = 120,  //!< Connection type is NXT IIC sensor
 
-  CONN_INPUT_DUMB               = 121,  //!< Connection type is LMS2012 input device with ID resistor
-  CONN_INPUT_UART               = 122,  //!< Connection type is LMS2012 UART sensor
+	CONN_INPUT_DUMB               = 121,  //!< Connection type is LMS2012 input device with ID resistor
+	CONN_INPUT_UART               = 122,  //!< Connection type is LMS2012 UART sensor
 
-  CONN_OUTPUT_DUMB              = 123,  //!< Connection type is LMS2012 output device with ID resistor
-  CONN_OUTPUT_INTELLIGENT       = 124,  //!< Connection type is LMS2012 output device with communication
-  CONN_OUTPUT_TACHO             = 125,  //!< Connection type is LMS2012 tacho motor with series ID resistance
+	CONN_OUTPUT_DUMB              = 123,  //!< Connection type is LMS2012 output device with ID resistor
+	CONN_OUTPUT_INTELLIGENT       = 124,  //!< Connection type is LMS2012 output device with communication
+	CONN_OUTPUT_TACHO             = 125,  //!< Connection type is LMS2012 tacho motor with series ID resistance
 
-  CONN_NONE                     = 126,  //!< Port empty or not available
-  CONN_ERROR                    = 127,  //!< Port not empty and type is invalid
+	CONN_NONE                     = 126,  //!< Port empty or not available
+	CONN_ERROR                    = 127,  //!< Port not empty and type is invalid
 }
 CONN;
 
 typedef   struct
 {
-  DATA8     Connection[INPUTS];
-  DATA8     Type[INPUTS];
-  DATA8     Mode[INPUTS];
+	DATA8     Connection[INPUTS];
+	DATA8     Type[INPUTS];
+	DATA8     Mode[INPUTS];
 }
 DEVCON;
 

@@ -22,19 +22,19 @@
 
 typedef   struct
 {
-  TYPES   TypeData[INPUTS][MAX_DEVICE_MODES]; //!< TypeData
+	TYPES   TypeData[INPUTS][MAX_DEVICE_MODES]; //!< TypeData
 
 #ifndef DISABLE_FAST_DATALOG_BUFFER
-  UWORD   Repeat[INPUTS][DEVICE_LOGBUF_SIZE];
-  DATA8   Raw[INPUTS][DEVICE_LOGBUF_SIZE][UART_DATA_LENGTH];      //!< Raw value from UART device
-  UWORD   Actual[INPUTS];
-  UWORD   LogIn[INPUTS];
+	uint16_t   Repeat[INPUTS][DEVICE_LOGBUF_SIZE];
+	DATA8   Raw[INPUTS][DEVICE_LOGBUF_SIZE][UART_DATA_LENGTH];      //!< Raw value from UART device
+	uint16_t   Actual[INPUTS];
+	uint16_t   LogIn[INPUTS];
 #else
-  DATA8   Raw[INPUTS][UART_DATA_LENGTH];      //!< Raw value from UART device
+	DATA8   Raw[INPUTS][UART_DATA_LENGTH];      //!< Raw value from UART device
 #endif
-  DATA8   Status[INPUTS];                     //!< Status
-  DATA8   Output[INPUTS][UART_DATA_LENGTH];   //!< Bytes to UART device
-  DATA8   OutputLength[INPUTS];
+	DATA8   Status[INPUTS];                     //!< Status
+	DATA8   Output[INPUTS][UART_DATA_LENGTH];   //!< Bytes to UART device
+	DATA8   OutputLength[INPUTS];
 }
 UART;
 

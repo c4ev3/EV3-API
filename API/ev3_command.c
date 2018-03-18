@@ -16,17 +16,18 @@
  */
 
 #include "ev3_command.h"
+#include <time.h>
 
 static void ms2ts(struct timespec *ts, unsigned long ms)
 {
-    ts->tv_sec = ms / 1000;
-    ts->tv_nsec = (ms % 1000) * 1000000;
+	ts->tv_sec = ms / 1000;
+	ts->tv_nsec = (ms % 1000) * 1000000;
 }
 
 void Wait(unsigned long ms)
 {
-  struct timespec delay;
-  ms2ts(&delay, ms);
-  while (nanosleep(&delay, &delay));
+	struct timespec delay;
+	ms2ts(&delay, ms);
+	while (nanosleep(&delay, &delay));
 }
 

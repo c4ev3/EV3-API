@@ -68,33 +68,33 @@ char* HardwareVersionString();
 
 void SetLedWarning(bool Value);
 
-byte LedWarning();
+uint8_t LedWarning();
 
-void SetLedPattern(byte Pattern);
+void SetLedPattern(uint8_t Pattern);
 
-byte LedPattern();
+uint8_t LedPattern();
 
-word ButtonWaitForAnyEvent(unsigned int timeout);
+uint16_t ButtonWaitForAnyEvent(unsigned int timeout);
 
-word ButtonWaitForAnyPress(unsigned int timeout);
+uint16_t ButtonWaitForAnyPress(unsigned int timeout);
 
-bool ButtonIsUp(byte Button);
+bool ButtonIsUp(uint8_t Button);
 
-bool ButtonIsDown(byte Button);
+bool ButtonIsDown(uint8_t Button);
 
-void ButtonWaitForPress(byte Button);
+void ButtonWaitForPress(uint8_t Button);
 
-void ButtonWaitForPressAndRelease(byte Button);
+void ButtonWaitForPressAndRelease(uint8_t Button);
 
 // NXC-style API functions (no support for short press, long press,
 // short release, long release, or press counts
-bool ButtonPressedEx(byte btn, bool resetCount);
+bool ButtonPressedEx(uint8_t btn, bool resetCount);
 
 #define ButtonPressed(_btn) ButtonPressedEx((_btn), FALSE)
 
-char ReadButtonEx(byte btn, bool reset, bool* pressed, word* count);
+char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count);
 
-byte ButtonState(byte btn);
+uint8_t ButtonState(uint8_t btn);
 
 #endif // ev3_button_h
 

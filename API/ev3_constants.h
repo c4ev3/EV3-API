@@ -40,19 +40,13 @@ extern "C" {
 #ifndef ev3_constants_h
 #define ev3_constants_h
 
-#ifndef byte
-#define byte unsigned char
-#endif
-
-#ifndef word
-#define word unsigned short
-#endif
+#include <stdint.h>
 
 /** @addtogroup MiscConstants
  * @{
  */
-#define TRUE  1 /*!< A true value */
-#define FALSE 0 /*!< A false value */
+#define TRUE  true /*!< A true value */
+#define FALSE false /*!< A false value */
 
 #define NUM_INPUTS     4   /*!< Number of input  ports in the system */
 #define NUM_LEDS       4   /*!< Number of LEDs in the system */
@@ -62,7 +56,7 @@ extern "C" {
 
 #define OWNER_NONE 0x0000 /*!< The object id of the owner of a resource (no owner) */
 
-  // daisy chain constants
+// daisy chain constants
 #define LAYER_MASTER 0x00 /*!< The master layer */
 #define LAYER_SLAVE1 0x10 /*!< The first slave layer */
 #define LAYER_SLAVE2 0x20 /*!< The second slave layer */
@@ -424,7 +418,7 @@ extern "C" {
 /** @addtogroup SoundModule
  * @{
  */
- 
+
 /** @defgroup SoundModuleConstants Sound module constants
  * Constants that are part of the EV3 firmware's Sound module.
  * @{
