@@ -1,5 +1,6 @@
 ## Copyright (c) 2015 Ahmad Fatoum
-PREFIX ?= C:/CSLite/bin/arm-none-linux-gnueabi-
+CROSS_COMPILE ?= C:/CSLite/bin/arm-none-linux-gnueabi-
+PREFIX ?= $(CROSS_COMPILE)
 CC = $(PREFIX)gcc
 AR = $(PREFIX)ar
 SRCS = $(wildcard *.c)
@@ -10,7 +11,7 @@ libev3api.a: $(OBJS)
 	$(AR) rcs $@ $^
 
 %.o: %.c
-	$(CC) -Os -isystem. -c $<
+	$(CC) -Os $(CFLAGS) -isystem. -c $<
 
 #ifeq ($(OS),Windows_NT)
 #RM = del /Q
