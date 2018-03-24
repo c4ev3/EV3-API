@@ -16,4 +16,4 @@ before_install:
 
 script:
   - cd API
-  - make PREFIX=arm-none-linux-gnueabi-
+  - make CROSS_COMPILE=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign"
