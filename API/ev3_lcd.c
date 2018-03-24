@@ -351,7 +351,6 @@ void LcdCloseDevices()
 
 bool LcdInit()
 {
-	int i;
 	uint8_t * pTmp;
 	if (LcdInitialized()) return true;
 
@@ -387,6 +386,8 @@ bool LcdInit()
 			return true;
 		}
 	}
+
+        return false;
 }
 
 bool LcdOpen()
