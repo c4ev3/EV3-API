@@ -25,7 +25,7 @@ static int __RAMP_DOWN_DEGREES = 0;
 typedef struct
 {
 	int TachoCounts;
-	char Speed;
+	int8_t Speed;
 	int TachoSensor;
 } MOTORDATA;
 
@@ -33,7 +33,7 @@ typedef struct
 {
 	uint8_t Cmd;
 	uint8_t Outputs;
-	char PwrOrSpd;
+	int8_t PwrOrSpd;
 	int  StepOrTime1;
 	int  StepOrTime2;
 	int  StepOrTime3;
@@ -44,7 +44,7 @@ typedef struct
 {
 	uint8_t  Cmd;
 	uint8_t  Outputs;
-	char  Speed;
+	int8_t  Speed;
 	short Turn;
 	int   StepOrTime;
 	uint8_t  Brake;
@@ -52,7 +52,7 @@ typedef struct
 
 typedef struct
 {
-	char  OutputTypes[NUM_OUTPUTS];
+	int8_t  OutputTypes[NUM_OUTPUTS];
 	short Owners[NUM_OUTPUTS];
 
 	int PwmFile;
@@ -86,7 +86,7 @@ void DecodeOutputs(uint8_t * outputs, uint8_t * layer)
   *outputs = *outputs & OUT_MASK;
 }
 
-int WriteToPWMDevice(char * bytes, int num_bytes)
+int WriteToPWMDevice(int8_t * bytes, int num_bytes)
 {
   int result = -1;
   if (OutputInstance.PwmFile >= 0)
@@ -161,7 +161,7 @@ bool OutputOpen(void)
   if (!OutputInitialized())
 	return false;
 
-  char cmd;
+  int8_t cmd;
 
   bool result = ResetOutputs();
   if (result)
@@ -210,7 +210,7 @@ bool OutputStop(uint8_t Outputs, bool useBrake)
   if (!OutputInitialized())
 	return false;
   int cmdLen = 3;
-  char cmd[3];
+  int8_t cmd[3];
   uint8_t Layer;
   // opOutputStop (outputs, brake)
   // Stops the outputs (brake or coast)
@@ -258,12 +258,12 @@ bool OutputProgramStop(void)
   if (!OutputInitialized())
 	return false;
 
-  char cmd;
+  int8_t cmd;
   cmd = opProgramStop;
   return WriteToPWMDevice(&cmd, 1) == 1;
 }
 
-bool OutputSetType(uint8_t Output, char DeviceType)
+bool OutputSetType(uint8_t Output, int8_t DeviceType)
 {
   if (!OutputInitialized())
 	return false;
@@ -314,17 +314,17 @@ bool OutputSetType(uint8_t Output, char DeviceType)
   }
 }
 
-bool OutputSetTypesArray(char * pTypes)
+bool OutputSetTypesArray(int8_t * pTypes)
 {
   return OutputSetTypes(pTypes[0], pTypes[1], pTypes[2], pTypes[3]);
 }
 
-bool OutputSetTypes(char OutputA, char OutputB, char OutputC, char OutputD)
+bool OutputSetTypes(int8_t OutputA, int8_t OutputB, int8_t OutputC, int8_t OutputD)
 {
   if (!OutputInitialized())
 	return false;
   int cmdLen = 5;
-  char cmd[5];
+  int8_t cmd[5];
   cmd[0] = opOutputSetType;
   cmd[1] = OutputA;
   cmd[2] = OutputB;
@@ -350,7 +350,7 @@ bool OutputReset(uint8_t Outputs)
 
   int cmdLen = 2;
   uint8_t Layer;
-  char cmd[2];
+  int8_t cmd[2];
   // opOutputReset (outputs)
   // Resets the Tacho counts
   DecodeOutputs(&Outputs, &Layer);
@@ -387,14 +387,14 @@ bool OutputReset(uint8_t Outputs)
   }
 }
 
-bool OutputSpeed(uint8_t Outputs, char Speed)
+bool OutputSpeed(uint8_t Outputs, int8_t Speed)
 {
   if (!OutputInitialized())
 	return false;
 
   int cmdLen = 3;
   uint8_t Layer;
-  char cmd[3];
+  int8_t cmd[3];
   // opOutputSpeed (outputs, speed)
   // Set speed of the outputs
   // (relative to polarity - enables regulation if the output has a tachometer)
@@ -433,13 +433,13 @@ bool OutputSpeed(uint8_t Outputs, char Speed)
   }
 }
 
-bool OutputPower(uint8_t Outputs, char Power)
+bool OutputPower(uint8_t Outputs, int8_t Power)
 {
   if (!OutputInitialized())
 	return false;
   int cmdLen = 3;
   uint8_t Layer;
-  char cmd[3];
+  int8_t cmd[3];
   // opOutputPower (outputs, power)
   // Set power of the outputs
   DecodeOutputs(&Outputs, &Layer);
@@ -490,7 +490,7 @@ bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
 
   int cmdLen = 2;
   uint8_t Layer;
-  char cmd[2];
+  int8_t cmd[2];
   // opOutputStart (outputs)
   // Starts the outputs
   DecodeOutputs(&Outputs, &Layer);
@@ -542,14 +542,14 @@ bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
   }
 }
 
-bool OutputPolarity(uint8_t Outputs, char Polarity)
+bool OutputPolarity(uint8_t Outputs, int8_t Polarity)
 {
   if (!OutputInitialized())
 	return false;
 
   int cmdLen = 3;
   uint8_t Layer;
-  char cmd[3];
+  int8_t cmd[3];
   // opOutputPolarity (outputs, polarity)
   // Set polarity of the outputs
   //  - -1 makes the motor run backward
@@ -591,7 +591,7 @@ bool OutputPolarity(uint8_t Outputs, char Polarity)
   }
 }
 
-bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
+bool OutputStepPowerEx(uint8_t Outputs, int8_t Power, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -611,7 +611,7 @@ bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int St
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -659,7 +659,7 @@ bool OutputStepPowerEx(uint8_t Outputs, char Power, int Step1, int Step2, int St
   }
 }
 
-bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
+bool OutputTimePowerEx(uint8_t Outputs, int8_t Power, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -679,7 +679,7 @@ bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Ti
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -723,7 +723,7 @@ bool OutputTimePowerEx(uint8_t Outputs, char Power, int Time1, int Time2, int Ti
   }
 }
 
-bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
+bool OutputStepSpeedEx(uint8_t Outputs, int8_t Speed, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -743,7 +743,7 @@ bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int St
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -792,7 +792,7 @@ bool OutputStepSpeedEx(uint8_t Outputs, char Speed, int Step1, int Step2, int St
   }
 }
 
-bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
+bool OutputTimeSpeedEx(uint8_t Outputs, int8_t Speed, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -812,7 +812,7 @@ bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Ti
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -858,7 +858,7 @@ bool OutputTimeSpeedEx(uint8_t Outputs, char Speed, int Time1, int Time2, int Ti
 
 }
 
-bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool useBrake, uint8_t Owner)
+bool OutputStepSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Step, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -881,7 +881,7 @@ bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool us
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -924,7 +924,7 @@ bool OutputStepSyncEx(uint8_t Outputs, char Speed, short Turn, int Step, bool us
   }
 }
 
-bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool useBrake, uint8_t Owner)
+bool OutputTimeSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Time, bool useBrake, uint8_t Owner)
 {
   if (!OutputInitialized())
 	return false;
@@ -947,7 +947,7 @@ bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool us
   cmd.Brake = (uint8_t)useBrake;
   if (Layer == LAYER_MASTER)
   {
-	bool result = WriteToPWMDevice((char*)&(cmd.Cmd), cmdLen) == cmdLen;
+	bool result = WriteToPWMDevice((int8_t*)&(cmd.Cmd), cmdLen) == cmdLen;
 	if (result)
 	{
 	  int i;
@@ -990,7 +990,7 @@ bool OutputTimeSyncEx(uint8_t Outputs, char Speed, short Turn, int Time, bool us
   }
 }
 
-bool OutputRead(uint8_t Output, char * Speed, int * TachoCount, int * TachoSensor)
+bool OutputRead(uint8_t Output, int8_t * Speed, int * TachoCount, int * TachoSensor)
 {
   if (!OutputInitialized())
 	return false;
@@ -1033,7 +1033,7 @@ bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner)
   *Busy = 0;
   int test = 0;
   int test2 = 0;
-  char busyReturn[10];
+  int8_t busyReturn[10];
   uint8_t Layer;
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
@@ -1182,7 +1182,7 @@ bool OutputClearCount(uint8_t Outputs)
 
   int cmdLen = 2;
   uint8_t Layer;
-  char cmd[2];
+  int8_t cmd[2];
   DecodeOutputs(&Outputs, &Layer);
   if (Layer == LAYER_MASTER)
   {
@@ -1229,19 +1229,19 @@ bool OutputClearCount(uint8_t Outputs)
 
 bool OutputGetCount(uint8_t Output, int * Tacho)
 {
-  char speed = 0;
+  int8_t speed = 0;
   int tcount = 0;
   return OutputRead(Output, &speed, &tcount, Tacho);
 }
 
 bool OutputGetTachoCount(uint8_t Output, int * Tacho)
 {
-  char speed = 0;
+  int8_t speed = 0;
   int tsensor = 0;
   return OutputRead(Output, &speed, Tacho, &tsensor);
 }
 
-bool OutputGetActualSpeed(uint8_t Output, char * Speed)
+bool OutputGetActualSpeed(uint8_t Output, int8_t * Speed)
 {
   int tcount = 0;
   int tsensor = 0;
@@ -1261,7 +1261,7 @@ void ResetDelayCounter(UBYTE Pattern)
 UBYTE     cMotorGetBusyFlags(void)
 {
   int     test, test2;
-  char    BusyReturn[10]; // Busy mask
+  int8_t    BusyReturn[10]; // Busy mask
 
   if (OutputInstance.PwmFile >= 0)
   {
@@ -1312,7 +1312,7 @@ void SetOutputEx(uint8_t Outputs, uint8_t Mode, uint8_t reset)
 
 void SetDirection(uint8_t Outputs, uint8_t Dir)
 {
-  char Polarity;
+  int8_t Polarity;
   switch (Dir)
   {
 	case OUT_REV :
@@ -1328,12 +1328,12 @@ void SetDirection(uint8_t Outputs, uint8_t Dir)
   OutputPolarity(Outputs, Polarity);
 }
 
-void SetPower(uint8_t Outputs, char Power)
+void SetPower(uint8_t Outputs, int8_t Power)
 {
   OutputPower(Outputs, Power);
 }
 
-void SetSpeed(uint8_t Outputs, char Speed)
+void SetSpeed(uint8_t Outputs, int8_t Speed)
 {
   OutputSpeed(Outputs, Speed);
 }
@@ -1368,7 +1368,7 @@ void Rev(uint8_t Outputs)
   SetDirection(Outputs, OUT_REV);
 }
 
-void OnFwdEx(uint8_t Outputs, char Power, uint8_t reset)
+void OnFwdEx(uint8_t Outputs, int8_t Power, uint8_t reset)
 {
   Fwd(Outputs);
   if (Power != OUT_POWER_DEFAULT)
@@ -1376,7 +1376,7 @@ void OnFwdEx(uint8_t Outputs, char Power, uint8_t reset)
   OnEx(Outputs, reset);
 }
 
-void OnRevEx(uint8_t Outputs, char Power, uint8_t reset)
+void OnRevEx(uint8_t Outputs, int8_t Power, uint8_t reset)
 {
   Rev(Outputs);
   if (Power != OUT_POWER_DEFAULT)
@@ -1384,7 +1384,7 @@ void OnRevEx(uint8_t Outputs, char Power, uint8_t reset)
   OnEx(Outputs, reset);
 }
 
-void OnFwdRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset)
+void OnFwdRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset)
 {
   // regmode parameter is ignored
   Fwd(Outputs);
@@ -1392,7 +1392,7 @@ void OnFwdRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset)
   OnEx(Outputs, reset);
 }
 
-void OnRevRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset)
+void OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset)
 {
   // regmode parameter is ignored
   Rev(Outputs);
@@ -1400,20 +1400,20 @@ void OnRevRegEx(uint8_t Outputs, char Speed, uint8_t RegMode, uint8_t reset)
   OnEx(Outputs, reset);
 }
 
-void OnFwdSyncEx(uint8_t Outputs, char Speed, short Turn, uint8_t reset)
+void OnFwdSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
 {
   ResetCount(Outputs, reset);
   OutputStepSyncEx(Outputs, Speed, Turn, INT_MAX, FALSE, OWNER_NONE);
 }
 
-void OnRevSyncEx(uint8_t Outputs, char Speed, short Turn, uint8_t reset)
+void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
 {
   OnFwdSyncEx(Outputs, Speed*-1, Turn, reset);
 }
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-void RotateMotorNoWaitEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop)
+void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop)
 {
   if (Sync)
   {
@@ -1432,7 +1432,7 @@ void RotateMotorNoWaitEx(uint8_t Outputs, char Speed, int Angle, short Turn, boo
   OutputStepSpeedEx(Outputs, Speed, s1, s2, s3, Stop, OWNER_NONE);
 }
 
-void RotateMotorEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync, bool Stop)
+void RotateMotorEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop)
 {
   RotateMotorNoWaitEx(Outputs, Speed, Angle, Turn, Sync, Stop);
   bool busy;
@@ -1445,12 +1445,12 @@ void RotateMotorEx(uint8_t Outputs, char Speed, int Angle, short Turn, bool Sync
   }
 }
 
-void OnForSyncEx(uint8_t Outputs, int Time, char Speed, short Turn, bool Stop)
+void OnForSyncEx(uint8_t Outputs, int Time, int8_t Speed, short Turn, bool Stop)
 {
   OutputTimeSyncEx(Outputs, Speed, Turn, Time, Stop, OWNER_NONE);
 }
 
-void OnForEx(uint8_t Outputs, int Time, char Power, uint8_t reset)
+void OnForEx(uint8_t Outputs, int Time, int8_t Power, uint8_t reset)
 {
   if (Power != OUT_POWER_DEFAULT)
 	SetPower(Outputs, Power);
@@ -1527,16 +1527,16 @@ int MotorBlockTachoCount(uint8_t Output)
   return Result;
 }
 
-char MotorPower(uint8_t Output)
+int8_t MotorPower(uint8_t Output)
 {
-  char Result = 0;
+  int8_t Result = 0;
   OutputGetActualSpeed(Output, &Result);
   return Result;
 }
 
-char MotorActualSpeed(uint8_t Output)
+int8_t MotorActualSpeed(uint8_t Output)
 {
-  char Result = 0;
+  int8_t Result = 0;
   OutputGetActualSpeed(Output, &Result);
   return Result;
 }
