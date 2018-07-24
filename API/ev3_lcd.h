@@ -124,6 +124,7 @@ bool LcdUpdate();
 bool LcdClean();
 void LcdClearDisplay();
 bool LcdScroll(short Y);
+#if 0 /* unimplemented */
 bool LcdRect(char Color, short X0, short Y0, short X1, short Y1);
 bool LcdFillRect(char Color, short X0, short Y0, short X1, short Y1);
 bool LcdInverseRect(short X0, short Y0, short X1, short Y1);
@@ -132,13 +133,14 @@ bool LcdLine(char Color, short X0, short Y0, short X1, short Y1);
 bool LcdDotLine(char Color, short X0, short Y0, short X1, short Y1, short OnPix, short OffPix);
 bool LcdCircle(char Color, short X, short Y, short R);
 bool LcdFillCircle(char Color, short X, short Y, short R);
+bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
+#endif
 bool LcdSelectFont(uint8_t FontType);
 uint8_t* LcdGetDisplay();
 bool LcdText(char Color, short X, short Y, char* Text);
 bool LcdIcon(char Color, short X, short Y, char IconType, char IconNum);
 bool LcdBmpFile(char Color, short X, short Y, char* Name);
 bool LcdPicture(char Color, short X, short Y, IP pBitmap);
-bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
 bool LcdFillWindow(char Color, short Y, short Y1);
 uint8_t* LcdGetFrameBuffer();
 void LcdWriteDisplayToFile(char* filename, ImageFormat fmt);
