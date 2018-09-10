@@ -1847,3 +1847,38 @@ int LcdPrintf(char color, const char *fmt, ...)
 
 	return c - buf;
 }
+
+int Ev3Printf(const char *fmt, ...)
+{
+	va_list args;
+	char *buffer;
+
+	va_start(args, fmt);
+	vasprintf(&buffer, fmt, args);
+	va_end(args);
+
+	int ret = LcdPrintf(1, buffer);	// LcdPrintf with color=1 for black text
+
+	return ret;
+}
+
+int Ev3Println(const char *fmt, ...)
+{
+	char *buffer;
+	vaprintf(buffer, "%s%s", "\n");
+
+	va_list args;
+	char *buffer2;
+
+	va_start(args, fmt);
+	vasprintf(&buffer2, fmt, args);
+	va_end(args);
+
+	return Ev3Printf(buffer2);
+}
+
+void Ev3Clear()
+{
+	LcdClean();
+	LcdPrintf("%s", "\f");
+}

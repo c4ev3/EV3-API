@@ -338,6 +338,11 @@ int vasprintf(char **, const char *, va_list)
 #endif
 
 
+int Ev3Printf(const char *fmt, ...);
+int Ev3Println(const char *fmt, ...);
+void Ev3Clear();
+
+
 #endif // ev3_lcd_h
 
 #ifdef __cplusplus
