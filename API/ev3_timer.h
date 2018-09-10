@@ -40,6 +40,8 @@ extern "C" {
 //#include <stdio.h>
 //#include <stdlib.h>
 
+#ifndef DISABLE_TIMERS
+
 #include "ev3_constants.h"
 
 typedef enum {
@@ -72,11 +74,13 @@ void SetTimerUS(uint8_t Timer, unsigned long Value);
 
 void TimerInit();
 
+void SetTimerCallback(TimerInterval interval, TimerCallback callback);
+
+#endif // !DISABLE_TIMERS
+
 unsigned long long TimerGetUS();
 unsigned long long TimerGetMS();
 unsigned long long TimerGetCS();
-
-void SetTimerCallback(TimerInterval interval, TimerCallback callback);
 
 #endif // ev3_timer_h
 
