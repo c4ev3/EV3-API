@@ -1,6 +1,8 @@
 
-#ifndef TYPEDATA_H_
-#define TYPEDATA_H_
+#ifndef EV3_TYPEDATA_H_
+#define EV3_TYPEDATA_H_
+
+#include <ev3_basictypes.h>
 
 #define	   MAX_DEVICE_MODES		8                     //!< Max number of modes in one device
 #define    INPUTS				4
@@ -88,4 +90,4 @@ DEVCON;
 //#define   IIC_SETUP               _IOWR('i',5,IICDAT)
 //#define   IIC_SET                 _IOWR('i',6,IICSTR)
 
-#endif //TYPEDATA_H_
+#endif //EV3_TYPEDATA_H_
