@@ -1,9 +1,9 @@
 
-#ifndef IIC_H_
-#define IIC_H_
+#ifndef EV3_IIC_H_
+#define EV3_IIC_H_
 
-#include "basictypes.h"
-#include "typedata.h"
+#include "ev3_basictypes.h"
+#include "ev3_typedata.h"
 
 /*! \page IicModuleMemory
  *
@@ -62,4 +62,4 @@ IICDAT;
 
 
 
-#endif //IIC_H_
+#endif //EV3_IIC_H_

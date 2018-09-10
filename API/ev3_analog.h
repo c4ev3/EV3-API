@@ -1,6 +1,8 @@
 
-#ifndef ANALOG_H_
-#define ANALOG_H_
+#ifndef EV3_ANALOG_H_
+#define EV3_ANALOG_H_
+
+#include <ev3_typedata.h>
 
 /*! \page NxtColorMemory
  *
@@ -70,4 +72,4 @@ typedef   struct
 }
 ANALOG;
 
-#endif //ANALOG_H_
+#endif //EV3_ANALOG_H_

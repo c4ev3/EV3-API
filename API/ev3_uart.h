@@ -1,9 +1,9 @@
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef EV3_UART_H_
+#define EV3_UART_H_
 
-#include "basictypes.h"
-#include "typedata.h"
+#include "ev3_basictypes.h"
+#include "ev3_typedata.h"
 
 /*! \page UartModuleMemory
  *
@@ -38,4 +38,4 @@ typedef   struct
 }
 UART;
 
-#endif //UART_H_
+#endif //EV3_UART_H_
