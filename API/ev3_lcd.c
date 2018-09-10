@@ -380,7 +380,7 @@ bool LcdInit()
 #ifndef DISABLE_TIMERS
 
 			// initialize timer system
-			TimerInit();
+			TimerInit(250);
 
 			// register update handler with timer system
 			SetTimerCallback(ti250ms, &LcdUpdateHandler);

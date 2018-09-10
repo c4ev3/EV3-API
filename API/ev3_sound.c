@@ -82,7 +82,7 @@ typedef struct {
 	short ValPrev;
 	short Index;
 	short Step;
-	uint8_t BytesToWrite;
+	int BytesToWrite;
 	uint8_t StopLoop;
 	char PathBuffer[FILENAME_SIZE];
 	struct stat FileStatus;
@@ -91,7 +91,7 @@ typedef struct {
 
 SoundGlobals SoundInstance;
 
-int WriteToSoundDevice(char * bytes, int num_bytes)
+int WriteToSoundDevice(uint8_t * bytes, int num_bytes)
 {
 	ssize_t result = -1;
 	int sndHandle = open(LMS_SOUND_DEVICE_NAME, O_WRONLY);
@@ -462,7 +462,9 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 			return;
 		if (_readShort(SoundInstance.hSoundFile, false) != RIFF_FMT_1CHAN)
 			return;
+
 		int sampleRate = _readInt(SoundInstance.hSoundFile, true);
+
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
 		if (_readShort(SoundInstance.hSoundFile, false) != RIFF_FMT_8BITS)
