@@ -46,6 +46,8 @@ static int callBack250ms_count;
 static int callBack500ms_count;
 static int callBack1s_count;
 
+static unsigned long timer_interval_mutliplier = 1;
+
 unsigned long TimerWait(unsigned long Time)
 {
   return TimerGetMS() + Time;
@@ -131,7 +133,7 @@ void _timerSigHandler(int sig)
   static unsigned long counter = 0;
 
   // Handle the 10ms ones first
-  if (counter % TIMER_10MS == 0)
+  if (counter % TIMER_10MS == 0 || timer_interval_mutliplier <= TIMER_10MS)
   {
 	for (index = 0; index < callBack10ms_count; index++)
 	{
@@ -139,7 +141,7 @@ void _timerSigHandler(int sig)
 	}
   }
   // Handle the 50ms ones
-  if (counter % TIMER_50MS == 0)
+  if (counter % TIMER_50MS == 0 || timer_interval_mutliplier <= TIMER_50MS)
   {
 	for (index = 0; index < callBack50ms_count; index++)
 	{
@@ -148,7 +150,7 @@ void _timerSigHandler(int sig)
   }
 
   // Handle the 100ms ones
-  if (counter % TIMER_100MS == 0)
+  if (counter % TIMER_100MS == 0 || timer_interval_mutliplier <= TIMER_100MS)
   {
 	for (index = 0; index < callBack100ms_count; index++)
 	{
@@ -157,7 +159,7 @@ void _timerSigHandler(int sig)
   }
 
   // Handle the 250ms ones
-  if (counter % TIMER_250MS == 0)
+  if (counter % TIMER_250MS == 0 || timer_interval_mutliplier <= TIMER_250MS)
   {
 	for (index = 0; index < callBack250ms_count; index++)
 	{
@@ -166,7 +168,7 @@ void _timerSigHandler(int sig)
   }
 
   // Handle the 500ms ones
-  if (counter % TIMER_500MS == 0)
+  if (counter % TIMER_500MS == 0 || timer_interval_mutliplier <= TIMER_500MS)
   {
 	for (index = 0; index < callBack500ms_count; index++)
 	{
@@ -175,14 +177,14 @@ void _timerSigHandler(int sig)
   }
 
   // Handle the 1s ones
-  if (counter % TIMER_1SEC == 0)
+  if (counter % TIMER_1SEC == 0 || timer_interval_mutliplier <= TIMER_1SEC)
   {
 	for (index = 0; index < callBack1s_count; index++)
 	{
 	  callBack1s[index](sig);
 	}
   }
-  counter++;
+  counter += timer_interval_mutliplier;
 }
 
 void _timerCallbackInit()
@@ -193,9 +195,9 @@ void _timerCallbackInit()
   sa.sa_handler = &_timerSigHandler;
   sigaction (SIGALRM, &sa, NULL);
   timer.it_value.tv_sec = 0;
-  timer.it_value.tv_usec = TIMER_INTERVAL;
+  timer.it_value.tv_usec = TIMER_INTERVAL * timer_interval_mutliplier;
   timer.it_interval.tv_sec = 0;
-  timer.it_interval.tv_usec = TIMER_INTERVAL;
+  timer.it_interval.tv_usec = TIMER_INTERVAL * timer_interval_mutliplier;
   setitimer(ITIMER_REAL, &timer, NULL);
 
   // Reset all the counters
@@ -231,8 +233,10 @@ void SetTimerCallback(TimerInterval interval, TimerCallback callback)
   }
 }
 
-void TimerInit()
+void TimerInit(unsigned long interval_multiplier)
 {
+	timer_interval_mutliplier = interval_multiplier;
+
   unsigned long long csTick, msTick, usTick;
   int i;
   usTick = TimerGetUS();

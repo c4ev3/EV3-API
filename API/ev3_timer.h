@@ -72,7 +72,7 @@ unsigned long TimerUS(uint8_t Timer);
 void ClearTimerUS(uint8_t Timer);
 void SetTimerUS(uint8_t Timer, unsigned long Value);
 
-void TimerInit();
+void TimerInit(unsigned long interval_multiplier);
 
 void SetTimerCallback(TimerInterval interval, TimerCallback callback);
 
