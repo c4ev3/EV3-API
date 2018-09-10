@@ -31,16 +31,16 @@
 * \note Correct readout for Gyroscop and Infrared Sensor
 *
 */
+#include "ev3_sensor.h"
+
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include "ev3sensor.h"
-#include "uart.h"
-#include "iic.h"
-#include "analog.h"
-
 #include <stdint.h>
+#include "ev3_analog.h"
+#include "ev3_iic.h"
+#include "ev3_uart.h"
 
 /***********************************/
 // define of Sensor setup

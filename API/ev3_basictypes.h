@@ -1,6 +1,6 @@
 
-#ifndef BASICTYPES_H_
-#define BASICTYPES_H_
+#ifndef EV3_BASICTYPES_H_
+#define EV3_BASICTYPES_H_
 
 #include <stdint.h>
 
@@ -16,4 +16,4 @@ typedef   int8_t                 DATA8;  //!< VM Type for 1 byte signed value
 typedef   int16_t                 DATA16; //!< VM Type for 2 byte signed value
 typedef   float                 DATAF;  //!< VM Type for 4 byte floating point value
 
-#endif //BASICTYPES_H_
+#endif //EV3_BASICTYPES_H_

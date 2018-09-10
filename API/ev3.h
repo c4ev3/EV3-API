@@ -42,7 +42,7 @@ extern "C" {
 #include <ev3_constants.h>
 #include <ev3_command.h>
 #include <ev3_output.h>
-#include <ev3sensor.h>
+#include "ev3_sensor.h"
 #include <ev3_button.h>
 #include <ev3_lcd.h>
 #include <ev3_sound.h>
