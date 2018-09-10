@@ -377,11 +377,14 @@ bool LcdInit()
 //      LCDInstance.font := @(font_data[0]);
 			LCDInstance.pLcd = LCDInstance.displayBuf;
 
+#ifndef DISABLE_TIMERS
+
 			// initialize timer system
 			TimerInit();
 
 			// register update handler with timer system
 			SetTimerCallback(ti250ms, &LcdUpdateHandler);
+#endif
 
 			return true;
 		}
@@ -684,13 +687,6 @@ void dLcdDrawBitmap(uint8_t *pImage, char Color, short X0, short Y0, IP pBitmap)
 	}
 }
 
-void LcdRefresh()
-{
-	if (!LcdInitialized())
-		return;
-	doUpdateScreen();
-}
-
 void LcdSetAutoRefresh(bool bOn)
 {
 	LCDInstance.autoRefresh = bOn;
@@ -715,7 +711,6 @@ bool LcdClean()
 	LCDInstance.Dirty = true;
 	return true;
 }
-
 bool LcdScroll(short Y)
 {
 	if (LcdInitialized())
@@ -796,6 +791,7 @@ uint8_t reverse_bits(uint8_t b)
 {
 	return reverse_bits_table[b];
 }
+
 
 void _lcdWriteBytesToFile(ImageFormat fmt, uint8_t* data, char* filename, uint8_t width, uint8_t height)
 {
@@ -1682,6 +1678,21 @@ char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long 
 	return 0;
 }
 
+
+/*******************
+ * Redundant functions
+ */
+#if 0
+
+// Same as LcdUpdate
+void LcdRefresh()
+{
+	if (!LcdInitialized())
+		return;
+	doUpdateScreen();
+}
+
+#endif
 
 /**********************************************************************
  * Unused / currently useless functions

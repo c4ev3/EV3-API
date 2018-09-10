@@ -117,7 +117,6 @@ bool LcdInit();
 bool LcdExit();
 bool LcdInitialized();
 
-void LcdRefresh();
 void LcdSetAutoRefresh(bool bOn);
 bool LcdUpdate();
 bool LcdClean();
@@ -133,6 +132,13 @@ bool LcdDotLine(char Color, short X0, short Y0, short X1, short Y1, short OnPix,
 bool LcdCircle(char Color, short X, short Y, short R);
 bool LcdFillCircle(char Color, short X, short Y, short R);
 bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
+#endif
+
+/*******************
+ * Redundant functions
+ */
+#if 0
+void LcdRefresh();
 #endif
 
 bool LcdSelectFont(uint8_t FontType);

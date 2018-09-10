@@ -17,6 +17,8 @@
 
 #include "ev3_timer.h"
 
+#ifndef DISABLE_TIMERS
+
 static unsigned long long msTimers[NUM_MS_TIMERS];
 static unsigned long long usTimers[NUM_US_TIMERS];
 static unsigned long long csTimers[NUM_CS_TIMERS];
@@ -245,6 +247,8 @@ void TimerInit()
   // also initialize our callback timers
   _timerCallbackInit();
 }
+
+#endif
 
 unsigned long long TimerGetUS()
 {
