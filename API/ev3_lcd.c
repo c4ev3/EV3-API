@@ -390,16 +390,6 @@ bool LcdInit()
         return false;
 }
 
-bool LcdOpen()
-{
-	return true;
-}
-
-bool LcdClose()
-{
-	return true;
-}
-
 bool LcdExit()
 {
 	// if not initialized then just exit
@@ -724,12 +714,6 @@ bool LcdClean()
 	memset((void*)LCDInstance.pLcd, 0, LCD_BUFFER_SIZE);
 	LCDInstance.Dirty = true;
 	return true;
-}
-
-void LcdClearDisplay()
-{
-	LcdClean();
-	LCDInstance.Dirty = true;
 }
 
 bool LcdScroll(short Y)
@@ -1688,6 +1672,38 @@ char RectOutEx(int x, int y, int width, int height, unsigned long options)
 	return 0;
 }
 
+char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options)
+{
+	if (!LcdInitialized())
+		return 1;
+	uint8_t pixelMode, fillMode;
+	if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
+		CmdDrawEllipse(x, y, radiusX, radiusY, pixelMode, fillMode);
+	return 0;
+}
+
+
+/**********************************************************************
+ * Unused / currently useless functions
+ */
+#if 0
+
+bool LcdOpen()
+{
+	return true;
+}
+
+bool LcdClose()
+{
+	return true;
+}
+
+void LcdClearDisplay()
+{
+	LcdClean();
+	LCDInstance.Dirty = true;
+}
+
 char TextOutEx(int x, int y, char* str, unsigned long options)
 {
 	if (!LcdInitialized())
@@ -1705,16 +1721,6 @@ char NumOutEx(int x, int y, int value, unsigned long options)
 	return 0;
 }
 
-char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options)
-{
-	if (!LcdInitialized())
-		return 1;
-	uint8_t pixelMode, fillMode;
-	if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
-		CmdDrawEllipse(x, y, radiusX, radiusY, pixelMode, fillMode);
-	return 0;
-}
-
 char PolyOutEx(PLocationType points, unsigned long options)
 {
 	return 0;
@@ -1729,6 +1735,8 @@ char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options)
 {
 	return 0;
 }
+
+#endif
 
 
 /********************************************************************************************/
