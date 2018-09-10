@@ -41,6 +41,7 @@ extern "C" {
 #define ev3_lcd_h
 
 /* Print Text with Variables - Ahmad Fatoum*/
+
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
@@ -63,7 +64,7 @@ extern "C" {
 #define LCD_BYTE_WIDTH ((LCD_WIDTH + 7) / 8)
 #define LCD_BUFFER_SIZE (LCD_BYTE_WIDTH * LCD_HEIGHT)
 
-typedef uint8_t     IMGDATA;    //!< Image base type
+typedef uint8_t  IMGDATA;    //!< Image base type
 typedef IMGDATA* IP;         //!< Instruction pointer type
 
 typedef struct {
@@ -113,8 +114,6 @@ typedef enum {
 */
 
 bool LcdInit();
-bool LcdOpen();
-bool LcdClose();
 bool LcdExit();
 bool LcdInitialized();
 
@@ -122,8 +121,8 @@ void LcdRefresh();
 void LcdSetAutoRefresh(bool bOn);
 bool LcdUpdate();
 bool LcdClean();
-void LcdClearDisplay();
 bool LcdScroll(short Y);
+
 #if 0 /* unimplemented */
 bool LcdRect(char Color, short X0, short Y0, short X1, short Y1);
 bool LcdFillRect(char Color, short X0, short Y0, short X1, short Y1);
@@ -135,6 +134,7 @@ bool LcdCircle(char Color, short X, short Y, short R);
 bool LcdFillCircle(char Color, short X, short Y, short R);
 bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
 #endif
+
 bool LcdSelectFont(uint8_t FontType);
 uint8_t* LcdGetDisplay();
 bool LcdText(char Color, short X, short Y, char* Text);
@@ -216,6 +216,42 @@ char PointOutEx(int x, int y, unsigned long options);
 char RectOutEx(int x, int y, int width, int height, unsigned long options);
 #define RectOut(_x, _y, _w, _h) RectOutEx((_x), (_y), (_w), (_h), DRAW_OPT_NORMAL)
 
+
+/**
+ * Draw an ellipse.
+ * This function lets you draw an ellipse on the screen with its center at the
+ * specified x and y location, using the specified radii. Optionally specify
+ * drawing options. If this argument is not specified it defaults to \ref DRAW_OPT_NORMAL.
+ * Valid display option constants are listed in the \ref DisplayDrawOptionConstants group.
+ * \sa SysDrawEllipse, DrawEllipseType
+ *
+ * \warning This function requires the enhanced NBC/NXC firmware version 1.28+.
+ *
+ * \param x The x value for the center of the ellipse.
+ * \param y The y value for the center of the ellipse.
+ * \param radiusX The x axis radius.
+ * \param radiusY The y axis radius.
+ * \param options The drawing options.
+ * \return The result of the drawing operation.
+ */
+char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
+#define EllipseOut(_x, _y, _rx, _ry) EllipseOutEx((_x), (_y), (_rx), (_ry), DRAW_OPT_NORMAL)
+
+
+
+
+
+/*******************************
+ * Unused / currently useless functions
+ */
+#if 0
+
+bool LcdOpen();
+
+bool LcdClose();
+
+void LcdClearDisplay();
+
 /**
  * Draw text.
  * Draw a text value on the screen at the specified x and y location. The y
@@ -253,26 +289,6 @@ char TextOutEx(int x, int y, char* str, unsigned long options);
  */
 char NumOutEx(int x, int y, int value, unsigned long options);
 #define NumOut(_x, _y, _v) NumOutEx((_x), (_y), (_v), DRAW_OPT_NORMAL)
-
-/**
- * Draw an ellipse.
- * This function lets you draw an ellipse on the screen with its center at the
- * specified x and y location, using the specified radii. Optionally specify
- * drawing options. If this argument is not specified it defaults to \ref DRAW_OPT_NORMAL.
- * Valid display option constants are listed in the \ref DisplayDrawOptionConstants group.
- * \sa SysDrawEllipse, DrawEllipseType
- *
- * \warning This function requires the enhanced NBC/NXC firmware version 1.28+.
- *
- * \param x The x value for the center of the ellipse.
- * \param y The y value for the center of the ellipse.
- * \param radiusX The x axis radius.
- * \param radiusY The y axis radius.
- * \param options The drawing options.
- * \return The result of the drawing operation.
- */
-char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
-#define EllipseOut(_x, _y, _rx, _ry) EllipseOutEx((_x), (_y), (_rx), (_ry), DRAW_OPT_NORMAL)
 
 /**
  * Draw a polygon.
@@ -326,6 +342,10 @@ char GraphicOutEx(int x, int y, char* filename, unsigned long options);
  */
 char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options);
 #define GraphicArrayOut(_x, _y, _d) GraphicArrayOutEx((_x), (_y), (_d), DRAW_OPT_NORMAL)
+
+#endif
+
+
 
 
 bool LcdTextf(char Color, short X, short Y, const char *fmt, ...);
