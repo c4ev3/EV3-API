@@ -364,12 +364,33 @@ int asprintf(char **, const char *, ...);
 int vasprintf(char **, const char *, va_list)
 #endif
 
-
+/**
+ * Print formatted text on the display. Works like the normal printf.
+ * 
+ */
 int Ev3Printf(const char *fmt, ...);
+
+/**
+ * Print formatted text on the display with a new line at the end.
+ * Works like the normal printf but appends a linefeed at the end.
+ */
 int Ev3Println(const char *fmt, ...);
+
+/**
+ * Clear the display and reset the cursor to the top left corner.
+ */
 void Ev3Clear();
 
+/**
+ * Analog to Ev3Printf but automatically scrolls upwards to prevent 
+ * text from being out of bounds.
+ */
 int TermPrintf(const char *fmt, ...);
+
+/**
+ * Analog to Ev3Printf but automatically scrolls upwards to prevent 
+ * text from being out of bounds.
+ */
 int TermPrintln(const char *fmt, ...);
 
 #endif // ev3_lcd_h
