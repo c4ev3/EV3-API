@@ -1,7 +1,7 @@
 # EV3-API [![Build Status](https://travis-ci.org/c4ev3/EV3-API.svg?branch=master)](https://travis-ci.org/c4ev3/EV3-API) [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/c4ev3/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This API supports the follwing functionallity:
-* Easy initialistion with one header-file
+* Easy initialization with one header-file
 * Controlling LEGO motors
 * Reading out of Touch, Ultrasonic, Color, Gyro, EV3-Infrared, NXT-Infrared Sensor and NXT Temperaturesensor
 * Controling Buttons and LED
