@@ -58,6 +58,7 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 #include <libgen.h>
+#include <stdarg.h>
 
 #include "ev3_constants.h"
 
@@ -368,6 +369,8 @@ int Ev3Printf(const char *fmt, ...);
 int Ev3Println(const char *fmt, ...);
 void Ev3Clear();
 
+int TermPrintf(const char *fmt, ...);
+int TermPrintln(const char *fmt, ...);
 
 #endif // ev3_lcd_h
 
