@@ -1682,7 +1682,7 @@ char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long 
 /*******************
  * Redundant functions
  */
-#if 0
+#if 1
 
 // Same as LcdUpdate
 void LcdRefresh()
@@ -1693,62 +1693,6 @@ void LcdRefresh()
 }
 
 #endif
-
-/**********************************************************************
- * Unused / currently useless functions
- */
-#if 0
-
-bool LcdOpen()
-{
-	return true;
-}
-
-bool LcdClose()
-{
-	return true;
-}
-
-void LcdClearDisplay()
-{
-	LcdClean();
-	LCDInstance.Dirty = true;
-}
-
-char TextOutEx(int x, int y, char* str, unsigned long options)
-{
-	if (!LcdInitialized())
-		return 1;
-//  uint8_t pixelMode, fillMode;
-//  if (CmdResolveDrawingMode(options, &pixelMode, &fillMode))
-//    CmdDrawRect(x, y, width, height, pixelMode);
-	return 0;
-}
-
-char NumOutEx(int x, int y, int value, unsigned long options)
-{
-	if (!LcdInitialized())
-		return 1;
-	return 0;
-}
-
-char PolyOutEx(PLocationType points, unsigned long options)
-{
-	return 0;
-}
-
-char GraphicOutEx(int x, int y, char* filename, unsigned long options)
-{
-	return 0;
-}
-
-char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options)
-{
-	return 0;
-}
-
-#endif
-
 
 /********************************************************************************************/
 /**
