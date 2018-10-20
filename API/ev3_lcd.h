@@ -58,7 +58,6 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 #include <libgen.h>
-#include <stdarg.h>
 
 #include "ev3_constants.h"
 
@@ -123,22 +122,11 @@ bool LcdUpdate();
 bool LcdClean();
 bool LcdScroll(short Y);
 
-#if 0 /* unimplemented */
-bool LcdRect(char Color, short X0, short Y0, short X1, short Y1);
-bool LcdFillRect(char Color, short X0, short Y0, short X1, short Y1);
-bool LcdInverseRect(short X0, short Y0, short X1, short Y1);
-bool LcdPixel(char Color, short X, short Y);
-bool LcdLine(char Color, short X0, short Y0, short X1, short Y1);
-bool LcdDotLine(char Color, short X0, short Y0, short X1, short Y1, short OnPix, short OffPix);
-bool LcdCircle(char Color, short X, short Y, short R);
-bool LcdFillCircle(char Color, short X, short Y, short R);
-bool LcdVerticalBar(char Color, short X0, short Y0, short X1, short Y1, short Min, short Max, short Actual);
-#endif
 
 /*******************
  * Redundant functions
  */
-#if 0
+#if 1
 void LcdRefresh();
 #endif
 
@@ -243,117 +231,6 @@ char RectOutEx(int x, int y, int width, int height, unsigned long options);
  */
 char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
 #define EllipseOut(_x, _y, _rx, _ry) EllipseOutEx((_x), (_y), (_rx), (_ry), DRAW_OPT_NORMAL)
-
-
-
-
-
-/*******************************
- * Unused / currently useless functions
- */
-#if 0
-
-bool LcdOpen();
-
-bool LcdClose();
-
-void LcdClearDisplay();
-
-/**
- * Draw text.
- * Draw a text value on the screen at the specified x and y location. The y
- * value must be a multiple of 8.  Valid line number constants are listed in
- * the \ref LineConstants group.
- * Optionally specify drawing options. If this argument is not specified it
- * defaults to \ref DRAW_OPT_NORMAL. Valid display option constants are listed in
- * the \ref DisplayDrawOptionConstants group.
- * \sa SysDrawText, DrawTextType
- *
- * \param x The x value for the start of the text output.
- * \param y The text line number for the text output.
- * \param str The text to output to the LCD screen.
- * \param options The drawing options.
- * \return The result of the drawing operation.
- */
-char TextOutEx(int x, int y, char* str, unsigned long options);
-#define TextOut(_x, _y, _str) TextOutEx((_x), (_y), (_str), DRAW_OPT_NORMAL)
-
-/**
- * Draw a number.
- * Draw a numeric value on the screen at the specified x and y location. The y
- * value must be a multiple of 8.  Valid line number constants are listed in
- * the \ref LineConstants group.
- * Optionally specify drawing options. If this argument is not specified it
- * defaults to \ref DRAW_OPT_NORMAL. Valid display option constants are listed in
- * the \ref DisplayDrawOptionConstants group.
- * \sa SysDrawText, DrawTextType
- *
- * \param x The x value for the start of the number output.
- * \param y The text line number for the number output.
- * \param value The value to output to the LCD screen. Any numeric type is supported.
- * \param options The drawing options.
- * \return The result of the drawing operation.
- */
-char NumOutEx(int x, int y, int value, unsigned long options);
-#define NumOut(_x, _y, _v) NumOutEx((_x), (_y), (_v), DRAW_OPT_NORMAL)
-
-/**
- * Draw a polygon.
- * This function lets you draw a polygon on the screen using an array of points.
- * Optionally specify drawing options. If this argument is not specified it
- * defaults to \ref DRAW_OPT_NORMAL. Valid display option constants are listed in
- * the \ref DisplayDrawOptionConstants group.
- * \sa SysDrawPolygon, DrawPolygonType
- *
- * \warning This function requires the enhanced NBC/NXC firmware version 1.28+.
- *
- * \param points An array of LocationType points that define the polygon.
- * \param options The optional drawing options.
- * \return The result of the drawing operation.
- */
-char PolyOutEx(PLocationType points, unsigned long options);
-#define PolyOut(_p) PolyOutEx((_p), DRAW_OPT_NORMAL)
-
-/**
- * Draw a graphic image.
- * Draw a graphic image file on the screen at the specified x and y location.
- * Optionally specify drawing options. If this argument is not specified it
- * defaults to \ref DRAW_OPT_NORMAL. Valid display option constants are listed in
- * the \ref DisplayDrawOptionConstants group. If the file cannot be found then
- * nothing will be drawn and no errors will be reported.
- * \sa SysDrawGraphic, DrawGraphicType
- *
- * \param x The x value for the position of the graphic image.
- * \param y The y value for the position of the graphic image.
- * \param filename The filename of the RIC graphic image.
- * \param options The drawing options.
- * \return The result of the drawing operation.
- */
-char GraphicOutEx(int x, int y, char* filename, unsigned long options);
-#define GraphicOut(_x, _y, _f) GraphicOutEx((_x), (_y), (_f), DRAW_OPT_NORMAL)
-
-/**
- * Draw a graphic image from byte array.
- * Draw a graphic image byte array on the screen at the specified x and y location.
- * Optionally specify drawing options. If this argument is not specified it
- * defaults to \ref DRAW_OPT_NORMAL. Valid display option constants are listed in
- * the \ref DisplayDrawOptionConstants group. If the file cannot be found then
- * nothing will be drawn and no errors will be reported.
- * \sa SysDrawGraphicArray, DrawGraphicArrayType
- *
- * \param x The x value for the position of the graphic image.
- * \param y The y value for the position of the graphic image.
- * \param data The byte array of the RIC graphic image.
- * \param options The drawing options.
- * \return The result of the drawing operation.
- */
-char GraphicArrayOutEx(int x, int y, uint8_t* data, unsigned long options);
-#define GraphicArrayOut(_x, _y, _d) GraphicArrayOutEx((_x), (_y), (_d), DRAW_OPT_NORMAL)
-
-#endif
-
-
-
 
 bool LcdTextf(char Color, short X, short Y, const char *fmt, ...);
 int LcdPrintf(char __color, const char * __fmt, ...);
