@@ -1306,7 +1306,7 @@ bool CmdResolveDrawingMode(unsigned short DrawingOptions, uint8_t* pPixelMode, u
 				return true;
 		}
 	}
-	// If no operation is required, set defaults and return FALSE.
+	// If no operation is required, set defaults and return false.
 	// e.g. 'AND' on its own is meaningless for line drawing,
 	// 'INVERT + OR' and 'INVERT + XOR'  do nothing either.
 	*pPixelMode = DRAW_PIXELS_SET;

@@ -1403,7 +1403,7 @@ void OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset)
 void OnFwdSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
 {
   ResetCount(Outputs, reset);
-  OutputStepSyncEx(Outputs, Speed, Turn, INT_MAX, FALSE, OWNER_NONE);
+  OutputStepSyncEx(Outputs, Speed, Turn, INT_MAX, false, OWNER_NONE);
 }
 
 void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
