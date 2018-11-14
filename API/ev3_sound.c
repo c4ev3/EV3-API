@@ -152,7 +152,7 @@ bool SoundInit()
 			{
 				SoundInstance.pSound = pTmp;
 				close(sndHandle);
-				Result = TRUE;
+				Result = true;
 			}
 		}
 	}
@@ -161,23 +161,23 @@ bool SoundInit()
 
 bool SoundOpen()
 {
-	return TRUE;
+	return true;
 }
 
 bool SoundClose()
 {
 	StopSound();
-	return TRUE;
+	return true;
 }
 
 bool SoundExit()
 {
 	if (!SoundInitialized())
-		return TRUE;
+		return true;
 	// make sure we close before we exit
 	SoundClose();
 	SoundCloseDevices();
-	return TRUE;
+	return true;
 }
 
 bool SoundInitialized()
@@ -189,8 +189,8 @@ bool SoundInitialized()
 bool SoundTest()
 {
 	if (SoundInitialized())
-		return (*SoundInstance.pSound).Busy == TRUE;
-	return FALSE;
+		return (*SoundInstance.pSound).Busy == true;
+	return false;
 }
 
 void SoundReady()
@@ -259,7 +259,7 @@ uint8_t _soundGetAdPcmValue(uint8_t Delta)
 void _playRMDFile(char* pFileName, uint8_t volume, bool loop)
 {
 	SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
-	(*SoundInstance.pSound).Busy = TRUE;
+	(*SoundInstance.pSound).Busy = true;
 //  SoundInstance.SoundOwner = CallingObjectId();
 
 	sprintf(SoundInstance.PathBuffer, "%s", pFileName);
@@ -435,7 +435,7 @@ short _readShort(int fileHandle, bool lsb)
 void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 {
 	SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
-	(*SoundInstance.pSound).Busy = TRUE;
+	(*SoundInstance.pSound).Busy = true;
 	sprintf(SoundInstance.PathBuffer, "%s", pFileName);
 	// Open SoundFile
 	SoundInstance.hSoundFile = open(SoundInstance.PathBuffer, O_RDONLY, 0666);
@@ -515,7 +515,7 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 {
 	SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
-	(*SoundInstance.pSound).Busy = TRUE;
+	(*SoundInstance.pSound).Busy = true;
 
 	sprintf(SoundInstance.PathBuffer, "%s", pFileName);
 	// Open SoundFile
@@ -599,7 +599,7 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volum
 	if (SoundInstance.SoundMuted != 0)
 		return;
 
-	(*SoundInstance.pSound).Busy = TRUE;
+	(*SoundInstance.pSound).Busy = true;
 	uint8_t SoundData[6];
 	SoundData[0] = SOUND_CMD_TONE;
 	SoundData[1] = (uint8_t)((volume*13)/100);

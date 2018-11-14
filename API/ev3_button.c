@@ -120,7 +120,7 @@ void ButtonLedCloseDevices()
 	if (!ButtonLedInitialized())
 		return;
 
-	ButtonLedInstance.WarnLight = FALSE;
+	ButtonLedInstance.WarnLight = false;
 
 	if ((ButtonLedInstance.pButton != NULL) &&
 		(ButtonLedInstance.pButton != &ButtonLedInstance.ButtonSafe))
@@ -141,7 +141,7 @@ void ButtonLedCloseDevices()
 bool ButtonLedInit()
 {
 	if (ButtonLedInitialized())
-		return TRUE;
+		return true;
 
 	ButtonLedInstance.pButton = &ButtonLedInstance.ButtonSafe;
 
@@ -152,7 +152,7 @@ bool ButtonLedInit()
 	if (ButtonLedInstance.ButtonLedFile < 0)
 	{
 		ButtonLedCloseDevices();
-		return FALSE;
+		return false;
 	}
 
 	BUTTON* pButtonTmp = (BUTTON*)mmap(0, sizeof(BUTTON), PROT_READ + PROT_WRITE, MAP_SHARED, ButtonLedInstance.ButtonLedFile, 0);
@@ -160,7 +160,7 @@ bool ButtonLedInit()
 	{
 //    LogErrorNumber(UI_SHARED_MEMORY);
 		ButtonLedCloseDevices();
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -168,42 +168,42 @@ bool ButtonLedInit()
 	}
 
 	buttonClear();
-	ButtonLedInstance.WarnLight = FALSE;
+	ButtonLedInstance.WarnLight = false;
 	ButtonLedInstance.LedPattern = NUM_LED_PATTERNS; // impossible value
 	SetLedPattern(LED_BLACK);
 
-	return TRUE;
+	return true;
 }
 
 bool ButtonLedOpen()
 {
 	if (!ButtonLedInitialized())
-		return FALSE;
+		return false;
 
 	buttonClear();
 
-	return TRUE;
+	return true;
 }
 
 bool ButtonLedClose()
 {
 	if (!ButtonLedInitialized())
-		return FALSE;
+		return false;
 
 	buttonClear();
 
-	return TRUE;
+	return true;
 }
 
 bool ButtonLedExit()
 {
 	// if not initialized then just exit
 	if (!ButtonLedInitialized())
-		return TRUE;
+		return true;
 	ButtonLedClose();
 	ButtonLedCloseDevices();
 
-	return TRUE;
+	return true;
 }
 
 float HardwareVersion()
@@ -285,7 +285,7 @@ void SetLedWarning(bool Value)
 uint8_t LedWarning()
 {
 	if (!ButtonLedInitialized())
-		return FALSE;
+		return false;
 	return ButtonLedInstance.WarnLight;
 }
 
@@ -320,7 +320,7 @@ uint16_t ButtonWaitForAnyEvent(unsigned int timeout)
 	else
 		endms = TimerGetMS() + timeout;
 	oldDown = ButtonLedInstance.curButtonsE;
-	while (TRUE)
+	while (true)
 	{
 		curTime = TimerGetMS();
 		if (curTime >= endms)
@@ -350,7 +350,7 @@ uint16_t ButtonWaitForAnyPress(unsigned int timeout)
 	else
 		endms = TimerGetMS() + timeout;
 	oldDown = ButtonLedInstance.curButtonsE;
-	while (TRUE)
+	while (true)
 	{
 		curTime = TimerGetMS();
 		if (curTime >= endms)

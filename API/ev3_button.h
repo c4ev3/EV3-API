@@ -90,7 +90,7 @@ void ButtonWaitForPressAndRelease(uint8_t Button);
 // short release, long release, or press counts
 bool ButtonPressedEx(uint8_t btn, bool resetCount);
 
-#define ButtonPressed(_btn) ButtonPressedEx((_btn), FALSE)
+#define ButtonPressed(_btn) ButtonPressedEx((_btn), false)
 
 char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count);
 
