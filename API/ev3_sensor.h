@@ -27,10 +27,22 @@
 #ifndef EV3SENSOR_H
 #define EV3SENSOR_H
 
+#include <stdbool.h>
+
 /**
  * Initializes sensor I/O.
  */
-int InitSensors();
+int SensorsInit();
+
+/**
+ * Check if sensors are initialized.
+ */
+bool SensorsInitialized();
+
+/**
+ * Unmap sensors and close fds.
+ */
+bool SensorsExit();
 
 /**
  * Reads the sensor value from a specific port.
@@ -122,7 +134,7 @@ int SetIRBeaconCH(int sensorPort, int channel);
 /*!
  * @deprecated
 */
-#define initSensors() InitSensors()
+#define initSensors() SensorsInit()
 
 /*!
  * @deprecated

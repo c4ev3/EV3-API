@@ -200,7 +200,7 @@ bool ButtonLedExit()
 	// if not initialized then just exit
 	if (!ButtonLedInitialized())
 		return TRUE;
-
+	ButtonLedClose();
 	ButtonLedCloseDevices();
 
 	return TRUE;
