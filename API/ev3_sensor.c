@@ -101,11 +101,11 @@ int ir_sensor_channel[INPUTS];
 * 		 date: 2015-02-28
 *
 */
-int InitSensors()
+int SensorsInit()
 {
-	if (!EV3IsInitialized() && !InitEV3())
-	    return -1;
-
+	if (SensorsInitialized())
+		return 0;
+    
 	g_uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
 	g_iicFile =  open("/dev/lms_iic", O_RDWR | O_SYNC);
 	g_analogFile = open("/dev/lms_analog", O_RDWR | O_SYNC);
@@ -126,6 +126,30 @@ int InitSensors()
 		g_uartSensors && g_iicSensors && g_analogSensors)
 		return 0;
 	return -1;
+}
+
+bool SensorsInitialized()
+{
+	return g_uartFile && g_iicFile && g_analogFile &&
+		g_uartSensors && g_iicSensors && g_analogSensors;
+}
+
+bool SensorsExit()
+{
+	if (!SensorsInitialized())
+        return false;
+	munmap(g_uartSensors, sizeof(UART));
+	munmap(g_iicSensors, sizeof(IIC));
+	munmap(g_analogSensors, sizeof(ANALOG));
+
+	close(g_uartFile);
+	close(g_iicFile);
+	close(g_analogFile);
+
+	g_uartFile = g_iicFile = g_analogFile = 0;
+	g_uartSensors = g_iicSensors = g_analogSensors = 0;
+
+	return true;
 }
 
 /*DATA8 getSensorConnectionType(int sensorPort)

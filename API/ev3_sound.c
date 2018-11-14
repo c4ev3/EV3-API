@@ -124,6 +124,8 @@ void SoundCloseDevices()
 
 bool SoundInit()
 {
+	if (SoundInitialized())
+		return true;
 	int sndHandle;
 	bool Result = SoundInitialized();
 	if (!Result)
@@ -170,6 +172,8 @@ bool SoundClose()
 
 bool SoundExit()
 {
+	if (!SoundInitialized())
+		return TRUE;
 	// make sure we close before we exit
 	SoundClose();
 	SoundCloseDevices();

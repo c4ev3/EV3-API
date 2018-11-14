@@ -24,44 +24,22 @@ int __attribute__((constructor)) InitEV3 (void)
 	    return 1;
 
 	OutputInit();
-	InitSensors();
+	SensorsInit();
 	ButtonLedInit();
 	LcdInit();
-	LcdClean();
 	SoundInit();
+    
+	LcdClean();
+
 	initialized = true;
-
-	return 1;
-}
-
-
-int CloseEV3()
-{
-	OutputClose();
-	ButtonLedClose();
-	SoundClose();
-
-	return 1;
-}
-
-
-int ExitEV3()
-{
-	OutputExit();
-	ButtonLedExit();
-	LcdExit();
-	SoundExit();
-	initialized = false;
-
 	return 1;
 }
 
 int __attribute__((destructor)) FreeEV3()
+
 {
-	OutputClose();
-	ButtonLedClose();
-	SoundClose();
 	OutputExit();
+	SensorsExit();
 	ButtonLedExit();
 	LcdExit();
 	SoundExit();
