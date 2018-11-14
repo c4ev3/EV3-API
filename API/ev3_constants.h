@@ -45,8 +45,6 @@ extern "C" {
 /** @addtogroup MiscConstants
  * @{
  */
-#define TRUE  true /*!< A true value */
-#define FALSE false /*!< A false value */
 
 #define NUM_INPUTS     4   /*!< Number of input  ports in the system */
 #define NUM_LEDS       4   /*!< Number of LEDs in the system */
@@ -557,13 +555,13 @@ extern "C" {
  * @{
  */
 #define DISPLAY_ERASE_ALL       0x00     /*!< W - erase entire screen     (CMD,x,x,x,x,x) */
-#define DISPLAY_PIXEL           0x01     /*!< W - set pixel (on/off)      (CMD,TRUE/FALSE,X,Y,x,x) */
-#define DISPLAY_HORIZONTAL_LINE 0x02     /*!< W - draw horizontal line    (CMD,TRUE/FALSE,X1,Y1,X2,x) */
-#define DISPLAY_VERTICAL_LINE   0x03     /*!< W - draw vertical line      (CMD,TRUE/FALSE,X1,Y1,x,Y2) */
-#define DISPLAY_CHAR            0x04     /*!< W - draw char (actual font) (CMD,TRUE,X1,Y1,Char,x) */
+#define DISPLAY_PIXEL           0x01     /*!< W - set pixel (on/off)      (CMD,true/false,X,Y,x,x) */
+#define DISPLAY_HORIZONTAL_LINE 0x02     /*!< W - draw horizontal line    (CMD,true/false,X1,Y1,X2,x) */
+#define DISPLAY_VERTICAL_LINE   0x03     /*!< W - draw vertical line      (CMD,true/false,X1,Y1,x,Y2) */
+#define DISPLAY_CHAR            0x04     /*!< W - draw char (actual font) (CMD,true,X1,Y1,Char,x) */
 #define DISPLAY_ERASE_LINE      0x05     /*!< W - erase a single line     (CMD,x,LINE,x,x,x) */
-#define DISPLAY_FILL_REGION     0x06     /*!< W - fill screen region      (CMD,TRUE/FALSE,X1,Y1,X2,Y2) */
-#define DISPLAY_FRAME           0x07     /*!< W - draw a frame (on/off)   (CMD,TRUE/FALSE,X1,Y1,X2,Y2) */
+#define DISPLAY_FILL_REGION     0x06     /*!< W - fill screen region      (CMD,true/false,X1,Y1,X2,Y2) */
+#define DISPLAY_FRAME           0x07     /*!< W - draw a frame (on/off)   (CMD,true/false,X1,Y1,X2,Y2) */
 /** @} */  // end of DisplayExecuteFunctionConstants group
 
 /** @defgroup DisplayDrawOptionConstants Drawing option constants

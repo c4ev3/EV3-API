@@ -62,7 +62,7 @@ bool SoundInitialized();
 
 void PlayFileEx(char* pFileName, uint8_t volume, bool loop);
 
-#define PlayFile(_f) PlayFileEx((_f), 100, FALSE)
+#define PlayFile(_f) PlayFileEx((_f), 100, false)
 
 void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volume);
 

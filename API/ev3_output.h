@@ -110,27 +110,27 @@ bool OutputGetActualSpeed(uint8_t Output, int8_t * Speed);
 
 bool OutputStepPowerEx(uint8_t Outputs, int8_t Power, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner);
 
-#define OutputStepPower(_outputs, _power, _step1, _step2, _step3) OutputStepPowerEx((_outputs), (_power), (_step1), (_step2), (_step3), TRUE, OWNER_NONE)
+#define OutputStepPower(_outputs, _power, _step1, _step2, _step3) OutputStepPowerEx((_outputs), (_power), (_step1), (_step2), (_step3), true, OWNER_NONE)
 
 bool OutputTimePowerEx(uint8_t Outputs, int8_t Power, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner);
 
-#define OutputTimePower(_outputs, _power, _time1, _time2, _time3) OutputTimePowerEx((_outputs), (_power), (_time1), (_time2), (_time3), TRUE, OWNER_NONE)
+#define OutputTimePower(_outputs, _power, _time1, _time2, _time3) OutputTimePowerEx((_outputs), (_power), (_time1), (_time2), (_time3), true, OWNER_NONE)
 
 bool OutputStepSpeedEx(uint8_t Outputs, int8_t Speed, int Step1, int Step2, int Step3, bool useBrake, uint8_t Owner);
 
-#define OutputStepSpeed(_outputs, _speed, _step1, _step2, _step3) OutputStepSpeedEx((_outputs), (_speed), (_step1), (_step2), (_step3), TRUE, OWNER_NONE)
+#define OutputStepSpeed(_outputs, _speed, _step1, _step2, _step3) OutputStepSpeedEx((_outputs), (_speed), (_step1), (_step2), (_step3), true, OWNER_NONE)
 
 bool OutputTimeSpeedEx(uint8_t Outputs, int8_t Speed, int Time1, int Time2, int Time3, bool useBrake, uint8_t Owner);
 
-#define OutputTimeSpeed(_outputs, _speed, _time1, _time2, _time3) OutputTimeSpeedEx((_outputs), (_speed), (_time1), (_time2), (_time3), TRUE, OWNER_NONE)
+#define OutputTimeSpeed(_outputs, _speed, _time1, _time2, _time3) OutputTimeSpeedEx((_outputs), (_speed), (_time1), (_time2), (_time3), true, OWNER_NONE)
 
 bool OutputStepSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Step, bool useBrake, uint8_t Owner);
 
-#define OutputStepSync(_outputs, _speed, _turn, _step) OutputStepSyncEx((_outputs), (_speed), (_turn), (_step), TRUE, OWNER_NONE)
+#define OutputStepSync(_outputs, _speed, _turn, _step) OutputStepSyncEx((_outputs), (_speed), (_turn), (_step), true, OWNER_NONE)
 
 bool OutputTimeSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Time, bool useBrake, uint8_t Owner);
 
-#define OutputTimeSync(_outputs, _speed, _turn, _time) OutputTimeSyncEx((_outputs), (_speed), (_turn), (_time), TRUE, OWNER_NONE)
+#define OutputTimeSync(_outputs, _speed, _turn, _time) OutputTimeSyncEx((_outputs), (_speed), (_turn), (_time), true, OWNER_NONE)
 
 void SetOutputEx(uint8_t Outputs, uint8_t Mode, uint8_t reset);
 
@@ -188,15 +188,15 @@ void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset);
 
 void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop);
 
-#define RotateMotorNoWait(_outputs, _speed, _angle) RotateMotorNoWaitEx((_outputs), (_speed), (_angle), 0, TRUE, TRUE)
+#define RotateMotorNoWait(_outputs, _speed, _angle) RotateMotorNoWaitEx((_outputs), (_speed), (_angle), 0, true, true)
 
 void RotateMotorEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop);
 
-#define RotateMotor(_outputs, _speed, _angle) RotateMotorEx((_outputs), (_speed), (_angle), 0, TRUE, TRUE)
+#define RotateMotor(_outputs, _speed, _angle) RotateMotorEx((_outputs), (_speed), (_angle), 0, true, true)
 
 void OnForSyncEx(uint8_t Outputs, int Time, int8_t Speed, short Turn, bool Stop);
 
-#define OnForSync(_outputs, _time, _speed) OnForSyncEx((_outputs), (_time), (_speed), 0, TRUE)
+#define OnForSync(_outputs, _time, _speed) OnForSyncEx((_outputs), (_time), (_speed), 0, true)
 
 void OnForEx(uint8_t Outputs, int Time, int8_t Power, uint8_t reset);
 
