@@ -54,6 +54,17 @@ int ExitEV3(void);
 int FreeEV3(void);
 bool EV3IsInitialized(void);
 
+/* Students are lazy, so lets have the intialization happen automatically for them.
+ * This code is usually linked in as a static library and the linker will throw
+ * the InitEV3 function out if no one wants it, so lets reference it manually
+ * and have GCC warn if a user accesses it.
+ */
+
+#ifndef EV3_NO_CONSTRUCTORS
+static int __attribute__((used,deprecated)) (* volatile __reference_InitEV3)(void) = InitEV3;
+static int __attribute__((used,deprecated)) (* volatile __reference_FreeEV3)(void) = FreeEV3;
+#endif
+
 #endif // ev3_h
 
 #ifdef __cplusplus
