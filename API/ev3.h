@@ -38,6 +38,7 @@ extern "C" {
 #include <sys/time.h>
 #include <signal.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <ev3_constants.h>
 #include <ev3_command.h>
@@ -51,6 +52,7 @@ int InitEV3(void);
 int CloseEV3(void);
 int ExitEV3(void);
 int FreeEV3(void);
+bool EV3IsInitialized(void);
 
 #endif // ev3_h
 
