@@ -17,6 +17,7 @@
 
 #include "ev3.h"
 
+static bool initialized;
 int InitEV3()
 {
 	OutputInit();
@@ -25,6 +26,7 @@ int InitEV3()
 	LcdInit();
 	LcdClean();
 	SoundInit();
+	initialized = true;
 
 	return 1;
 }
@@ -47,6 +49,7 @@ int ExitEV3()
 	ButtonLedExit();
 	LcdExit();
 	SoundExit();
+	initialized = false;
 
 	return 1;
 }
@@ -60,6 +63,12 @@ int FreeEV3()
 	ButtonLedExit();
 	LcdExit();
 	SoundExit();
+	initialized = false;
 
 	return 1;
+}
+
+bool EV3IsInitialized(void)
+{
+	return initialized;
 }
