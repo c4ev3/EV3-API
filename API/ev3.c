@@ -18,8 +18,11 @@
 #include "ev3.h"
 
 static bool initialized;
-int InitEV3()
+int __attribute__((constructor)) InitEV3 (void)
 {
+	if (EV3IsInitialized())
+	    return 1;
+
 	OutputInit();
 	InitSensors();
 	ButtonLedInit();
@@ -44,7 +47,6 @@ int CloseEV3()
 
 int ExitEV3()
 {
-
 	OutputExit();
 	ButtonLedExit();
 	LcdExit();
@@ -54,7 +56,7 @@ int ExitEV3()
 	return 1;
 }
 
-int FreeEV3()
+int __attribute__((destructor)) FreeEV3()
 {
 	OutputClose();
 	ButtonLedClose();
