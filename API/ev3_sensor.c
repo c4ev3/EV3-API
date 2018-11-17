@@ -38,6 +38,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <stdint.h>
+#include "ev3.h"
 #include "ev3_analog.h"
 #include "ev3_iic.h"
 #include "ev3_uart.h"
@@ -102,6 +103,9 @@ int ir_sensor_channel[INPUTS];
 */
 int InitSensors()
 {
+	if (!EV3IsInitialized() && !InitEV3())
+	    return -1;
+
 	g_uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
 	g_iicFile =  open("/dev/lms_iic", O_RDWR | O_SYNC);
 	g_analogFile = open("/dev/lms_analog", O_RDWR | O_SYNC);
@@ -359,7 +363,10 @@ int SetSensorMode(int sensorPort, int name)
 {
 	static DEVCON devCon;
 
-	if (!g_analogSensors || sensorPort < 0 || sensorPort >= INPUTS)
+	if (!g_analogSensors)
+		InitSensors();
+
+	if (sensorPort < 0 || sensorPort >= INPUTS)
 		return -1;
 
 	sensor_setup_NAME[sensorPort] = name;
@@ -424,9 +431,7 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 	name[3] = name_4;
 
 	if (!g_analogSensors)
-	{
-		return -1;
-	}
+		InitSensors();
 
 	// Setup of Input
 	for(sensorPort=0; sensorPort<4; sensorPort++)
