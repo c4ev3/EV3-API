@@ -46,6 +46,7 @@ extern "C" {
  * @{
  */
 #define TRUE true
+#define FALSE false
 
 #define NUM_INPUTS     4   /*!< Number of input  ports in the system */
 #define NUM_LEDS       4   /*!< Number of LEDs in the system */
