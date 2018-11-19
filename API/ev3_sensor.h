@@ -139,6 +139,11 @@ int SetIRBeaconCH(int sensorPort, int channel);
 /*!
  * @deprecated
 */
+#define InitSensors() SensorsInit()
+
+/*!
+ * @deprecated
+*/
 #define readSensor(_sensorPort) ReadSensor(_sensorPort)
 
 /*!
