@@ -147,7 +147,9 @@ bool SensorsExit()
 	close(g_analogFile);
 
 	g_uartFile = g_iicFile = g_analogFile = 0;
-	g_uartSensors = g_iicSensors = g_analogSensors = 0;
+	g_uartSensors = NULL;
+	g_iicSensors = NULL;
+	g_analogSensors = NULL;
 
 	return true;
 }
