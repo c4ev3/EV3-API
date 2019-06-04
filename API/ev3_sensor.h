@@ -104,8 +104,10 @@ int SetIRBeaconCH(int sensorPort, int channel);
 
 //NXT 
 #define NXT_IR_SEEKER 20 // Infrared Seeker
-#define NXT_TEMP_C 21 	// Temperature in C
-#define NXT_TEMP_F 22 	// Temperature in F
+#define NXT_TEMP_C 21	 // Temperature in C
+#define NXT_TEMP_F 22	 // Temperature in F
+#define NXT_SOUND_DB 23  // Sound pressure level - Flat weighting
+#define NXT_SOUND_DBA 24 // Sound pressure level - A weighting
 
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0

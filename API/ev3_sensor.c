@@ -44,7 +44,13 @@
 #include "ev3_uart.h"
 
 /***********************************/
-// define of Sensor setup
+/**
+ * The EV3 firmware uses a build-in device type list in order to know how to read
+ * data from the various external devices.
+ * The list of types can be found in the EV3 firmware source code or in the "EV3
+ * Firmware Development Kit" document (downloadable from the Lego website).
+ */
+
 // TOUCH
 #define TOUCH_TYPE 16
 #define TOUCH_PRESS_MODE 0 	// Press
@@ -76,10 +82,15 @@
 #define IIC_TYPE 100
 #define IIC_BYTE_MODE 0
 
-//NXT Temperture
+// NXT Temperture
 #define NXT_TEMP_TYPE 6
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
+
+// NXT Sound
+#define NXT_SOUND_TYPE 3
+#define NXT_SOUND_DB_MODE 0
+#define NXT_SOUND_DBA_MODE 1
 
 /***********************************/
 
@@ -274,6 +285,9 @@ void* ReadSensorData(int sensorPort)
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
+		case NXT_SOUND_DB:
+		case NXT_SOUND_DBA:
+			return readOldDumbSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -297,10 +311,11 @@ void* ReadSensorData(int sensorPort)
 */
 int ReadSensor(int sensorPort)
 {
-	uint64_t* data = (uint64_t*)ReadSensorData(sensorPort);
-	int32_t help=0;
-	if (!data)
+	uint64_t* data = (uint64_t*) ReadSensorData(sensorPort);
+	int32_t temp = 0;
+	if (!data) {
 		return -1;
+	}
 
 	switch (sensor_setup_NAME[sensorPort])
 	{
@@ -308,11 +323,11 @@ int ReadSensor(int sensorPort)
 			return -1;
 			// Touchsensor
 		case TOUCH_PRESS:
-			help = *((DATA16*)data);
-			help = help/256;
-			if (help==0)
+			temp = *((DATA16*)data);
+			temp = temp/256;
+			if (temp==0)
 				return 0;
-			else if(help==0xD)
+			else if(temp==0xD)
 				return 1;
 			else
 				return -1;
@@ -333,45 +348,49 @@ int ReadSensor(int sensorPort)
 			// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
-			help = *(data)&0xFFFF;
-			if(help & 0x8000)
+			temp = *(data)&0xFFFF;
+			if(temp & 0x8000)
 			{
-				help = ((help&0x7FFF) - 0x7FFF);
+				temp = ((temp&0x7FFF) - 0x7FFF);
 			}
-			return help;
+			return temp;
 			// Infrared
 		case IR_PROX:
 			return *((DATA16*)data)&0x00FF;
 		case IR_SEEK:
-			help = (*(data) >> (16*ir_sensor_channel[sensorPort]))& 0xFF;
-			if(help & 0x80)
+			temp = (*(data) >> (16*ir_sensor_channel[sensorPort]))& 0xFF;
+			if(temp & 0x80)
 			{
-				help = ((help&0x7F) - 0x7F);
+				temp = ((temp&0x7F) - 0x7F);
 			}
-			return help;
+			return temp;
 		case IR_REMOTE:
-			help = *(data)&0xFFFFFFFF;
-			help = (help >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
-			return help;
+			temp = *(data)&0xFFFFFFFF;
+			temp = (temp >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
+			return temp;
 			// NXT
 		case NXT_IR_SEEKER:
 			return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
-			help = (*data>>4) & 0x0FFF;
-			if(help & 0x800)
+			temp = (*data>>4) & 0x0FFF;
+			if(temp & 0x800)
 			{
-				help = ((help&0x7FF) ^ 0x7FF) + 1;
-				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15));
+				temp = ((temp&0x7FF) ^ 0x7FF) + 1;
+				return (-1)*(((temp>>4) & 0xFF)*10 + ((temp & 0xF) * 10 / 15));
 			}
-			return ((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15);
+			return ((temp>>4) & 0xFF)*10 + ((temp & 0xF) * 10 / 15);
 		case NXT_TEMP_F:
-			help = (*data>>4) & 0x0FFF;
-			if(help & 0x800)
+			temp = (*data>>4) & 0x0FFF;
+			if(temp & 0x800)
 			{
-				help = ((help&0x7FF) ^ 0x7FF) + 1;
-				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
+				temp = ((temp&0x7FF) ^ 0x7FF) + 1;
+				return (-1)*(((temp>>4) & 0xFF)*10 + ((temp & 0xF) * 10 / 15)) * 9/5 + 320;
 			}
-			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
+			return (((temp>>4) & 0xFF)*10 + ((temp & 0xF) * 10 / 15)) * 9/5 + 320;
+		case NXT_SOUND_DB:
+		case NXT_SOUND_DBA:
+			temp = *((DATA16*)data);
+			return (int)((1.0 - (temp/4095.0)) * 100.0); // ADC_RES = 4095
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -502,6 +521,21 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
 				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
+				break;
+			case NXT_SOUND_DB:
+				devCon.Connection[sensorPort] 	= CONN_NXT_DUMB;
+				devCon.Type[sensorPort] 		= NXT_SOUND_TYPE;
+				devCon.Mode[sensorPort] 		= NXT_SOUND_DB_MODE;
+				break;
+			case NXT_SOUND_DBA:
+				devCon.Connection[sensorPort] 	= CONN_NXT_DUMB;
+				devCon.Type[sensorPort] 		= NXT_SOUND_TYPE;
+				devCon.Mode[sensorPort] 		= NXT_SOUND_DBA_MODE;
+				break;
+			case NXT_COMPASS:
+				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
+				devCon.Type[sensorPort] 		= IIC_TYPE;
+				devCon.Mode[sensorPort] 		= IIC_BYTE_MODE;
 				break;
 			default: return -1;
 		}
