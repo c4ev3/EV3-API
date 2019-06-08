@@ -92,15 +92,16 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define US_DIST_CM 5	// Dist in cm
 #define US_DIST_MM 6	// Dist in mm
 #define US_DIST_IN 7	// Dist in inch
+#define US_LISTEN  8	// Presence of other sensors
 
 //Gyroskop
-#define GYRO_ANG 8		// angle
-#define GYRO_RATE 9		// rate
+#define GYRO_ANG 9		// angle
+#define GYRO_RATE 10	// rate
 
 //Infrared
-#define IR_PROX 10		// Proximity
-#define IR_SEEK 11		// Seek
-#define IR_REMOTE 12	// Remote Control
+#define IR_PROX 11		// Proximity
+#define IR_SEEK 12		// Seek
+#define IR_REMOTE 13	// Remote Control
 
 //NXT 
 #define NXT_IR_SEEKER 20 // Infrared Seeker
@@ -166,6 +167,9 @@ int SetIRBeaconCH(int sensorPort, int channel);
  * @deprecated
 */
 #define setIRBeaconCH(_sensorPort, _channel) SetIRBeaconCH(_sensorPort, _channel)
+
+
+int GetSensorName (int port);
 
 
 #endif // EV3SENSOR_H

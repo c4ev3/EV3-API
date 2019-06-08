@@ -66,6 +66,7 @@
 #define US_DIST_CM_MODE 0 	// Dist in cm
 #define US_DIST_MM_MODE 0 	// Dist in mm
 #define US_DIST_IN_MODE 1 	// Dist in inch
+#define US_LISTEN_MODE  2   // Presence of other ultrasonic sensors
 
 // Gyroskop
 #define GYRO_TYPE 32
@@ -256,22 +257,18 @@ void* ReadSensorData(int sensorPort)
 			return readNewDumbSensor(sensorPort);
 			// Lightsensor
 		case COL_REFLECT:
-			return readUartSensor(sensorPort);
 		case COL_AMBIENT:
-			return readUartSensor(sensorPort);
 		case COL_COLOR:
 			return readUartSensor(sensorPort);
 			// Ultrasonic
 		case US_DIST_CM:
-			return readUartSensor(sensorPort);
 		case US_DIST_MM:
-			return readUartSensor(sensorPort);
-		case US_DIST_IN:
+        case US_DIST_IN:
+        case US_LISTEN:
 			return readUartSensor(sensorPort);
 			// Gyroskop
 		case GYRO_ANG:
-			return readUartSensor(sensorPort);
-		case GYRO_RATE:
+        case GYRO_RATE:
 			return readUartSensor(sensorPort);
 			// Infrared
 		case IR_PROX:
@@ -280,9 +277,7 @@ void* ReadSensorData(int sensorPort)
 			return readUartSensor(sensorPort);
 			// NXT
 		case NXT_IR_SEEKER:
-			return readIicSensor(sensorPort);
-		case NXT_TEMP_C:
-			return readIicSensor(sensorPort);
+        case NXT_TEMP_C:
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
 		case NXT_SOUND_DB:
@@ -345,6 +340,8 @@ int ReadSensor(int sensorPort)
 			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
+		case US_LISTEN:
+			return *((DATA16*)data)&0x0FFF;
 			// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
@@ -396,6 +393,12 @@ int ReadSensor(int sensorPort)
 	return *((DATA16*)data);
 }
 
+
+DEVCON devCon;
+
+int setSensorMode(int sensorPort, int name);
+void applySensorMode();
+
 /********************************************************************************************/
 /**
 * Initialisation for one Sensor 
@@ -406,9 +409,17 @@ int ReadSensor(int sensorPort)
 */
 int SetSensorMode(int sensorPort, int name)
 {
-	(void)sensorPort;
-	(void)name;
-	return -1;
+	if (!g_analogSensors)
+		InitSensors();
+
+	if (sensorPort < 0 || sensorPort >= INPUTS)
+		return -1;
+
+	int res = setSensorMode(sensorPort, name);
+	if (res == -1) {
+	    return res;
+	}
+	applySensorMode();
 }
 
 /********************************************************************************************/
@@ -420,7 +431,6 @@ int SetSensorMode(int sensorPort, int name)
 */
 int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 {
-	static DEVCON devCon;
 	int sensorPort = 0;
 
 	int name[4] = {0};
@@ -436,114 +446,137 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 	// Setup of Input
 	for(sensorPort=0; sensorPort<4; sensorPort++)
 	{
-		sensor_setup_NAME[sensorPort] = name[sensorPort];
-		switch (name[sensorPort])
-		{
-			case NO_SEN:
-				break;
-				// Touchsensor
-			case TOUCH_PRESS:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
-				devCon.Type[sensorPort] 		= TOUCH_TYPE;
-				devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
-				break;
-				// Lightsensor
-			case COL_REFLECT:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= COL_TYPE;
-				devCon.Mode[sensorPort] 		= COL_REFLECT_MODE;
-				break;
-			case COL_AMBIENT:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= COL_TYPE;
-				devCon.Mode[sensorPort] 		= COL_AMBIENT_MODE;
-				break;
-			case COL_COLOR:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= COL_TYPE;
-				devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
-				break;
-				// Ultrasonic
-			case US_DIST_CM:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= US_TYPE;
-				devCon.Mode[sensorPort] 		= US_DIST_CM_MODE;
-				break;
-			case US_DIST_MM:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= US_TYPE;
-				devCon.Mode[sensorPort] 		= US_DIST_MM_MODE;
-				break;
-			case US_DIST_IN:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= US_TYPE;
-				devCon.Mode[sensorPort] 		= US_DIST_IN_MODE;
-				break;
-				// Gyroskop
-			case GYRO_ANG:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= GYRO_TYPE;
-				devCon.Mode[sensorPort] 		= GYRO_ANG_MODE;
-				break;
-			case GYRO_RATE:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= GYRO_TYPE;
-				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
-				break;
-				// Infrared
-			case IR_PROX:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= IR_TYPE;
-				devCon.Mode[sensorPort] 		= IR_PROX_MODE;
-				break;
-			case IR_SEEK:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= IR_TYPE;
-				devCon.Mode[sensorPort] 		= IR_SEEK_MODE;
-				break;
-			case IR_REMOTE:
-				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-				devCon.Type[sensorPort] 		= IR_TYPE;
-				devCon.Mode[sensorPort] 		= IR_REMOTE_MODE;
-				break;
-				// NXT
-			case NXT_IR_SEEKER:
-				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
-				devCon.Type[sensorPort] 		= IIC_TYPE;
-				devCon.Mode[sensorPort] 		= IIC_BYTE_MODE;
-				break;
-			case NXT_TEMP_C:
-				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
-				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
-				devCon.Mode[sensorPort] 		= NXT_TEMP_C_MODE;
-				break;
-			case NXT_TEMP_F:
-				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
-				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
-				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
-				break;
-			case NXT_SOUND_DB:
-				devCon.Connection[sensorPort] 	= CONN_NXT_DUMB;
-				devCon.Type[sensorPort] 		= NXT_SOUND_TYPE;
-				devCon.Mode[sensorPort] 		= NXT_SOUND_DB_MODE;
-				break;
-			case NXT_SOUND_DBA:
-				devCon.Connection[sensorPort] 	= CONN_NXT_DUMB;
-				devCon.Type[sensorPort] 		= NXT_SOUND_TYPE;
-				devCon.Mode[sensorPort] 		= NXT_SOUND_DBA_MODE;
-				break;
-			case NXT_COMPASS:
-				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
-				devCon.Type[sensorPort] 		= IIC_TYPE;
-				devCon.Mode[sensorPort] 		= IIC_BYTE_MODE;
-				break;
-			default: return -1;
-		}
+	    int res = setSensorMode(sensorPort, name[sensorPort]);
+	    if (res == -1) {
+	    	return -1;
+	    }
 	}
+	applySensorMode();
+
+	return 0;
+}
+
+int setSensorMode(int sensorPort, int name) {
+    sensor_setup_NAME[sensorPort] = name;
+    switch (name) {
+        case NO_SEN:
+            break;
+            // Touchsensor
+        case TOUCH_PRESS:
+            devCon.Connection[sensorPort] = CONN_INPUT_DUMB;
+            devCon.Type[sensorPort] = TOUCH_TYPE;
+            devCon.Mode[sensorPort] = TOUCH_PRESS_MODE;
+            break;
+            // Lightsensor
+        case COL_REFLECT:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = COL_TYPE;
+            devCon.Mode[sensorPort] = COL_REFLECT_MODE;
+            break;
+        case COL_AMBIENT:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = COL_TYPE;
+            devCon.Mode[sensorPort] = COL_AMBIENT_MODE;
+            break;
+        case COL_COLOR:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = COL_TYPE;
+            devCon.Mode[sensorPort] = COL_COLOR_MODE;
+            break;
+            // Ultrasonic
+        case US_DIST_CM:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = US_TYPE;
+            devCon.Mode[sensorPort] = US_DIST_CM_MODE;
+            break;
+        case US_DIST_MM:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = US_TYPE;
+            devCon.Mode[sensorPort] = US_DIST_MM_MODE;
+            break;
+        case US_DIST_IN:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = US_TYPE;
+            devCon.Mode[sensorPort] = US_DIST_IN_MODE;
+            break;
+        case US_LISTEN:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = US_TYPE;
+            devCon.Mode[sensorPort] = US_LISTEN_MODE;
+            break;
+            // Gyroskop
+        case GYRO_ANG:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = GYRO_TYPE;
+            devCon.Mode[sensorPort] = GYRO_ANG_MODE;
+            break;
+        case GYRO_RATE:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = GYRO_TYPE;
+            devCon.Mode[sensorPort] = GYRO_RATE_MODE;
+            break;
+            // Infrared
+        case IR_PROX:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = IR_TYPE;
+            devCon.Mode[sensorPort] = IR_PROX_MODE;
+            break;
+        case IR_SEEK:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = IR_TYPE;
+            devCon.Mode[sensorPort] = IR_SEEK_MODE;
+            break;
+        case IR_REMOTE:
+            devCon.Connection[sensorPort] = CONN_INPUT_UART;
+            devCon.Type[sensorPort] = IR_TYPE;
+            devCon.Mode[sensorPort] = IR_REMOTE_MODE;
+            break;
+            // NXT
+        case NXT_IR_SEEKER:
+            devCon.Connection[sensorPort] = CONN_NXT_IIC;
+            devCon.Type[sensorPort] = IIC_TYPE;
+            devCon.Mode[sensorPort] = IIC_BYTE_MODE;
+            break;
+        case NXT_TEMP_C:
+            devCon.Connection[sensorPort] = CONN_NXT_IIC;
+            devCon.Type[sensorPort] = NXT_TEMP_TYPE;
+            devCon.Mode[sensorPort] = NXT_TEMP_C_MODE;
+            break;
+        case NXT_TEMP_F:
+            devCon.Connection[sensorPort] = CONN_NXT_IIC;
+            devCon.Type[sensorPort] = NXT_TEMP_TYPE;
+            devCon.Mode[sensorPort] = NXT_TEMP_F_MODE;
+            break;
+        case NXT_SOUND_DB:
+            devCon.Connection[sensorPort] = CONN_NXT_DUMB;
+            devCon.Type[sensorPort] = NXT_SOUND_TYPE;
+            devCon.Mode[sensorPort] = NXT_SOUND_DB_MODE;
+            break;
+        case NXT_SOUND_DBA:
+            devCon.Connection[sensorPort] = CONN_NXT_DUMB;
+            devCon.Type[sensorPort] = NXT_SOUND_TYPE;
+            devCon.Mode[sensorPort] = NXT_SOUND_DBA_MODE;
+            break;
+        case NXT_COMPASS:
+            devCon.Connection[sensorPort] = CONN_NXT_IIC;
+            devCon.Type[sensorPort] = 100;
+            devCon.Mode[sensorPort] = 255;
+            break;
+        default:
+            return -1;
+    }
+    return 0;
+}
+
+
+void applySensorMode(){
 	// Set actual device mode
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
-	return 0;
+}
+
+int GetSensorName (int port) {
+	return sensor_setup_NAME[port];
 }
 
 
