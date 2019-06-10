@@ -69,9 +69,10 @@
 #define US_LISTEN_MODE  2   // Presence of other ultrasonic sensors
 
 // Gyroskop
-#define GYRO_TYPE 32
-#define GYRO_ANG_MODE 0 	// angle
-#define GYRO_RATE_MODE 1	// rate
+#define GYRO_TYPE 				32
+#define GYRO_ANG_MODE 			0 // angle
+#define GYRO_RATE_MODE 			1 // rate
+#define GYRO_ANG_AND_RATE_MODE 	3 // both
 
 // Infrared
 #define IR_TYPE 33
@@ -343,10 +344,19 @@ int ReadSensor(int sensorPort)
 		case US_LISTEN:
 			return *((DATA16*)data)&0x0FFF;
 			// Gyroskop
+			// The first 16bits are the angle ...
 		case GYRO_ANG:
-		case GYRO_RATE:
 			temp = *(data)&0xFFFF;
-			if(temp & 0x8000)
+
+			if(temp & 0x8000) // handles negative values
+			{
+				temp = ((temp&0x7FFF) - 0x7FFF);
+			}
+			return temp;
+			// ... the next 16bits are the rate
+		case GYRO_RATE:
+			temp = ((*(data))>>16)&0xFFFF;
+			if(temp & 0x8000)  // handles negative values
 			{
 				temp = ((temp&0x7FFF) - 0x7FFF);
 			}
@@ -407,7 +417,7 @@ void applySensorMode();
 * 		 note: Sensors are working now, but only one sensor is working at once
 *
 */
-int SetSensorMode(int sensorPort, int name)
+int SetSensorMode(int sensorPort, int modeName)
 {
 	if (!g_analogSensors)
 		InitSensors();
@@ -415,7 +425,7 @@ int SetSensorMode(int sensorPort, int name)
 	if (sensorPort < 0 || sensorPort >= INPUTS)
 		return -1;
 
-	int res = setSensorMode(sensorPort, name);
+	int res = setSensorMode(sensorPort, modeName);
 	if (res == -1) {
 	    return res;
 	}
@@ -506,14 +516,10 @@ int setSensorMode(int sensorPort, int name) {
             break;
             // Gyroskop
         case GYRO_ANG:
-            devCon.Connection[sensorPort] = CONN_INPUT_UART;
-            devCon.Type[sensorPort] = GYRO_TYPE;
-            devCon.Mode[sensorPort] = GYRO_ANG_MODE;
-            break;
         case GYRO_RATE:
             devCon.Connection[sensorPort] = CONN_INPUT_UART;
             devCon.Type[sensorPort] = GYRO_TYPE;
-            devCon.Mode[sensorPort] = GYRO_RATE_MODE;
+            devCon.Mode[sensorPort] = GYRO_ANG_AND_RATE_MODE;
             break;
             // Infrared
         case IR_PROX:
@@ -557,11 +563,11 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Type[sensorPort] = NXT_SOUND_TYPE;
             devCon.Mode[sensorPort] = NXT_SOUND_DBA_MODE;
             break;
-        case NXT_COMPASS:
+        /*case NXT_COMPASS:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
             devCon.Type[sensorPort] = 100;
             devCon.Mode[sensorPort] = 255;
-            break;
+            break;*/
         default:
             return -1;
     }
@@ -574,11 +580,6 @@ void applySensorMode(){
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
 }
-
-int GetSensorName (int port) {
-	return sensor_setup_NAME[port];
-}
-
 
 /********************************************************************************************/
 /**
@@ -594,5 +595,17 @@ int SetIRBeaconCH(int sensorPort, int channel)
 	return 0;
 }
 
+int GetSensorName (int port) {
+	return sensor_setup_NAME[port];
+}
 
+/**
+ * Switches from the mode to read both values to the mode to read only one value,
+ * so the sensor resets it self.
+ * NOTE: The sensor should not move while switching mode
+ */
+void ResetGyroSensor (int port) {
+	SetSensorMode(port, GYRO_RATE);
+	SetSensorMode(port, GYRO_ANG_AND_RATE_MODE);
+}
 

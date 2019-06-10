@@ -156,11 +156,6 @@ int SetIRBeaconCH(int sensorPort, int channel);
 /*!
  * @deprecated
 */
-#define setSensorMode(_sensorPort, _name) SetSensorMode(_sensorPort, _name)
-
-/*!
- * @deprecated
-*/
 #define setAllSensorMode(_name_1, _name_2, _name_3, _name_4) SetAllSensorMode(_name_1, _name_2, _name_3, _name_4)
 
 /*!
@@ -170,6 +165,8 @@ int SetIRBeaconCH(int sensorPort, int channel);
 
 
 int GetSensorName (int port);
+
+void ResetGyroSensor (int port);
 
 
 #endif // EV3SENSOR_H
