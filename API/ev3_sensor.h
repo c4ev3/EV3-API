@@ -189,5 +189,21 @@ int GetGFromRGB(int rgb);
  */
 int GetBFromRGB(int rgb);
 
+/**
+ * Read the seek value for all the channels.
+ * The returned array contains 8 integers, two values for each channel:
+ * - position value (-25 - 25)
+ * - raw value
+ *
+ * If no beacon is detected, raw value is 128.
+ *
+ * NOTE: This function returns a pointer to a static array. If you need to remember
+ * old values, you'll need to copy them from the array before calling this function,
+ * since the  array will be modified.
+ * @param port
+ * @return
+ */
+int* ReadIRSeekAllChannels(int port);
+
 
 #endif // EV3SENSOR_H

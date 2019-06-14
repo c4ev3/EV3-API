@@ -638,3 +638,28 @@ int GetGFromRGB(int rgb) {
 int GetBFromRGB(int rgb) {
 	return (rgb >> 16 ) & 0x00FF;
 }
+
+int invertSignIfOverHalfByte (int n) {
+    if(n & 0x80) {
+        return ((n & 0x7F) - 0x7F);
+    }
+    return n;
+}
+
+int * ReadIRSeekAllChannels(int port) {
+	if(GetSensorName(port) != IR_SEEK) {
+		return NULL;
+	}
+	uint64_t data = *((uint64_t*)ReadSensorData(port));
+	static int results[8];
+	int i;
+	for (i = 0; i < IR_CHANNELS; i++) {
+		int channelData = (int) (data >> (i * 16));
+		int measurement = channelData & 0xFF;
+		int raw =  (channelData >> 8) & 0xFF;
+		// TODO: Fix, sometimes it goes to -inf
+		results[i * 2] = invertSignIfOverHalfByte(measurement);
+		results[(i * 2) + 1] = raw;
+	}
+	return results;
+}
