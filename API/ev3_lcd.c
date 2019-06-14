@@ -1708,6 +1708,13 @@ void LcdRefresh()
 static short CURSOR_X = 0;
 static short CURSOR_Y = 0;
 
+void SetCursorX(short x) {
+	CURSOR_X = x;
+}
+void SetCursorY(short y) {
+	CURSOR_Y = y;
+}
+
 #ifdef __GNUC__
 #define ___FORMAT(x,y) __attribute__ ((format (printf, x, y)))
 #define ___NONNULL(...) __attribute__((nonnull (##__VA_ARGS__)))
@@ -1757,7 +1764,7 @@ bool LcdTextf(char Color, short X, short Y, const char *fmt, ...)
 }
 
 #define TAB_SIZE 2
-int LcdPrintf(char color, const char *fmt, ...)
+int LcdPrintfEx(char color, bool autoscroll, const char * fmt, ...)
 {
 	static short X0 = 0;
 	static short Y0 = 0;
@@ -1788,6 +1795,10 @@ int LcdPrintf(char color, const char *fmt, ...)
 		{
 			Y0 += height + 2;
 			X0 = 0;
+		}
+		if (autoscroll && (Y0 + height + 2 > LCD_HEIGHT)) {
+			Y0 -= height + 2;
+			LcdScroll(height + 2);
 		}
 		switch (*c)
 		{
@@ -1824,21 +1835,18 @@ int LcdPrintf(char color, const char *fmt, ...)
     return c - buf;
 }
 
-int Ev3Printf(const char *fmt, ...)
-{
+int LcdPrintf(char color, const char *fmt, ...){
 	va_list args;
-	char *buffer;
+	char *buffer2;
 
 	va_start(args, fmt);
-	vasprintf(&buffer, fmt, args);
+	vasprintf(&buffer2, fmt, args);
 	va_end(args);
 
-	int ret = LcdPrintf(1, buffer);	// LcdPrintf with color=1 for black text
-
-	return ret;
+	return LcdPrintfEx(1, false, "%s", buffer2);
 }
 
-int Ev3Println(const char *fmt, ...)
+int TermPrintf(const char *fmt, ...)
 {
 	va_list args;
 	char *buffer2;
@@ -1846,80 +1854,8 @@ int Ev3Println(const char *fmt, ...)
 	va_start(args, fmt);
 	vasprintf(&buffer2, fmt, args);
 	va_end(args);
-	
-	return Ev3Printf("%s\n", buffer2);
-}
 
-int TermPrintf(const char *fmt, ...)
-{
-    static short X0 = 0;
-	static short Y0 = 0;
-	static short indent = 0;
-    
-    X0 = CURSOR_X;
-    Y0 = CURSOR_Y;
-    
-	if (!LcdInitialized())
-		return -1;
-
-	int ret;
-	(void) ret; // do something with this!
-	va_list ap;
-	char *buf;
-
-	va_start(ap, fmt);
-	ret = vasprintf(&buf, fmt, ap);
-	va_end(ap);
-
-	const char *c = buf;
-	const short width = FontInfo[LCDInstance.currentFont].FontWidth;
-	const short height = FontInfo[LCDInstance.currentFont].FontHeight;
-	while (*c)
-	{
-		if (indent == TAB_SIZE) indent = 0;
-		if (! (0 <= X0 && X0 < LCD_WIDTH - width) )
-		{
-			Y0 += height + 2;
-			X0 = 0;
-		}
-		if (Y0 + height + 2 > LCD_HEIGHT) {
-            Y0 -= height + 2;
-            LcdScroll(height + 2);
-        }
-		switch (*c)
-		{
-			case '\n':
-				Y0 += height + 2;
-				/* fallthrough */
-			case '\r':
-				X0 = 0;
-				break;
-			case '\b':
-				X0 -= width;
-				break;
-			case '\v':
-				Y0 += height + 2;
-				break;
-			case '\f':
-				X0 = Y0 = 0;
-				break;
-			case '\t':
-				X0 += width * (TAB_SIZE - indent);
-				break;
-			default:
-				indent++;
-				dLcdDrawChar(LCDInstance.pLcd, 1, X0, Y0, LCDInstance.currentFont, *c);
-				X0 += width;
-		}
-		indent++;
-		c++;
-	}
-	LCDInstance.Dirty = true;
-
-    CURSOR_X = X0;
-    CURSOR_Y = Y0;
-    
-    return c - buf;
+	return LcdPrintfEx(1, true, "%s\n", buffer2);
 }
 
 int TermPrintln(const char *fmt, ...)
