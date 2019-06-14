@@ -87,28 +87,31 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define COL_REFLECT 2	// Reflect
 #define COL_AMBIENT 3	// Ambient
 #define COL_COLOR 4		// Color
+#define COL_RGB 5       // Color in RGB values
 
 //Ultrasonic
-#define US_DIST_CM 5	// Dist in cm
-#define US_DIST_MM 6	// Dist in mm
-#define US_DIST_IN 7	// Dist in inch
-#define US_LISTEN  8	// Presence of other sensors
+#define US_DIST_CM 6	// Dist in cm
+#define US_DIST_MM 7	// Dist in mm
+#define US_DIST_IN 8	// Dist in inch
+#define US_LISTEN  9	// Presence of other sensors
 
 //Gyroskop
-#define GYRO_ANG 9		// angle
-#define GYRO_RATE 10	// rate
+#define GYRO_ANG 10		// angle
+#define GYRO_RATE 11	// rate
 
 //Infrared
-#define IR_PROX 11		// Proximity
-#define IR_SEEK 12		// Seek
-#define IR_REMOTE 13	// Remote Control
+#define IR_PROX 12		        // Proximity
+#define IR_SEEK 13		        // Seek
+#define IR_REMOTE 14	        // Remote Control
 
 //NXT 
-#define NXT_IR_SEEKER 20 // Infrared Seeker
-#define NXT_TEMP_C 21	 // Temperature in C
-#define NXT_TEMP_F 22	 // Temperature in F
-#define NXT_SOUND_DB 23  // Sound pressure level - Flat weighting
-#define NXT_SOUND_DBA 24 // Sound pressure level - A weighting
+#define NXT_IR_SEEKER_DC 20 // Infrared Seeker DC signal
+#define NXT_IR_SEEKER_AC 21 // Infrared Seeker AC signal
+#define NXT_TEMP_C 22	    // Temperature in C
+#define NXT_TEMP_F 23	    // Temperature in F
+#define NXT_SOUND_DB 24     // Sound pressure level - Flat weighting
+#define NXT_SOUND_DBA 25    // Sound pressure level - A weighting
+#define NXT_COMPASS 26
 
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0
@@ -167,6 +170,24 @@ int SetIRBeaconCH(int sensorPort, int channel);
 int GetSensorName (int port);
 
 void ResetGyroSensor (int port);
+
+/**
+ * @param rgb
+ * @return red (0-255)
+ */
+int GetRFromRGB(int rgb);
+
+/**
+ * @param rgb
+ * @return green (0-255)
+ */
+int GetGFromRGB(int rgb);
+
+/**
+ * @param rgb
+ * @return blue (0-255)
+ */
+int GetBFromRGB(int rgb);
 
 
 #endif // EV3SENSOR_H

@@ -59,7 +59,8 @@
 #define COL_TYPE 29
 #define COL_REFLECT_MODE 0 	// Reflect
 #define COL_AMBIENT_MODE 1 	// Ambient
-#define COL_COLOR_MODE 2 	//Color
+#define COL_COLOR_MODE 2 	// Color
+#define COL_RGB_MODE 4
 
 // Ultrasonic
 #define US_TYPE 30
@@ -260,6 +261,7 @@ void* ReadSensorData(int sensorPort)
 		case COL_REFLECT:
 		case COL_AMBIENT:
 		case COL_COLOR:
+		case COL_RGB:
 			return readUartSensor(sensorPort);
 			// Ultrasonic
 		case US_DIST_CM:
@@ -334,6 +336,17 @@ int ReadSensor(int sensorPort)
 			return *((DATA16*)data)&0x00FF;
 		case COL_COLOR:
 			return *((DATA16*)data)&0x000F;
+		case COL_RGB:
+			/**
+			 * The first 6 bytes in data are the colors: 2 byte for each color.
+			 * The range of each color value is from 0 to 1023. We convert those
+			 * values in 3 bytes (0-255), to be able to return it as a int
+			 */
+			temp = 0;
+			int r = (int) ((((*data) & 0xFFFF) / 1024.0) * 255.0);
+			int g = (int) (((((*data) >> 16) & 0xFFFF) / 1024.0) * 255.0);
+			int b = (int) (((((*data) >> 32) & 0xFFFF) / 1024.0) * 255.0);
+			return r | (g << 8) | (b << 16);
 			// Ultrasonic
 		case US_DIST_CM:
 			return (*((DATA16*)data)&0x0FFF)/10;
@@ -488,10 +501,14 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Type[sensorPort] = COL_TYPE;
             devCon.Mode[sensorPort] = COL_AMBIENT_MODE;
             break;
-        case COL_COLOR:
-            devCon.Connection[sensorPort] = CONN_INPUT_UART;
-            devCon.Type[sensorPort] = COL_TYPE;
-            devCon.Mode[sensorPort] = COL_COLOR_MODE;
+		case COL_COLOR:
+			devCon.Connection[sensorPort] = CONN_INPUT_UART;
+			devCon.Type[sensorPort] = COL_TYPE;
+			devCon.Mode[sensorPort] = COL_COLOR_MODE;
+		case COL_RGB:
+			devCon.Connection[sensorPort] = CONN_INPUT_UART;
+			devCon.Type[sensorPort] = COL_TYPE;
+			devCon.Mode[sensorPort] = COL_RGB_MODE;
             break;
             // Ultrasonic
         case US_DIST_CM:
@@ -609,3 +626,15 @@ void ResetGyroSensor (int port) {
 	SetSensorMode(port, GYRO_ANG_AND_RATE_MODE);
 }
 
+
+int GetRFromRGB(int rgb) {
+	return rgb & 0x00FF;
+}
+
+int GetGFromRGB(int rgb) {
+	return (rgb >> 8 ) & 0x00FF;
+}
+
+int GetBFromRGB(int rgb) {
+	return (rgb >> 16 ) & 0x00FF;
+}
