@@ -468,7 +468,6 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 			return;
 
 		int sampleRate = _readInt(SoundInstance.hSoundFile, true);
-		(void)sampleRate;
 
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
@@ -612,7 +611,7 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volum
 	WriteToSoundDevice(SoundData, sizeof(SoundData)); // write 6 bytes
 }
 
-void PlaySound(uint8_t aCode)
+void PlaySoundEx(uint8_t aCode, uint8_t volume)
 {
 	int i;
 	if (!SoundInitialized())
@@ -623,35 +622,35 @@ void PlaySound(uint8_t aCode)
 		return;
 
 	if (aCode == SOUND_CLICK)
-		PlayTone(600, MS_200);
+		PlayToneEx(600, MS_200, volume);
 	else if (aCode == SOUND_DOUBLE_BEEP)
 	{
-		PlayTone(600, MS_150);
+		PlayToneEx(600, MS_150, volume);
 		Wait(MS_200);
-		PlayTone(600, MS_150);
+		PlayToneEx(600, MS_150, volume);
 		Wait(MS_150);
 	}
 	else if (aCode == SOUND_UP)
 		for (i = 4; i < 8; i++)
 		{
-			PlayTone(TONE_C5 * i / 4, MS_100);
+			PlayToneEx(TONE_C5 * i / 4, MS_100, volume);
 			Wait(MS_100);
 		}
 	else if (aCode == SOUND_DOWN)
 		for (i = 7; i > 3; i--)
 		{
-			PlayTone(TONE_C5 * i / 4, MS_100);
+			PlayToneEx(TONE_C5 * i / 4, MS_100, volume);
 			Wait(MS_100);
 		}
 	else if (aCode == SOUND_LOW_BEEP)
 	{
-		PlayTone(100, MS_500);
+		PlayToneEx(100, MS_500, volume);
 		Wait(MS_500);
 	}
 	else if (aCode == SOUND_FAST_UP)
 		for (i = 4; i < 8; i++)
 		{
-			PlayTone(TONE_C5 * i / 4, MS_50);
+			PlayToneEx(TONE_C5 * i / 4, MS_50, volume);
 			Wait(MS_50);
 		}
 }
@@ -666,7 +665,7 @@ void PlayTonesEx(Tone tones[], size_t size)
 	if (SoundInstance.SoundMuted != 0)
 		return;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i <  size; i++) {
 		Tone tmp = tones[i];
 		PlayTone(tmp.Frequency, tmp.Duration);
 		Wait(tmp.Duration);
@@ -711,4 +710,3 @@ void ClearSound()
 	// a synonym for StopSound;
 	StopSound();
 }
-

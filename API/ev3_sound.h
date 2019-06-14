@@ -68,6 +68,8 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volum
 
 #define PlayTone(_f, _d) PlayToneEx((_f), (_d), 100)
 
+void PlaySoundEx(uint8_t aCode, uint8_t volume);
+
 /**
  * Play a system sound.
  * Play a sound that mimics the RCX system sounds using one of the
@@ -83,7 +85,7 @@ void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volum
  * </TABLE>
  * \param aCode The system sound to play.  See \ref RCXSoundConstants.
  */
-void PlaySound(uint8_t aCode);
+#define PlaySound(aCode) PlaySoundEx((aCode), 100)
 
 /**
  * Play multiple tones.
