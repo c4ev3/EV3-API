@@ -90,4 +90,5 @@ DEVCON;
 #define   IIC_SETUP               _IOWR('i',5,IICDAT)
 //#define   IIC_SET                 _IOWR('i',6,IICSTR)
 
+
 #endif //EV3_TYPEDATA_H_

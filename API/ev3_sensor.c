@@ -153,10 +153,9 @@ void exitNxtCompassesIfNeeded();
 
 bool SensorsExit()
 {
-	exitNxtCompassesIfNeeded();
-
-	if (!SensorsInitialized())
+	if (!SensorsInitialized()) {
         return false;
+	}
 	munmap(g_uartSensors, sizeof(UART));
 	munmap(g_iicSensors, sizeof(IIC));
 	munmap(g_analogSensors, sizeof(ANALOG));
@@ -173,29 +172,6 @@ bool SensorsExit()
 	return true;
 }
 
-void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
-void exitNxtCompass (int sensorPort);
-int isCompassSensor(int sensorPort);
-
-void exitNxtCompassesIfNeeded() {
-	int sensorPort;
-	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
-	    if (isCompassSensor(sensorPort)) {
-	    	exitNxtCompass(sensorPort);
-	    }
-	}
-}
-
-
-int isCompassSensor(int sensorPort) {
-	int name = sensor_setup_NAME[sensorPort];
-	return name == NXT_COMPASS_COMPASS || name == NXT_COMPASS_ANGLE;
-}
-
-void exitNxtCompass (int sensorPort) {
-	DATA8 request[] = {0x42};
-	writeIicRequestUsingIoctl(sensorPort, NXT_COMPASS_IIC_ADDRESS, request, 1, 0, 100, 1);
-}
 
 /*DATA8 getSensorConnectionType(int sensorPort)
 {
@@ -235,29 +211,6 @@ void* readNewDumbSensor(int sensorPort)
 void* readOldDumbSensor(int sensorPort)
 {
 	return (void*)&(g_analogSensors->InPin1[sensorPort]);
-}
-
-void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
-	static IICDAT IicDat;
-	IicDat.Port = sensorPort;
-	IicDat.Time = repeatInterval;
-	IicDat.Repeat = repeatTimes;
-	IicDat.RdLng = -responseLength;
-
-	// the first byte of data is the length of data to send
-	IicDat.WrLng = toWriteLength + 1;
-	IicDat.WrData[0] = address;
-	
-	int i;
-	for (i = 0; i < toWriteLength; i++) {
-		IicDat.WrData[i + 1] = toWrite[i];
-	}
-
-	IicDat.Result = -1;
-	memset (IicDat.RdData,0x00,IIC_DATA_LENGTH);
-	//while (IicDat.Result) {
-	    ioctl(g_iicFile, IIC_SETUP, &IicDat);    
-	//};
 }
 
 void* readNxtColor(int sensorPort, DATA8 index)
@@ -500,9 +453,9 @@ int ReadSensor(int sensorPort)
 			return (int)((1.0 - (temp/4095.0)) * 100.0); // ADC_RES = 4095
 
 		case NXT_COMPASS_COMPASS:
-			return (*data & 0xFFFF);
+			return ((*data & 0xFF) << 1);
 		case NXT_COMPASS_ANGLE:
-			temp = (*data & 0xFFFF);
+			temp = ((*data & 0xFF) << 1);
 			return  temp < 180 ? (-temp) : (360 - temp);
 		default: break;
 	}
@@ -676,8 +629,8 @@ int setSensorMode(int sensorPort, int name) {
         case NXT_COMPASS_COMPASS:
         case NXT_COMPASS_ANGLE:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
-            devCon.Type[sensorPort] = 123;// 100;
-            devCon.Mode[sensorPort] = 1;// word
+            devCon.Type[sensorPort] = IIC_TYPE;
+            devCon.Mode[sensorPort] = IIC_BYTE_MODE;
             break;
         default:
             return -1;
@@ -685,29 +638,10 @@ int setSensorMode(int sensorPort, int name) {
     return 0;
 }
 
-void setupNxtCompassesIfNeeded ();
-
 void applySensorMode(){
 	// Set actual device mode
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 	ioctl(g_iicFile, IIC_SET_CONN, &devCon);
-	setupNxtCompassesIfNeeded();
-}
-
-void setupNxtCompass(int sensorPort);
-
-void setupNxtCompassesIfNeeded () {
-	int sensorPort;
-	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
-	    if (isCompassSensor(sensorPort)) {
-	    	setupNxtCompass(sensorPort);
-	    }
-	}
-}
-
-void setupNxtCompass(int sensorPort) {
-	DATA8 request[] = {0x44};
-	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 1, 0, 100, 8);
 }
 
 /********************************************************************************************/
@@ -776,12 +710,36 @@ int * ReadIRSeekAllChannels(int port) {
 	return results;
 }
 
+/**
+ * Writes to the IIC device connected to the sensor port.
+ * If repeatTimes is zero, the message will be sent for ever until a new call this function is made.
+ * When reèeatTimes is 1, the message will be sent only one time.
+*/
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
+	static IICDAT IicDat;
+	IicDat.Port = sensorPort;
+	IicDat.Time = repeatInterval;
+	IicDat.Repeat = repeatTimes;
+	IicDat.RdLng = -responseLength;
+
+	// the first byte of data is the length of data to send
+	IicDat.WrLng = toWriteLength + 1;
+	IicDat.WrData[0] = address;
+	
+	int i;
+	for (i = 0; i < toWriteLength; i++) {
+		IicDat.WrData[i + 1] = toWrite[i];
+	}
+
+	ioctl(g_iicFile, IIC_SETUP, &IicDat);
+}
+
 void StartHTCompassCalibration(int sensorPort) {
 	DATA8 request[] = {0x41, 0x43};
-	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 2, 1, 0, 8);
+	writeIicRequestUsingIoctl(sensorPort, NXT_COMPASS_IIC_ADDRESS, request, 2, 1, 0, 1);
 }
 
 void StopHTCompassCalibration(int sensorPort) {
 	DATA8 request[] = {0x41, 0x00};
-	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 2, 1, 0, 8);
+	writeIicRequestUsingIoctl(sensorPort, NXT_COMPASS_IIC_ADDRESS, request, 2, 0, 100, 1);
 }
