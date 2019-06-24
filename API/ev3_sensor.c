@@ -84,6 +84,7 @@
 // IIC 
 #define IIC_TYPE 100
 #define IIC_BYTE_MODE 0
+#define NXT_COMPASS_IIC_ADDRESS 0x01
 
 // NXT Temperture
 #define NXT_TEMP_TYPE 6
@@ -148,8 +149,12 @@ bool SensorsInitialized()
 		g_uartSensors && g_iicSensors && g_analogSensors;
 }
 
+void exitNxtCompassesIfNeeded();
+
 bool SensorsExit()
 {
+	exitNxtCompassesIfNeeded();
+
 	if (!SensorsInitialized())
         return false;
 	munmap(g_uartSensors, sizeof(UART));
@@ -166,6 +171,30 @@ bool SensorsExit()
 	g_analogSensors = NULL;
 
 	return true;
+}
+
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
+void exitNxtCompass (int sensorPort);
+int isCompassSensor(int sensorPort);
+
+void exitNxtCompassesIfNeeded() {
+	int sensorPort;
+	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
+	    if (isCompassSensor(sensorPort)) {
+	    	exitNxtCompass(sensorPort);
+	    }
+	}
+}
+
+
+int isCompassSensor(int sensorPort) {
+	int name = sensor_setup_NAME[sensorPort];
+	return name == NXT_COMPASS_COMPASS || name == NXT_COMPASS_ANGLE;
+}
+
+void exitNxtCompass (int sensorPort) {
+	DATA8 request[] = {0x42};
+	writeIicRequestUsingIoctl(sensorPort, NXT_COMPASS_IIC_ADDRESS, request, 1, 0, 100, 1);
 }
 
 /*DATA8 getSensorConnectionType(int sensorPort)
@@ -208,6 +237,29 @@ void* readOldDumbSensor(int sensorPort)
 	return (void*)&(g_analogSensors->InPin1[sensorPort]);
 }
 
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
+	static IICDAT IicDat;
+	IicDat.Port = sensorPort;
+	IicDat.Time = repeatInterval;
+	IicDat.Repeat = repeatTimes;
+	IicDat.RdLng = -responseLength;
+
+	// the first byte of data is the length of data to send
+	IicDat.WrLng = toWriteLength + 1;
+	IicDat.WrData[0] = address;
+	
+	int i;
+	for (i = 0; i < toWriteLength; i++) {
+		IicDat.WrData[i + 1] = toWrite[i];
+	}
+
+	IicDat.Result = -1;
+	memset (IicDat.RdData,0x00,IIC_DATA_LENGTH);
+	//while (IicDat.Result) {
+	    ioctl(g_iicFile, IIC_SETUP, &IicDat);    
+	//};
+}
+
 void* readNxtColor(int sensorPort, DATA8 index)
 {
 	return 0; // Not supported
@@ -228,6 +280,38 @@ void* readNxtColor(int sensorPort, DATA8 index)
 */
 }
 
+
+
+enum      IIC_STATE
+{
+  IIC_IDLE,
+  IIC_INIT,
+  IIC_RESTART,
+  IIC_ENABLE,
+  IIC_NXT_TEMP_START,
+  IIC_NXT_TEMP_WRITE,
+  IIC_NXT_TEMP_READ,
+  IIC_MANUFACTURER_START,
+  IIC_MANUFACTURER_WRITE,
+  IIC_MANUFACTURER_READ,
+  IIC_TYPE_START,
+  IIC_TYPE_WRITE,
+  IIC_TYPE_READ,
+  IIC_SETUP_WAIT,
+  IIC_SETUP_START,
+  IIC_SETUP_WRITE,
+  IIC_SETUP_READ,
+  IIC_WAITING,
+  IIC_WRITING,
+  IIC_READING,
+  IIC_REPEAT,
+  IIC_ERROR,
+  IIC_EXIT,
+  IIC_STATES
+};
+
+
+
 /********************************************************************************************/
 /**
 * Get the Data from the Sensor
@@ -247,6 +331,7 @@ void* ReadSensorData(int sensorPort)
 	if (!g_analogSensors || sensorPort < 0 || sensorPort >= INPUTS)
 		return 0;
 
+	DATA8 iicData[] = {0x44};
 
 	switch (sensor_setup_NAME[sensorPort])
 	{
@@ -279,9 +364,11 @@ void* ReadSensorData(int sensorPort)
 		case IR_REMOTE:
 			return readUartSensor(sensorPort);
 			// NXT
-		case NXT_IR_SEEKER:
+		//case NXT_IR_SEEKER:
         case NXT_TEMP_C:
 		case NXT_TEMP_F:
+		case NXT_COMPASS_COMPASS:
+		case NXT_COMPASS_ANGLE:
 			return readIicSensor(sensorPort);
 		case NXT_SOUND_DB:
 		case NXT_SOUND_DBA:
@@ -389,8 +476,8 @@ int ReadSensor(int sensorPort)
 			temp = (temp >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return temp;
 			// NXT
-		case NXT_IR_SEEKER:
-			return *((DATA16*)data)&0x000F;
+		//case NXT_IR_SEEKER:
+		//	return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
 			temp = (*data>>4) & 0x0FFF;
 			if(temp & 0x800)
@@ -411,6 +498,12 @@ int ReadSensor(int sensorPort)
 		case NXT_SOUND_DBA:
 			temp = *((DATA16*)data);
 			return (int)((1.0 - (temp/4095.0)) * 100.0); // ADC_RES = 4095
+
+		case NXT_COMPASS_COMPASS:
+			return (*data & 0xFFFF);
+		case NXT_COMPASS_ANGLE:
+			temp = (*data & 0xFFFF);
+			return  temp < 180 ? (-temp) : (360 - temp);
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -555,10 +648,10 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Mode[sensorPort] = IR_REMOTE_MODE;
             break;
             // NXT
-        case NXT_IR_SEEKER:
+        /*case NXT_IR_SEEKER:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
             devCon.Type[sensorPort] = IIC_TYPE;
-            devCon.Mode[sensorPort] = IIC_BYTE_MODE;
+            devCon.Mode[sensorPort] = IIC_BYTE_MODE;*/
             break;
         case NXT_TEMP_C:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
@@ -580,22 +673,41 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Type[sensorPort] = NXT_SOUND_TYPE;
             devCon.Mode[sensorPort] = NXT_SOUND_DBA_MODE;
             break;
-        /*case NXT_COMPASS:
+        case NXT_COMPASS_COMPASS:
+        case NXT_COMPASS_ANGLE:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
-            devCon.Type[sensorPort] = 100;
-            devCon.Mode[sensorPort] = 255;
-            break;*/
+            devCon.Type[sensorPort] = 123;// 100;
+            devCon.Mode[sensorPort] = 1;// word
+            break;
         default:
             return -1;
     }
     return 0;
 }
 
+void setupNxtCompassesIfNeeded ();
 
 void applySensorMode(){
 	// Set actual device mode
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
-	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
+	ioctl(g_iicFile, IIC_SET_CONN, &devCon);
+	setupNxtCompassesIfNeeded();
+}
+
+void setupNxtCompass(int sensorPort);
+
+void setupNxtCompassesIfNeeded () {
+	int sensorPort;
+	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
+	    if (isCompassSensor(sensorPort)) {
+	    	setupNxtCompass(sensorPort);
+	    }
+	}
+}
+
+void setupNxtCompass(int sensorPort) {
+	DATA8 request[] = {0x44};
+	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 1, 0, 100, 8);
 }
 
 /********************************************************************************************/
@@ -651,7 +763,7 @@ int * ReadIRSeekAllChannels(int port) {
 		return NULL;
 	}
 	uint64_t data = *((uint64_t*)ReadSensorData(port));
-	static int results[8];
+	static int results[IR_CHANNELS * 2];
 	int i;
 	for (i = 0; i < IR_CHANNELS; i++) {
 		int channelData = (int) (data >> (i * 16));
@@ -662,4 +774,14 @@ int * ReadIRSeekAllChannels(int port) {
 		results[(i * 2) + 1] = raw;
 	}
 	return results;
+}
+
+void StartHTCompassCalibration(int sensorPort) {
+	DATA8 request[] = {0x41, 0x43};
+	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 2, 1, 0, 8);
+}
+
+void StopHTCompassCalibration(int sensorPort) {
+	DATA8 request[] = {0x41, 0x00};
+	writeIicRequestUsingIoctl(sensorPort, 0x01, request, 2, 1, 0, 8);
 }

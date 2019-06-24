@@ -105,13 +105,14 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define IR_REMOTE 14	        // Remote Control
 
 //NXT 
-#define NXT_IR_SEEKER_DC 20 // Infrared Seeker DC signal
-#define NXT_IR_SEEKER_AC 21 // Infrared Seeker AC signal
-#define NXT_TEMP_C 22	    // Temperature in C
-#define NXT_TEMP_F 23	    // Temperature in F
-#define NXT_SOUND_DB 24     // Sound pressure level - Flat weighting
-#define NXT_SOUND_DBA 25    // Sound pressure level - A weighting
-#define NXT_COMPASS 26
+#define NXT_IR_SEEKER_DC 20 	// Infrared Seeker DC signal
+#define NXT_IR_SEEKER_AC 21 	// Infrared Seeker AC signal
+#define NXT_TEMP_C 22	    	// Temperature in C
+#define NXT_TEMP_F 23	    	// Temperature in F
+#define NXT_SOUND_DB 24     	// Sound pressure level - Flat weighting
+#define NXT_SOUND_DBA 25    	// Sound pressure level - A weighting
+#define NXT_COMPASS_COMPASS 26	// compass with values from 0 to 360
+#define NXT_COMPASS_ANGLE 27	// compass with values from -180 to 180
 
 // Infrared Beacon Buttons
 #define BEACON_CH_1 0
@@ -131,6 +132,8 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define BEACON_LEFT 		10
 #define BEACON_RIGHT 		11
 
+
+#define IR_CHANNELS 4
 
 /**
  * COMPATIBILITY FUNCTION NAMES
@@ -205,5 +208,9 @@ int GetBFromRGB(int rgb);
  */
 int* ReadIRSeekAllChannels(int port);
 
+
+void StartHTCompassCalibration(int sensorPort);
+
+void StopHTCompassCalibration(int sensorPort);
 
 #endif // EV3SENSOR_H
