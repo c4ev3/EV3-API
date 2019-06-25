@@ -84,7 +84,14 @@
 // IIC 
 #define IIC_TYPE 100
 #define IIC_BYTE_MODE 0
+
+// NXT Compass
 #define NXT_COMPASS_IIC_ADDRESS 0x01
+
+// NXT IR
+#define NXT_IR_IIC_ADDRESS 0x08
+#define NXT_IR_REGISTER_DC 0x42
+#define NXT_IR_REGISTER_AC 0x49
 
 // NXT Temperture
 #define NXT_TEMP_TYPE 6
@@ -149,13 +156,17 @@ bool SensorsInitialized()
 		g_uartSensors && g_iicSensors && g_analogSensors;
 }
 
-void exitNxtCompassesIfNeeded();
+void exitNxtIRSensorsIfNeeded();
 
 bool SensorsExit()
 {
 	if (!SensorsInitialized()) {
         return false;
 	}
+
+	exitNxtIRSensorsIfNeeded();
+	/// TODO: Exit also the compass
+
 	munmap(g_uartSensors, sizeof(UART));
 	munmap(g_iicSensors, sizeof(IIC));
 	munmap(g_analogSensors, sizeof(ANALOG));
@@ -284,8 +295,6 @@ void* ReadSensorData(int sensorPort)
 	if (!g_analogSensors || sensorPort < 0 || sensorPort >= INPUTS)
 		return 0;
 
-	DATA8 iicData[] = {0x44};
-
 	switch (sensor_setup_NAME[sensorPort])
 	{
 		case CONN_NONE:
@@ -317,7 +326,8 @@ void* ReadSensorData(int sensorPort)
 		case IR_REMOTE:
 			return readUartSensor(sensorPort);
 			// NXT
-		//case NXT_IR_SEEKER:
+		case NXT_IR_SEEKER_DC:
+		case NXT_IR_SEEKER_AC:
         case NXT_TEMP_C:
 		case NXT_TEMP_F:
 		case NXT_COMPASS_COMPASS:
@@ -429,8 +439,9 @@ int ReadSensor(int sensorPort)
 			temp = (temp >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return temp;
 			// NXT
-		//case NXT_IR_SEEKER:
-		//	return *((DATA16*)data)&0x000F;
+		case NXT_IR_SEEKER_DC:
+		case NXT_IR_SEEKER_AC:
+			return *((DATA16*)data)&0x000F;
 		case NXT_TEMP_C:
 			temp = (*data>>4) & 0x0FFF;
 			if(temp & 0x800)
@@ -601,10 +612,11 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Mode[sensorPort] = IR_REMOTE_MODE;
             break;
             // NXT
-        /*case NXT_IR_SEEKER:
+        case NXT_IR_SEEKER_DC:
+        case NXT_IR_SEEKER_AC:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
             devCon.Type[sensorPort] = IIC_TYPE;
-            devCon.Mode[sensorPort] = IIC_BYTE_MODE;*/
+            devCon.Mode[sensorPort] = IIC_BYTE_MODE;
             break;
         case NXT_TEMP_C:
             devCon.Connection[sensorPort] = CONN_NXT_IIC;
@@ -638,10 +650,81 @@ int setSensorMode(int sensorPort, int name) {
     return 0;
 }
 
+
+/**
+ * Writes to the IIC device connected to the sensor port.
+ * If repeatTimes is zero, the message will be sent for ever until a new call this function is made.
+ * When reèeatTimes is 1, the message will be sent only one time.
+*/
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
+	static IICDAT IicDat;
+	IicDat.Port = sensorPort;
+	IicDat.Time = repeatInterval;
+	IicDat.Repeat = repeatTimes;
+	IicDat.RdLng = -responseLength;
+
+	// the first byte of data is the length of data to send
+	IicDat.WrLng = toWriteLength + 1;
+	IicDat.WrData[0] = address;
+	
+	int i;
+	for (i = 0; i < toWriteLength; i++) {
+		IicDat.WrData[i + 1] = toWrite[i];
+	}
+
+	IicDat.Result = -1; 
+	while (IicDat.Result) {
+		ioctl(g_iicFile, IIC_SETUP, &IicDat);
+	}
+}
+
+void writeIicRequestToNxtIRToReadRegister(int sensorPort, int registerAddress) {
+	DATA8 request[] = {registerAddress};
+	Wait(100); // TODO: investigate. Without this it doesn't always work. Maybe we need to receive at least one value? 
+	writeIicRequestUsingIoctl(sensorPort, NXT_IR_IIC_ADDRESS, request, 1, 0, 100, 1);
+}
+
+void setupNxtIRSensorIfNeeded (int sensorPort) {
+	int sensorName = sensor_setup_NAME[sensorPort];
+	if (sensorName == NXT_IR_SEEKER_DC) {
+		writeIicRequestToNxtIRToReadRegister(sensorPort, NXT_IR_REGISTER_DC);
+	} else if (sensorName == NXT_IR_SEEKER_AC) {
+		writeIicRequestToNxtIRToReadRegister(sensorPort, NXT_IR_REGISTER_AC);
+	}
+}
+
+void setupNxtIRSensorsIfNeeded () {
+	int sensorPort;
+	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
+	    setupNxtIRSensorIfNeeded(sensorPort);
+	}
+}
+
 void applySensorMode(){
 	// Set actual device mode
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 	ioctl(g_iicFile, IIC_SET_CONN, &devCon);
+	setupNxtIRSensorsIfNeeded();
+}
+
+/**
+ * When the ev3 app "Port view" starts, it shows the IR sensor values in DC mode by default.
+ * If the user used this library and read the IR sensor in AC mode, the EV3 will show the AC values, saying
+ * that they are DC values. We need to switch back to the DC mode if we are in AC mode while exiting the program.
+ */
+void exitNxtIRSensorIfNeeded (int sensorPort) {
+	int sensorName = sensor_setup_NAME[sensorPort];
+	if (sensorName == NXT_IR_SEEKER_AC) {
+		writeIicRequestToNxtIRToReadRegister(sensorPort, NXT_IR_REGISTER_DC);
+	}
+}
+
+
+void exitNxtIRSensorsIfNeeded(){
+	int sensorPort;
+	for(sensorPort = 0; sensorPort < 4; sensorPort++) {
+	    exitNxtIRSensorIfNeeded(sensorPort);
+	}
 }
 
 /********************************************************************************************/
@@ -708,30 +791,6 @@ int * ReadIRSeekAllChannels(int port) {
 		results[(i * 2) + 1] = raw;
 	}
 	return results;
-}
-
-/**
- * Writes to the IIC device connected to the sensor port.
- * If repeatTimes is zero, the message will be sent for ever until a new call this function is made.
- * When reèeatTimes is 1, the message will be sent only one time.
-*/
-void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
-	static IICDAT IicDat;
-	IicDat.Port = sensorPort;
-	IicDat.Time = repeatInterval;
-	IicDat.Repeat = repeatTimes;
-	IicDat.RdLng = -responseLength;
-
-	// the first byte of data is the length of data to send
-	IicDat.WrLng = toWriteLength + 1;
-	IicDat.WrData[0] = address;
-	
-	int i;
-	for (i = 0; i < toWriteLength; i++) {
-		IicDat.WrData[i + 1] = toWrite[i];
-	}
-
-	ioctl(g_iicFile, IIC_SETUP, &IicDat);
 }
 
 void StartHTCompassCalibration(int sensorPort) {
