@@ -357,6 +357,9 @@ void _playSoundSamplesFromStream(int fileHandle)
 			// Valid file
 			BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
 			SoundInstance.BytesToWrite = BytesRead + 1;
+			if (BytesRead == 0) {
+				break;
+			}
 		}
 
 		BytesWritten = 0;
