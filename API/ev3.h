@@ -47,6 +47,7 @@ extern "C" {
 #include <ev3_button.h>
 #include <ev3_lcd.h>
 #include <ev3_sound.h>
+#include <ev3_bluetooth.h>
 
 int InitEV3(void);
 int FreeEV3(void);

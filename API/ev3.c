@@ -28,6 +28,7 @@ int __attribute__((constructor)) InitEV3 (void)
 	ButtonLedInit();
 	LcdInit();
 	SoundInit();
+	BluetoothInit();
     
 	LcdClean();
 
@@ -43,6 +44,7 @@ int __attribute__((destructor)) FreeEV3()
 	ButtonLedExit();
 	LcdExit();
 	SoundExit();
+	BluetoothExit();
 	initialized = false;
 
 	return 1;
