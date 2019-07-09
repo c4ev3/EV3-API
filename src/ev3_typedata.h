@@ -2,7 +2,7 @@
 #ifndef EV3_TYPEDATA_H_
 #define EV3_TYPEDATA_H_
 
-#include <ev3_basictypes.h>
+#include "ev3_basictypes.h"
 
 #define	   MAX_DEVICE_MODES		8                     //!< Max number of modes in one device
 #define    INPUTS				4

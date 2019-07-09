@@ -10,11 +10,9 @@
 #include <bluetooth/rfcomm.h>
 #include <errno.h>
 #include <poll.h>
-       #include <sys/types.h>
-       #include <sys/stat.h>
-       #include <fcntl.h>
-
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "ev3_bluetooth.h"
 
 #define MAX_CONNECTIONS				    7
@@ -67,8 +65,6 @@ BluetoothConnectionHandle ConnectTo(char * nameOrAddress) {
 		strcpy(address, nameOrAddress);
 	} else {
 		findAddressByBluetoothName(nameOrAddress, address);
-        printf("found %s\n", address);
-        exit(-1);
 	}
 	BluetoothConnectionHandle c = connectByBluetoothAddress(address);
 	addConnectionToList(c);
@@ -87,7 +83,6 @@ void getKnownBluetoothNamesFile (char * localBluetoothAddress, char * fileName);
 void findAddressByBluetoothName(char * nameToFind, char * foundAddress) {
     char localBluetoothAddress[BLUETOOTH_ADDRRESS_LENGTH];
     getLocalBluetoothAddress(localBluetoothAddress);
-    printf("my mac: %s\n", localBluetoothAddress);
 
     char knownBluetoothNamesFile[MAX_BLUETOOTH_NAME_LENGTH];
     getKnownBluetoothNamesFile(localBluetoothAddress, knownBluetoothNamesFile);
@@ -112,6 +107,9 @@ void findAddressByBluetoothName(char * nameToFind, char * foundAddress) {
             found = true;
             strcpy(foundAddress, address);
         }
+    }
+    if(!found) {
+        exit(-1);
     }
     fclose(namesFile);
 }
