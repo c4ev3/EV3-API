@@ -220,6 +220,7 @@ extern "C" {
 #define BTNCENTER BTN4 //!< The enter button.
 #define BTNUP     BTN5 //!< The up button.
 #define BTNDOWN   BTN6 //!< The down button.
+#define BTNANY    BUTTON_ID_ALL //!< Any button
 
 #define NO_OF_BTNS 6  //!< The number of EV3 buttons.
 #define NUM_BUTTONS 6 //!< Number of buttons in the system
