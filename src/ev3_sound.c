@@ -330,88 +330,6 @@ void _playRMDFile(char* pFileName, uint8_t volume, bool loop)
 #define RIFF_DATA_SIG  	0x64617461
 
 
-short wavFileBitDepth;
-
-
-int changeBitDepthFrom16To8 (uint8_t buffer[], int length);
-
-void _playSoundSamplesFromStream(int fileHandle)
-{
-	uint8_t AdPcmData[SOUND_ADPCM_CHUNK];
-	unsigned short BytesToRead, BytesRead, BytesWritten, Delta;
-	int i;
-
-	// Get new sound data
-	// Any new data?
-	while (SoundInstance.SoundDataLength > 0)
-	{
-		SoundInstance.SoundData[0] = SOUND_CMD_SERVICE;
-		if (SoundInstance.SoundFileFormat == SOUND_FILE_FORMAT_ADPCM_SOUND)
-		{
-			// Adjust the chunk size for ADPCM (nibbles) if necessary
-			if (SoundInstance.SoundDataLength > SOUND_ADPCM_CHUNK)
-				BytesToRead = SOUND_ADPCM_CHUNK;
-			else
-				BytesToRead = SoundInstance.SoundDataLength;
-			// Valid file
-			BytesRead = read(fileHandle, AdPcmData, BytesToRead);
-			for (i = 0; i < BytesRead; i++)
-			{
-				SoundInstance.SoundData[2*i + 1] = _soundGetAdPcmValue((AdPcmData[i] >> 4) & 0x0F);
-				SoundInstance.SoundData[2*i + 2] = _soundGetAdPcmValue(AdPcmData[i] & 0x0F);
-			}
-			SoundInstance.BytesToWrite = (uint8_t)(1 + (BytesRead * 2));
-		}
-		else
-		{
-			// Non compressed data
-			// Adjust the chunk size if necessary
-			if (SoundInstance.SoundDataLength > SOUND_CHUNK) {
-                BytesToRead = SOUND_CHUNK;
-            } else {
-                BytesToRead = SoundInstance.SoundDataLength;
-            }
-
-            BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
-            SoundInstance.BytesToWrite = BytesRead + 1;
-
-
-			if (wavFileBitDepth == RIFF_FMT_16BITS) {
-                int newSoundDataLength = changeBitDepthFrom16To8(&SoundInstance.SoundData[1], BytesRead);
-                SoundInstance.BytesToWrite = newSoundDataLength + 1;
-			}
-
-			// TODO: This shouldn't be necessary, remove it
-			if (BytesRead == 0) {
-				break;
-			}
-		}
-
-		BytesWritten = 0;
-		while (BytesWritten == 0)
-		{
-			// Now we have or should have some bytes to write down into the driver
-			BytesWritten = WriteToSoundDevice(SoundInstance.SoundData, SoundInstance.BytesToWrite); // write bytes
-			if (BytesWritten == 0) {
-                usleep(1000); // delay 1 ms if we were unable to write to the sound device
-            }
-		}
-
-		// Adjust BytesToWrite with Bytes actually written
-		if (BytesWritten > 1)
-		{
-			Delta = BytesWritten;
-			// TODO: Playing a wav file or adpcm are different things, maybe split this function in two
-			if (SoundInstance.SoundFileFormat == SOUND_FILE_FORMAT_ADPCM_SOUND || wavFileBitDepth == RIFF_FMT_16BITS) {
-                Delta = Delta / 2;
-            }
-			SoundInstance.SoundDataLength -= Delta;
-			// Buffer data incl. CMD
-			SoundInstance.BytesToWrite -= (uint8_t)(BytesWritten + 1);
-		}
-	}
-}
-
 int _readInt(int fileHandle, bool lsb)
 {
 	uint8_t b1, b2, b3, b4;
@@ -454,17 +372,7 @@ short _readShort(int fileHandle, bool lsb)
 	return val;
 }
 
-int changeBitDepthFrom16To8 (uint8_t buffer[], int length) {
-    int i;
-    int j = 0;
-    for (i = 0; i < length; i += 2) {
-        uint8_t b1 = buffer[i];
-        uint8_t b2 = buffer[i + 1];
-        short tmp = (b1 & 0xff) | ((b2 & 0xff) << 8); // from 2 bytes to short
-        buffer[j++] = ((tmp + 32767) >> 8) & 0xff;
-    }
-    return j;
-}
+void _playSoundSamplesFromWavStream(int fileHandle, short bitDepth);
 
 void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 {
@@ -505,8 +413,8 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
-        wavFileBitDepth = _readShort(SoundInstance.hSoundFile, false);
-		if (wavFileBitDepth != RIFF_FMT_8BITS && wavFileBitDepth != RIFF_FMT_16BITS) {
+        short bitDepth = _readShort(SoundInstance.hSoundFile, false);
+		if (bitDepth != RIFF_FMT_8BITS && bitDepth != RIFF_FMT_16BITS) {
             return;
         }
 		// Skip any data in this chunk after the 16 bytes above
@@ -539,14 +447,61 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 		cmd[1] = (uint8_t)((volume*8)/100);
 		WriteToSoundDevice(cmd, 2); // write 2 bytes
 
-		if (loop)
-			SoundInstance.SoundState = SOUND_STATE_FILE_LOOPING;
-		else
-			SoundInstance.SoundState = SOUND_STATE_FILE;
-
-		_playSoundSamplesFromStream(SoundInstance.hSoundFile);
+		if (loop) {
+            SoundInstance.SoundState = SOUND_STATE_FILE_LOOPING;
+        } else {
+            SoundInstance.SoundState = SOUND_STATE_FILE;
+        }
+		_playSoundSamplesFromWavStream(SoundInstance.hSoundFile, bitDepth);
 	}
 }
+
+int changeBitDepthFrom16To8 (uint8_t buffer[], int length);
+
+int WriteToSoundDeviceOrRetry (uint8_t buffer[], int length);
+
+void _playSoundSamplesFromWavStream(int fileHandle, short bitDepth) {
+    SoundInstance.SoundData[0] = SOUND_CMD_SERVICE;
+    while (SoundInstance.SoundDataLength > 0) {
+        int BytesToRead = SoundInstance.SoundDataLength > SOUND_CHUNK ? SOUND_CHUNK : SoundInstance.SoundDataLength;
+
+        int BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
+        SoundInstance.BytesToWrite = BytesRead + 1;
+
+        if (bitDepth == RIFF_FMT_16BITS) {
+            int newSoundDataLength = changeBitDepthFrom16To8(&SoundInstance.SoundData[1], BytesRead);
+            SoundInstance.BytesToWrite = newSoundDataLength + 1;
+        }
+
+        WriteToSoundDeviceOrRetry(SoundInstance.SoundData, SoundInstance.BytesToWrite);
+        SoundInstance.SoundDataLength -= BytesRead;
+    }
+}
+
+int changeBitDepthFrom16To8 (uint8_t buffer[], int length) {
+    int i;
+    int j = 0;
+    for (i = 0; i < length; i += 2) {
+        uint8_t b1 = buffer[i];
+        uint8_t b2 = buffer[i + 1];
+        short tmp = (b1 & 0xff) | ((b2 & 0xff) << 8); // from 2 bytes to short
+        buffer[j++] = ((tmp + 32767) >> 8) & 0xff;
+    }
+    return j;
+}
+
+int WriteToSoundDeviceOrRetry (uint8_t buffer[], int length) {
+    int BytesWritten = 0;
+    do {
+        BytesWritten = WriteToSoundDevice(SoundInstance.SoundData, SoundInstance.BytesToWrite); // write bytes
+        if (BytesWritten == 0) {
+            usleep(1000); // delay 1 ms if we were unable to write to the sound device
+        }
+    } while (BytesWritten == 0);
+    return BytesWritten;
+}
+
+void _playSoundSamplesFromRSOStream(int fileHandle);
 
 void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 {
@@ -596,8 +551,45 @@ void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 		else
 			SoundInstance.SoundState = SOUND_STATE_FILE;
 
-		_playSoundSamplesFromStream(SoundInstance.hSoundFile);
+		_playSoundSamplesFromRSOStream(SoundInstance.hSoundFile);
 	}
+}
+
+void _playSoundSamplesFromRSOStream(int fileHandle) {
+    uint8_t AdPcmData[SOUND_ADPCM_CHUNK];
+    unsigned short BytesToRead, BytesRead, BytesWritten, Delta;
+    int i;
+
+    // Get new sound data
+    // Any new data?
+    while (SoundInstance.SoundDataLength > 0) {
+        SoundInstance.SoundData[0] = SOUND_CMD_SERVICE;
+
+        // Adjust the chunk size for ADPCM (nibbles) if necessary
+        if (SoundInstance.SoundDataLength > SOUND_ADPCM_CHUNK)
+            BytesToRead = SOUND_ADPCM_CHUNK;
+        else
+            BytesToRead = SoundInstance.SoundDataLength;
+        // Valid file
+        BytesRead = read(fileHandle, AdPcmData, BytesToRead);
+        for (i = 0; i < BytesRead; i++) {
+            SoundInstance.SoundData[2 * i + 1] = _soundGetAdPcmValue((AdPcmData[i] >> 4) & 0x0F);
+            SoundInstance.SoundData[2 * i + 2] = _soundGetAdPcmValue(AdPcmData[i] & 0x0F);
+        }
+        SoundInstance.BytesToWrite = (uint8_t) (1 + (BytesRead * 2));
+
+
+        int BytesWritten = WriteToSoundDeviceOrRetry(SoundInstance.SoundData, SoundInstance.BytesToWrite);
+
+        // Adjust BytesToWrite with Bytes actually written
+        if (BytesWritten > 1) {
+            Delta = BytesWritten;
+            Delta = Delta / 2;
+            SoundInstance.SoundDataLength -= Delta;
+            // Buffer data incl. CMD
+            SoundInstance.BytesToWrite -= (uint8_t) (BytesWritten + 1);
+        }
+    }
 }
 
 void PlayFileEx(char* pFileName, uint8_t volume, bool loop)
