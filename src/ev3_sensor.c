@@ -562,6 +562,7 @@ int setSensorMode(int sensorPort, int name) {
 			devCon.Connection[sensorPort] = CONN_INPUT_UART;
 			devCon.Type[sensorPort] = COL_TYPE;
 			devCon.Mode[sensorPort] = COL_COLOR_MODE;
+			break;
 		case COL_RGB:
 			devCon.Connection[sensorPort] = CONN_INPUT_UART;
 			devCon.Type[sensorPort] = COL_TYPE;
