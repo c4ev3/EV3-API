@@ -330,8 +330,10 @@ void _playRMDFile(char* pFileName, uint8_t volume, bool loop)
 #define RIFF_DATA_SIG  	0x64617461
 
 
-int sampleRate;
-short bits;
+short wavFileBitDepth;
+
+
+int changeBitDepthFrom16To8 (uint8_t buffer[], int length);
 
 void _playSoundSamplesFromStream(int fileHandle)
 {
@@ -364,59 +366,25 @@ void _playSoundSamplesFromStream(int fileHandle)
 		{
 			// Non compressed data
 			// Adjust the chunk size if necessary
-			if (SoundInstance.SoundDataLength > SOUND_CHUNK)
-				BytesToRead = SOUND_CHUNK;
-			else
-				BytesToRead = SoundInstance.SoundDataLength;
+			if (SoundInstance.SoundDataLength > SOUND_CHUNK) {
+                BytesToRead = SOUND_CHUNK;
+            } else {
+                BytesToRead = SoundInstance.SoundDataLength;
+            }
+
+            BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
+            SoundInstance.BytesToWrite = BytesRead + 1;
 
 
-			if (bits == RIFF_FMT_8BITS) {
-				// File is in 8bit
-				BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
-				SoundInstance.BytesToWrite = BytesRead + 1;
-
-				//printf("Read %d bytes (needed to read %d)\n", BytesRead, BytesToRead);
-			} else {
-				// 16bit -> 8bit
-				printf("16 -> 8\n");
-				uint8_t buffer[SOUND_FILE_BUFFER_SIZE * 2];
-
-				BytesToRead *= 2;
-				BytesRead = read(fileHandle, buffer, BytesToRead);
-
-				int j = 1;
-				for (i = 0; i < BytesRead; i += 2) {
-					uint8_t b1 = buffer[i];
-					uint8_t b2 = buffer[i + 1];
-					short tmp = (b1 & 0xff) | ((b2 & 0xff) << 8); // from 2 bytes to short
-
-					SoundInstance.SoundData[j++] = ((tmp + 32767) >> 8) & 0xff;
-				}
-
-				printf("> %d bytes => %d bytes\n", BytesRead, j - 1);
-
-				SoundInstance.BytesToWrite = j;
+			if (wavFileBitDepth == RIFF_FMT_16BITS) {
+                int newSoundDataLength = changeBitDepthFrom16To8(&SoundInstance.SoundData[1], BytesRead);
+                SoundInstance.BytesToWrite = newSoundDataLength + 1;
 			}
 
-			if (sampleRate == 22050) {
-				// 22050Hz -> 110250Hz
-				printf("2050 -> 11025\n");
-
-				int j = 1;
-				for (i = 1; i < SoundInstance.BytesToWrite; i += 2) {
-					SoundInstance.SoundData[j++] = (uint8_t)(((uint16_t)SoundInstance.SoundData[i]+(uint16_t)SoundInstance.SoundData[i+1])/2);
-				}
-
-				printf("> %d bytes => %d bytes\n", SoundInstance.BytesToWrite - 1, j - 1);
-
-				SoundInstance.BytesToWrite = j;
-			}
-
+			// TODO: This shouldn't be necessary, remove it
 			if (BytesRead == 0) {
-				printf("EOF\n");
 				break;
 			}
-			//SoundInstance.BytesToWrite = BytesRead + 1;
 		}
 
 		BytesWritten = 0;
@@ -424,16 +392,19 @@ void _playSoundSamplesFromStream(int fileHandle)
 		{
 			// Now we have or should have some bytes to write down into the driver
 			BytesWritten = WriteToSoundDevice(SoundInstance.SoundData, SoundInstance.BytesToWrite); // write bytes
-			if (BytesWritten == 0)
-				usleep(1000); // delay 1 ms if we were unable to write to the sound device
+			if (BytesWritten == 0) {
+                usleep(1000); // delay 1 ms if we were unable to write to the sound device
+            }
 		}
 
 		// Adjust BytesToWrite with Bytes actually written
 		if (BytesWritten > 1)
 		{
 			Delta = BytesWritten;
-			if (SoundInstance.SoundFileFormat == SOUND_FILE_FORMAT_ADPCM_SOUND)
-				Delta = Delta / 2;
+			// TODO: Playing a wav file or adpcm are different things, maybe split this function in two
+			if (SoundInstance.SoundFileFormat == SOUND_FILE_FORMAT_ADPCM_SOUND || wavFileBitDepth == RIFF_FMT_16BITS) {
+                Delta = Delta / 2;
+            }
 			SoundInstance.SoundDataLength -= Delta;
 			// Buffer data incl. CMD
 			SoundInstance.BytesToWrite -= (uint8_t)(BytesWritten + 1);
@@ -483,6 +454,18 @@ short _readShort(int fileHandle, bool lsb)
 	return val;
 }
 
+int changeBitDepthFrom16To8 (uint8_t buffer[], int length) {
+    int i;
+    int j = 0;
+    for (i = 0; i < length; i += 2) {
+        uint8_t b1 = buffer[i];
+        uint8_t b2 = buffer[i + 1];
+        short tmp = (b1 & 0xff) | ((b2 & 0xff) << 8); // from 2 bytes to short
+        buffer[j++] = ((tmp + 32767) >> 8) & 0xff;
+    }
+    return j;
+}
+
 void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 {
 	SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
@@ -518,15 +501,14 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 		if (_readShort(SoundInstance.hSoundFile, false) != RIFF_FMT_1CHAN)
 			return;
 
-		sampleRate = _readInt(SoundInstance.hSoundFile, true);
-		printf("Sample rate: %d", sampleRate);
+		int sampleRate = _readInt(SoundInstance.hSoundFile, true);
 
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
-		bits = _readShort(SoundInstance.hSoundFile, false);
-		printf("Bit depth: %d\n", bits);
-		if (bits != RIFF_FMT_8BITS && bits != RIFF_FMT_16BITS)
-			return;
+        wavFileBitDepth = _readShort(SoundInstance.hSoundFile, false);
+		if (wavFileBitDepth != RIFF_FMT_8BITS && wavFileBitDepth != RIFF_FMT_16BITS) {
+            return;
+        }
 		// Skip any data in this chunk after the 16 bytes above
 		sz -= 16;
 
