@@ -28,6 +28,15 @@
 #define EV3SENSOR_H
 
 #include <stdbool.h>
+#include "../copied/lms2012/ev3_basictypes.h"
+
+
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
+
+void writeIicRequestToNxtIRToReadRegister(int sensorPort, int registerAddress);
+
+
+
 
 /**
  * Initializes sensor I/O.
@@ -133,11 +142,11 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define BEACON_RIGHT 		11
 
 
-#define IR_CHANNELS 4
-
 /**
  * COMPATIBILITY FUNCTION NAMES
  */
+
+void applySensorMode();
 
 /*!
  * @deprecated
@@ -212,5 +221,7 @@ int* ReadIRSeekAllChannels(int port);
 void StartHTCompassCalibration(int sensorPort);
 
 void StopHTCompassCalibration(int sensorPort);
+
+void SwitchSensorToModeIfNeeded (int port, int mode);
 
 #endif // EV3SENSOR_H

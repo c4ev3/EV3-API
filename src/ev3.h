@@ -41,31 +41,24 @@ extern "C" {
 #include <stdbool.h>
 
 #include "ev3_constants.h"
-#include "ev3_time.h"
+#include "ev3_wait.h"
 #include "ev3_output.h"
+
 #include "ev3_sensor.h"
+#include "ev3_sensors/sensors.h"
+
+
 #include "ev3_button.h"
 #include "ev3_lcd.h"
 #include "ev3_sound.h"
 #include "ev3_bluetooth.h"
 
+
 int InitEV3(void);
 int FreeEV3(void);
 bool EV3IsInitialized(void);
 
-/*
- *  Compatibility alias definitions
-*/
 
-/*!
- * @deprecated
-*/
-#define CloseEV3() FreeEV3()
-
-/*!
- * @deprecated
-*/
-#define ExitEV3() FreeEV3()
 
 /* Students are lazy, so lets have the intialization happen automatically for them.
  * This code is usually linked in as a static library and the linker will throw

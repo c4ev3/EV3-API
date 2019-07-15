@@ -1,7 +1,7 @@
 /** \file ev3_constants.h
  * \brief Constants for various EV3 modules
  *
- * ev3_constants.h contains eclarations for various EV3 C API functions.
+ * ev3_constants.h contains declarations for various EV3 C API functions.
  *
  * License:
  *
