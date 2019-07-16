@@ -203,6 +203,7 @@ void* readUartSensor(int sensorPort)
 {
 	if (!g_uartSensors)
 		return 0;
+	LcdTextf(1, 50, 50, "%d", g_uartSensors->Status[sensorPort]);
 	return g_uartSensors->Raw[sensorPort][g_uartSensors->Actual[sensorPort]];
 }
 
@@ -405,9 +406,8 @@ int ReadSensor(int sensorPort)
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
 		case US_LISTEN:
-			return *((DATA16*)data)&0x0FFF;
+			return *((DATA16*)data)&0x000F;
 			// Gyroskop
-			// The first 16bits are the angle ...
 		case GYRO_ANG:
 			temp = *(data)&0xFFFF;
 
@@ -416,7 +416,6 @@ int ReadSensor(int sensorPort)
 				temp = ((temp&0x7FFF) - 0x7FFF);
 			}
 			return temp;
-			// ... the next 16bits are the rate
 		case GYRO_RATE:
 			temp = ((*(data))>>16)&0xFFFF;
 			if(temp & 0x8000)  // handles negative values
