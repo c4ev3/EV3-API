@@ -751,9 +751,18 @@ int GetSensorName (int port) {
  * so the sensor resets it self.
  * NOTE: The sensor should not move while switching mode
  */
-void ResetGyroSensor (int port) {
-	SetSensorMode(port, GYRO_RATE);
-	SetSensorMode(port, GYRO_ANG_AND_RATE_MODE);
+void ResetGyroSensor(int port) {
+    devCon.Connection[port] = CONN_INPUT_UART;
+    devCon.Type[port] = GYRO_TYPE;
+    devCon.Mode[port] = GYRO_RATE_MODE;
+    applySensorMode();
+    Wait(200);
+
+    devCon.Connection[port] = CONN_INPUT_UART;
+    devCon.Type[port] = GYRO_TYPE;
+    devCon.Mode[port] = GYRO_ANG_AND_RATE_MODE;
+    applySensorMode();
+    Wait(200);
 }
 
 
