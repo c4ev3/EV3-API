@@ -203,7 +203,6 @@ void* readUartSensor(int sensorPort)
 {
 	if (!g_uartSensors)
 		return 0;
-	LcdTextf(1, 50, 50, "%d", g_uartSensors->Status[sensorPort]);
 	return g_uartSensors->Raw[sensorPort][g_uartSensors->Actual[sensorPort]];
 }
 
@@ -391,7 +390,7 @@ int ReadSensor(int sensorPort)
 			/**
 			 * The first 6 bytes in data are the colors: 2 byte for each color.
 			 * The range of each color value is from 0 to 1023. We convert those
-			 * values in 3 bytes (0-255), to be able to return it as a int
+			 * values in 1 byte (0-255), 3 bytes total, to be able to return it as a int
 			 */
 			temp = 0;
 			int r = (int) ((((*data) & 0xFFFF) / 1024.0) * 255.0);
@@ -789,15 +788,19 @@ int * ReadIRSeekAllChannels(int port) {
 		return NULL;
 	}
 	uint64_t data = *((uint64_t*)ReadSensorData(port));
+	/**
+	 * The first byte of data contains the bearing, the second the distance.
+	 * This pattern repeats 4 times, two bytes for every channel.
+	 * When no bacon is found for a channel the distance is set to 128.
+	 */
 	static int results[IR_CHANNELS * 2];
 	int i;
 	for (i = 0; i < IR_CHANNELS; i++) {
 		int channelData = (int) (data >> (i * 16));
 		int measurement = channelData & 0xFF;
-		int raw =  (channelData >> 8) & 0xFF;
-		// TODO: Fix, sometimes it goes to -inf
+		int distance =  (channelData >> 8) & 0xFF;
 		results[i * 2] = invertSignIfOverHalfByte(measurement);
-		results[(i * 2) + 1] = raw;
+		results[(i * 2) + 1] = distance;
 	}
 	return results;
 }
