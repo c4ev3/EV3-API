@@ -501,6 +501,7 @@ int SetSensorMode(int sensorPort, int modeName)
 	    return res;
 	}
 	applySensorMode();
+	Wait(100);
 }
 
 /********************************************************************************************/
@@ -702,8 +703,26 @@ void setupNxtIRSensorsIfNeeded () {
 	}
 }
 
+//char buf[4];
+//int dcmFile = -1;
+
 void applySensorMode(){
 	// Set actual device mode
+
+/*	if (dcmFile < 0) {
+        dcmFile = open(LMS_DCM_DEVICE_NAME, O_RDWR | O_SYNC);
+	}
+
+    buf[0] = 0x2D;
+    buf[1] = 0x2D;
+    buf[2] = 0x46;
+    buf[3] = '-';
+    // write setup string to "Device Connection Manager" driver
+    write(dcmFile, buf, 4);
+
+    Wait(100);*/
+
+
 	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 	ioctl(g_iicFile, IIC_SET_CONN, &devCon);
 	setupNxtIRSensorsIfNeeded();
@@ -746,6 +765,7 @@ int SetIRBeaconCH(int sensorPort, int channel)
 int GetSensorName (int port) {
 	return sensor_setup_NAME[port];
 }
+
 
 /**
  * Switches from the mode to read both values to the mode to read only one value,
