@@ -342,6 +342,9 @@ void* ReadSensorData(int sensorPort)
 	return 0;
 }
 
+
+int gyroAngleOffset[NUM_INPUTS] = {0, 0, 0, 0};
+
 /********************************************************************************************/
 /**
 * Usercall for actual value of one Sensor
@@ -414,7 +417,7 @@ int ReadSensor(int sensorPort)
 			{
 				temp = ((temp&0x7FFF) - 0x7FFF);
 			}
-			return temp;
+			return temp - gyroAngleOffset[sensorPort];
 		case GYRO_RATE:
 			temp = ((*(data))>>16)&0xFFFF;
 			if(temp & 0x8000)  // handles negative values
@@ -761,6 +764,9 @@ void ResetGyroSensor(int port) {
     devCon.Mode[port] = GYRO_ANG_AND_RATE_MODE;
     applySensorMode();
     Wait(200);
+
+    gyroAngleOffset[port] = 0;
+    gyroAngleOffset[port] = ReadSensor(port);
 }
 
 
