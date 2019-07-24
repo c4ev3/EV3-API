@@ -1,27 +1,53 @@
-#include "../ev3_wait.h"
+#include "../ev3_inputs/ev3_input_uart.h"
+#include "../ev3_time.h"
 #include "ev3_color.h"
 
+// TODO: Move in copied folder
+#define EV3_COLOR_SENSOR_TYPE           29
+#define EV3_COLOR_SENSOR_REFLECT_MODE   0
+#define EV3_COLOR_SENSOR_AMBIENT_MODE   1
+#define EV3_COLOR_SENSOR_COLOR_MODE     2
+#define EV3_COLOR_SENSOR_RGB_MODE       4
 
-int ReadEV3ColorSensorLight(int sensorPort, LightMode mode) {
-    SwitchSensorToModeIfNeeded(sensorPort, mode);
+#define EV3_COLOR_SENSOR_DEFAULT_MODE   EV3_COLOR_SENSOR_REFLECT_MODE
 
 
+SensorHandler * EV3Color = &(SensorHandler){
+        .Init = initEV3ColorSensor,
+        .Exit = exitEV3ColorSensor
+};
+
+bool initEV3ColorSensor(int port) {
+    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_DEFAULT_MODE);
+}
+
+int ReadEV3ColorSensorLight(int port, LightMode mode) {
+    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, getEV3ColorLightSensorModeConstant(mode));
+    
     // TODO: Modify mode
     DATA8 data;
-    int readResult = readFromUART(sensorPort, &data, 1);
+    int readResult = readFromUART(port, &data, 1);
     if (readResult < 0) { // TODO: Handle error
         return -1;
     }
     return data;
 }
 
-Color ReadEV3ColorSensor(int sensorPort) {
-    SwitchSensorToModeIfNeeded(sensorPort, COL_COLOR);
+int getEV3ColorLightSensorModeConstant (LightMode mode) {
+    if (mode == ReflectedLight) {
+        return EV3_COLOR_SENSOR_REFLECT_MODE;
+    } else {
+        return EV3_COLOR_SENSOR_AMBIENT_MODE;
+    }
+}
+
+Color ReadEV3ColorSensor(int port) {
+    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_COLOR_MODE);
 
 
     // TODO: Modify mode
     DATA8 data;
-    int readResult = readFromUART(sensorPort, &data, 1);
+    int readResult = readFromUART(port, &data, 1);
     if (readResult < 0) { // TODO: Handle error
         return -1;
     }
@@ -29,8 +55,8 @@ Color ReadEV3ColorSensor(int sensorPort) {
 }
 
 
-RGB ReadEV3ColorSensorRGB(int sensorPort) {
-    SwitchSensorToModeIfNeeded(sensorPort, COL_RGB);
+RGB ReadEV3ColorSensorRGB(int port) {
+    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_RGB_MODE);
 
 
     /**
@@ -38,7 +64,7 @@ RGB ReadEV3ColorSensorRGB(int sensorPort) {
 	* The range of each color value is from 0 to 1023.
 	*/
     DATA8 data[6];
-    readFromUART(sensorPort, data, 6);
+    readFromUART(port, data, 6);
     // TODO: Handle error
 
     return (RGB) {
@@ -48,3 +74,6 @@ RGB ReadEV3ColorSensorRGB(int sensorPort) {
     };
 }
 
+void exitEV3ColorSensor(int port) {
+
+}

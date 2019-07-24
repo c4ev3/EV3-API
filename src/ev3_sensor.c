@@ -55,12 +55,6 @@
 #define TOUCH_TYPE 16
 #define TOUCH_PRESS_MODE 0 	// Press
 
-// Light
-#define COL_TYPE 29
-#define COL_REFLECT_MODE 0 	// Reflect
-#define COL_AMBIENT_MODE 1 	// Ambient
-#define COL_COLOR_MODE 2 	// Color
-#define COL_RGB_MODE 4
 
 // Ultrasonic
 #define US_TYPE 30
@@ -68,12 +62,6 @@
 #define US_DIST_MM_MODE 0 	// Dist in mm
 #define US_DIST_IN_MODE 1 	// Dist in inch
 #define US_LISTEN_MODE  2   // Presence of other ultrasonic sensors
-
-// Gyroskop
-#define GYRO_TYPE 				32
-#define GYRO_ANG_MODE 			0 // angle
-#define GYRO_RATE_MODE 			1 // rate
-#define GYRO_ANG_AND_RATE_MODE 	3 // both
 
 // Infrared
 #define IR_TYPE 33
@@ -105,7 +93,7 @@
 
 
 
-// Mode of inputs
+// Mode of ev3_inputs
 int sensor_setup_NAME[INPUTS];
 int ir_sensor_channel[INPUTS];
 
@@ -132,9 +120,6 @@ void exitNxtIRSensorsIfNeeded();
 
 bool SensorsExit()
 {
-	if (!SensorsInitialized()) {
-        return false;
-	}
 
 	exitNxtIRSensorsIfNeeded();
 	/// TODO: Exit also the compass
@@ -237,33 +222,6 @@ int setSensorMode(int sensorPort, int name) {
     switch (name) {
         case NO_SEN:
             break;
-            // Touchsensor
-        case TOUCH_PRESS:
-            devCon.Connection[sensorPort] = CONN_INPUT_DUMB;
-            devCon.Type[sensorPort] = TOUCH_TYPE;
-            devCon.Mode[sensorPort] = TOUCH_PRESS_MODE;
-            break;
-            // Lightsensor
-        case COL_REFLECT:
-            devCon.Connection[sensorPort] = CONN_INPUT_UART;
-            devCon.Type[sensorPort] = COL_TYPE;
-            devCon.Mode[sensorPort] = COL_REFLECT_MODE;
-            break;
-        case COL_AMBIENT:
-            devCon.Connection[sensorPort] = CONN_INPUT_UART;
-            devCon.Type[sensorPort] = COL_TYPE;
-            devCon.Mode[sensorPort] = COL_AMBIENT_MODE;
-            break;
-		case COL_COLOR:
-			devCon.Connection[sensorPort] = CONN_INPUT_UART;
-			devCon.Type[sensorPort] = COL_TYPE;
-			devCon.Mode[sensorPort] = COL_COLOR_MODE;
-			break;
-		case COL_RGB:
-			devCon.Connection[sensorPort] = CONN_INPUT_UART;
-			devCon.Type[sensorPort] = COL_TYPE;
-			devCon.Mode[sensorPort] = COL_RGB_MODE;
-            break;
             // Ultrasonic
         case US_DIST_CM:
             devCon.Connection[sensorPort] = CONN_INPUT_UART;
@@ -284,13 +242,6 @@ int setSensorMode(int sensorPort, int name) {
             devCon.Connection[sensorPort] = CONN_INPUT_UART;
             devCon.Type[sensorPort] = US_TYPE;
             devCon.Mode[sensorPort] = US_LISTEN_MODE;
-            break;
-            // Gyroskop
-        case GYRO_ANG:
-        case GYRO_RATE:
-            devCon.Connection[sensorPort] = CONN_INPUT_UART;
-            devCon.Type[sensorPort] = GYRO_TYPE;
-            devCon.Mode[sensorPort] = GYRO_ANG_AND_RATE_MODE;
             break;
             // Infrared
         case IR_PROX:
@@ -403,22 +354,6 @@ extern int g_uartFile;
 
 void applySensorMode(){
 	// Set actual device mode
-
-/*	if (dcmFile < 0) {
-        dcmFile = open(LMS_DCM_DEVICE_NAME, O_RDWR | O_SYNC);
-	}
-
-    buf[0] = 0x2D;
-    buf[1] = 0x2D;
-    buf[2] = 0x46;
-    buf[3] = '-';
-    // write setup string to "Device Connection Manager" driver
-    write(dcmFile, buf, 4);
-
-    Wait(100);*/
-
-
-	ioctl(g_uartFile, UART_SET_CONN, &devCon);
 
 /*
     g_uartSensors->Status[0]      &= ~UART_DATA_READY;

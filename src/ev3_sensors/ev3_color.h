@@ -2,6 +2,10 @@
 #define EV3_API_EV3_COLOR_H
 
 #include "../ev3_sensor.h"
+#include "sensors.h"
+
+
+extern SensorHandler * EV3Color;
 
 typedef enum Color {
     None,
@@ -27,15 +31,21 @@ typedef struct RGB {
 } RGB;
 
 typedef enum LightMode {
-    ReflectedLight = COL_REFLECT,
-    AmbientLight = COL_AMBIENT
+    ReflectedLight,
+    AmbientLight
 } LightMode;
 
-int ReadEV3ColorSensorLight(int sensorPort, LightMode mode);
+bool initEV3ColorSensor(int port);
 
-Color ReadEV3ColorSensor(int sensorPort);
+int ReadEV3ColorSensorLight(int port, LightMode mode);
 
+Color ReadEV3ColorSensor(int port);
 
-RGB ReadEV3ColorSensorRGB(int sensorPort);
+RGB ReadEV3ColorSensorRGB(int port);
+
+void exitEV3ColorSensor(int port);
+
+/* Utility functions */
+int getEV3ColorLightSensorModeConstant (LightMode mode);
 
 #endif //EV3_API_EV3_COLOR_H

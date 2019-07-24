@@ -15,7 +15,7 @@
  *
  */
 
-#include "ev3_sensors/inputs/ev3_input.h"
+#include "ev3_inputs/ev3_input.h"
 #include "ev3.h"
 
 static bool initialized;

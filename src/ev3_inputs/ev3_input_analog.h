@@ -1,7 +1,8 @@
 #ifndef EV3_API_EV3_INPUT_ANALOG_H
 #define EV3_API_EV3_INPUT_ANALOG_H
 
-#include "../../../copied/lms2012/ev3_basictypes.h"
+#include <stdbool.h>
+#include "../../copied/lms2012/ev3_basictypes.h"
 
 bool initEV3AnalogInput();
 

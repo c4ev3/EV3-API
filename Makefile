@@ -24,4 +24,4 @@ example:
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o *.a *.d example
+	$(RM) src/*.o *.a *.d src/ev3_sensors/*.o src/ev3_inputs/*.o example

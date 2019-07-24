@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "ev3_input_iic.h"
-#include "../../../copied/lms2012/ev3_iic.h"
+#include "../../copied/lms2012/ev3_iic.h"
 
-static bool initialized = false;
+static bool ev3IICInputInitialized = false;
 static int iicFile = 0;
 static IIC* iicSensors = 0;
 
@@ -16,7 +16,7 @@ static IIC* iicSensors = 0;
 int g_iicFile;
 
 bool initEV3IICnput() {
-    if (initialized) {
+    if (ev3IICInputInitialized) {
         return false;
     }
     g_iicFile = iicFile = open("/dev/lms_iic", O_RDWR | O_SYNC);
@@ -28,12 +28,12 @@ bool initEV3IICnput() {
         close(iicFile);
         return false;
     }
-    initialized = true;
+    ev3IICInputInitialized = true;
     return true;
 }
 
 int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
-    if (!initialized) {
+    if (!ev3IICInputInitialized) {
         return -1;
     }
     uint16_t slot = iicSensors->Actual[sensorPort];
@@ -44,12 +44,12 @@ int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
 }
 
 void exitEV3IICInput() {
-    if (!initialized) {
+    if (!ev3IICInputInitialized) {
         return;
     }
     munmap(iicSensors, sizeof(IIC));
     iicSensors = NULL;
     close(iicFile);
     iicFile = 0;
-    initialized = false;
+    ev3IICInputInitialized = false;
 }

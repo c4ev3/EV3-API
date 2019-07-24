@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-#ifndef ev3_time_h
-#define ev3_time_h
+#ifndef ev3_command_h
+#define ev3_command_h
 
 #include <unistd.h>
 #include <sys/time.h>
@@ -46,7 +46,7 @@ unsigned long long TimerGetUS();
 
 unsigned long long TimerGetMS();
 
-#endif // ev3_time_h
+#endif // ev3_command_h
 
 #ifdef __cplusplus
 }

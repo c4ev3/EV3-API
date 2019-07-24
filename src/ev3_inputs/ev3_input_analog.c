@@ -6,14 +6,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "ev3_input_analog.h"
-#include "../../../copied/lms2012/ev3_analog.h"
+#include "../../copied/lms2012/ev3_analog.h"
 
 static int analogFile = 0;
 static ANALOG * analogSensors = NULL;
-static bool initialized = false;
+static bool ev3AnalogInputInitialized = false;
 
 bool initEV3AnalogInput(){
-    if (initialized) {
+    if (ev3AnalogInputInitialized) {
         return false;
     }
     analogFile = open("/dev/lms_analog", O_RDWR | O_SYNC);
@@ -25,7 +25,7 @@ bool initEV3AnalogInput(){
         close(analogFile);
         return false;
     }
-    initialized = true;
+    ev3AnalogInputInitialized = true;
     return true;
 }
 
@@ -38,12 +38,12 @@ DATA16 readOldDumbSensor(int sensorPort) {
 }
 
 void exitEV3AnalogInput(){
-    if (!initialized) {
+    if (!ev3AnalogInputInitialized) {
         return;
     }
     munmap(analogSensors, sizeof(ANALOG));
     analogSensors = NULL;
     close(analogFile);
     analogFile = 0;
-    initialized = false;
+    ev3AnalogInputInitialized = false;
 }

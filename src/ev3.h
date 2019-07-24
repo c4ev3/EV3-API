@@ -41,7 +41,7 @@ extern "C" {
 #include <stdbool.h>
 
 #include "ev3_constants.h"
-#include "ev3_wait.h"
+#include "ev3_time.h"
 #include "ev3_output.h"
 
 #include "ev3_sensor.h"
