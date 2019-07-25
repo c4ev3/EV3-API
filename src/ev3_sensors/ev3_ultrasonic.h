@@ -13,4 +13,8 @@ int ReadEV3UltrasonicSensorDistance(int port, EV3UltrasonicDistanceUnit mode);
 
 bool ReadEV3UltrasonicSensorListen(int port);
 
+
+/* Utility functions */
+int getEV3UltrasonicSensorDistanceModeConstant(EV3UltrasonicDistanceUnit mode);
+
 #endif //EV3_API_EV3_ULTRASONIC_H
