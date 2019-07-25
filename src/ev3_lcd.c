@@ -182,7 +182,7 @@ typedef   struct
 #include "icons/small_icons.xbm"
 #include "icons/large_icons.xbm"
 #include "icons/menu_icons.xbm"
-#include "arrow_icons.xbm"
+#include "icons/arrow_icons.xbm"
 
 
 ICONINFO IconInfo[] =
