@@ -22,6 +22,7 @@
  */
 
 #include "ev3_lcd.h"
+#include "ev3_timer.h"
 #include <stdarg.h>
 
 #define DRAW_PIXELS_SET    0x00 //Basic options for pixel, line and shape drawing.
@@ -317,24 +318,21 @@ void lcdToFrameBuffer(uint8_t* pSrc, uint8_t* pDst)
 	}
 }
 
-void UpdateLCDIfDirty()
+void doUpdateScreen()
 {
-	if (LCDInstance.Dirty == true && LCDInstance.pFB0 != NULL && LCDInstance.pLcd != NULL) {
+	if (LCDInstance.Dirty && (LCDInstance.pFB0 != NULL) && (LCDInstance.pLcd != NULL))
+	{
 		lcdToFrameBuffer(LCDInstance.pLcd, hwBuffer);
 		memmove((void*)LCDInstance.pFB0, (const void *)hwBuffer, LCD_BUFFER_LENGTH);
 		LCDInstance.Dirty = false;
 	}
 }
 
-void markLCDAsDirty () {
-    LCDInstance.Dirty = true;
+void LcdUpdateHandler(int sig)
+{
+	if (LCDInstance.autoRefresh)
+		doUpdateScreen();
 }
-
-void markLCDAsDirtyAndUpdate () {
-    markLCDAsDirty();
-    UpdateLCDIfDirty();
-}
-
 
 void LcdCloseDevices()
 {
@@ -351,7 +349,6 @@ void LcdCloseDevices()
 	}
 }
 
-
 bool LcdInit()
 {
 	uint8_t * pTmp;
@@ -366,23 +363,28 @@ bool LcdInit()
 	LCDInstance.currentFont = FONTTYPE_NORMAL;
 
 	LCDInstance.DispFile = open(LMS_LCD_DEVICE_NAME, O_RDWR);
-	printf("display opened: %d\n", LCDInstance.DispFile);
-
 	if (LCDInstance.DispFile != -1)
 	{
 		pTmp = (uint8_t*)mmap(NULL, LCD_BUFFER_LENGTH, PROT_READ + PROT_WRITE, MAP_SHARED, LCDInstance.DispFile, 0);
 		if (pTmp == MAP_FAILED)
 		{
-            printf("mmap display failed\n");
 			LcdCloseDevices();
 			return false;
 		}
 		else
 		{
-            printf("mmap display success\n");
 			LCDInstance.pFB0 = pTmp;
 //      LCDInstance.font := @(font_data[0]);
 			LCDInstance.pLcd = LCDInstance.displayBuf;
+
+#ifndef DISABLE_TIMERS
+
+			// initialize timer system
+			TimerInit(25);
+
+			// register update handler with timer system
+			SetTimerCallback(ti250ms, &LcdUpdateHandler);
+#endif
 
 			return true;
 		}
@@ -690,6 +692,15 @@ void LcdSetAutoRefresh(bool bOn)
 	LCDInstance.autoRefresh = bOn;
 }
 
+bool LcdUpdate()
+{
+	if (!LcdInitialized())
+		return false;
+
+	doUpdateScreen();
+	LCDInstance.Dirty = false;
+	return true;
+}
 
 bool LcdClean()
 {
@@ -697,7 +708,7 @@ bool LcdClean()
 		return false;
 	LCDInstance.currentFont = FONTTYPE_NORMAL;
 	memset((void*)LCDInstance.pLcd, 0, LCD_BUFFER_SIZE);
-	markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 	return true;
 }
 bool LcdScroll(short Y)
@@ -909,7 +920,7 @@ bool LcdText(char Color, short X, short Y, char* Text)
 		return false;
 
 	dLcdDrawText(LCDInstance.pLcd, Color, X, Y, LCDInstance.currentFont, Text);
-	markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 	return true;
 }
 
@@ -922,7 +933,7 @@ bool LcdIcon(char Color, short X, short Y, char IconType, char IconNum)
 		return false;
 
 	dLcdDrawIcon(LCDInstance.pLcd, Color, X, Y, IconType, IconNum);
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 	return true;
 }
 
@@ -938,7 +949,7 @@ bool LcdBmpFile(char Color, short X, short Y, char* Name)
 			read(File, pBmp, LCD_BUFFER_SIZE);
 			close(File);
 			dLcdDrawBitmap(LCDInstance.pLcd, Color, X, Y, (IP)pBmp);
-            markLCDAsDirtyAndUpdate();
+			LCDInstance.Dirty = true;
 			return true;
 		}
 	}
@@ -951,7 +962,7 @@ bool LcdPicture(char Color, short X, short Y, IP pBitmap)
 		return false;
 
 	dLcdDrawBitmap(LCDInstance.pLcd, Color, X, Y, pBitmap);
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 	return true;
 }
 
@@ -1000,7 +1011,7 @@ bool LcdFillWindow(char Color, short Y, short Y1)
 			}
 		}
 	}
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 	return true;
 }
 
@@ -1039,13 +1050,13 @@ void DisplayEraseLine(uint8_t Line)
 {
 	int cnt = DisplayLineHeight()*LCD_BYTE_WIDTH;
 	memset((void*)&(LCDInstance.pLcd[Line*cnt]), 0, cnt);
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 }
 
 void DisplayErase()
 {
 	memset((void*)LCDInstance.pLcd, 0, LCD_BUFFER_SIZE);
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 }
 
 void DisplaySetPixel(uint8_t X, uint8_t Y)
@@ -1053,7 +1064,7 @@ void DisplaySetPixel(uint8_t X, uint8_t Y)
 	if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
 	{
 		LCDInstance.pLcd[(X / 8) + (LCD_BYTE_WIDTH * Y)] |= (1 << (X % 8));
-		markLCDAsDirty();
+		LCDInstance.Dirty = true;
 	}
 }
 
@@ -1062,7 +1073,7 @@ void DisplayClrPixel(uint8_t X, uint8_t Y)
 	if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
 	{
 		LCDInstance.pLcd[(X / 8) + (LCD_BYTE_WIDTH * Y)] &= ~(1 << (X % 8));
-		markLCDAsDirty();
+		LCDInstance.Dirty = true;
 	}
 }
 
@@ -1071,7 +1082,7 @@ void DisplayXorPixel(uint8_t X, uint8_t Y)
 	if ((X < LCD_WIDTH) && (Y < LCD_HEIGHT))
 	{
 		LCDInstance.pLcd[(X / 8) + (LCD_BYTE_WIDTH * Y)] ^= (1 << (X % 8));
-		markLCDAsDirty();
+		LCDInstance.Dirty = true;
 	}
 }
 
@@ -1128,7 +1139,7 @@ void DisplayFillScreen(uint8_t StartX, uint8_t StartY, uint8_t PixelsX, uint8_t 
 		}
 		X += 8;
 	}
-	markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 }
 
 void DisplayLineX(uint8_t X1, uint8_t X2, uint8_t Y, uint8_t PixelMode)
@@ -1169,7 +1180,7 @@ void DisplayLineX(uint8_t X1, uint8_t X2, uint8_t Y, uint8_t PixelMode)
 		}
 		X += 8;
 	}
-    markLCDAsDirty();
+	LCDInstance.Dirty = true;
 }
 
 void DisplayLineY(uint8_t X, uint8_t Y1, uint8_t Y2, uint8_t PixelMode)
@@ -1203,7 +1214,7 @@ void DisplayLineY(uint8_t X, uint8_t Y1, uint8_t Y2, uint8_t PixelMode)
 		}
 		pDst += LCD_BYTE_WIDTH;
 	}
-	markLCDAsDirty();
+	LCDInstance.Dirty = true;
 }
 
 void DisplayFrame(uint8_t StartX, uint8_t StartY, uint8_t PixelsX, uint8_t PixelsY, uint8_t PixelMode)
@@ -1214,7 +1225,7 @@ void DisplayFrame(uint8_t StartX, uint8_t StartY, uint8_t PixelsX, uint8_t Pixel
 		DisplayLineY(StartX, StartY + 1, StartY + PixelsY - 1, PixelMode);
 		DisplayLineY(StartX + PixelsX - 1, StartY + 1, StartY + PixelsY - 1, PixelMode);
 	}
-	markLCDAsDirty();
+	LCDInstance.Dirty = true;
 }
 
 void DisplayDraw(uint8_t Cmd, uint8_t PixelMode, uint8_t X1, uint8_t Y1, uint8_t X2, uint8_t Y2)
@@ -1671,7 +1682,20 @@ char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long 
 }
 
 
+/*******************
+ * Redundant functions
+ */
+#if 1
 
+// Same as LcdUpdate
+void LcdRefresh()
+{
+	if (!LcdInitialized())
+		return;
+	doUpdateScreen();
+}
+
+#endif
 
 /********************************************************************************************/
 /**
@@ -1804,7 +1828,7 @@ int LcdPrintfEx(char color, bool autoscroll, const char * fmt, ...)
 		indent++;
 		c++;
 	}
-    markLCDAsDirtyAndUpdate();
+	LCDInstance.Dirty = true;
 
     CURSOR_X = X0;
     CURSOR_Y = Y0;

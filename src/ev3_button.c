@@ -22,7 +22,7 @@
  */
 
 #include "ev3_button.h"
-#include "ev3_time.h"
+#include "ev3_timer.h"
 
 #define BUTTON_DEBOUNCE_TIME 10
 #define BUTTON_POLL_TIME     50

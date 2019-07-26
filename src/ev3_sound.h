@@ -45,7 +45,7 @@ extern "C" {
 #include <limits.h>
 #include <errno.h>
 
-#include "ev3_time.h"
+#include "ev3_command.h"
 #include "ev3_constants.h"
 
 typedef struct
