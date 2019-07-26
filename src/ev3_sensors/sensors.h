@@ -1,7 +1,6 @@
 #ifndef EV3_API_SENSORS_H
 #define EV3_API_SENSORS_H
 
-
 #include <stdbool.h>
 
 typedef struct SensorHandler {

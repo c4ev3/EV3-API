@@ -1,7 +1,6 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../ev3_time.h"
-#include "../ev3_sensor.h"
 #include "../../copied/lms2012/ev3_basictypes.h"
+#include "../ev3_wait.h"
 #include "ev3_gyro.h"
 
 #define EV3_GYRO_SENSOR_TYPE                32
@@ -16,12 +15,9 @@ SensorHandler * EV3Gyro = &(SensorHandler){
 };
 
 bool initEV3GyroSensor (int port) {
-    LcdTextf(1, 0, 10, "Initialization");
-    LcdTextf(1, 0, 20, "Gyro at %d", port + 1);
-    setUARTSensorModeIfNeeded(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
+    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
 }
 
-// TODO: Rate mode doesn't work
 
 int ReadEV3GyroSensor(int port, EV3GyroMode mode) {
     setUARTSensorModeIfNeeded(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
@@ -56,12 +52,11 @@ int getRateFromAngleAndRate (uint64_t angleAndRate) {
     return temp;
 }
 
+// TODO: Apply the reset procedure used in pxt, which can handle the drift via software correction
 void ResetEV3GyroSensor(int port) {
-    LcdTextf(1, 0, 10, "Reset");
-    LcdTextf(1, 0, 20, "Gyro at %d", port + 1);
     setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_RATE_MODE);
     Wait(200);
-    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE); // sleep 1
+    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
     Wait(2000);
 }
 

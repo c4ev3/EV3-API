@@ -4,7 +4,6 @@
 #include "../ev3_sensor.h"
 #include "sensors.h"
 
-
 extern SensorHandler * EV3Color;
 
 typedef enum Color {
@@ -47,5 +46,6 @@ void exitEV3ColorSensor(int port);
 
 /* Utility functions */
 int getEV3ColorLightSensorModeConstant (LightMode mode);
+int readEV3ColorSensorRawValue(int port, int mode);
 
 #endif //EV3_API_EV3_COLOR_H

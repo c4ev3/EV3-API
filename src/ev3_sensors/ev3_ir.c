@@ -17,13 +17,12 @@ SensorHandler * EV3Ir = &(SensorHandler){
 };
 
 bool initEV3IrSensor (int port) {
-    setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_DEFAULT_MODE);
+    setUARTSensorMode(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_DEFAULT_MODE);
 }
 
 
 EV3IrSeekResult ReadEV3IrSensorSeek (int port) {
     setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_SEEK_MODE);
-
 
     /**
      * The first byte of data contains the bearing, the second the distance.
@@ -56,13 +55,6 @@ int ReadEV3IrSensorProximity (int port) {
     readFromUART(port, &data, 1);
     return data;
 }
-
-/*
-		case IR_REMOTE:
-			temp = *(data)&0xFFFFFFFF;
-			temp = (temp >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
-			return temp;
- */
 
 void exitEV3IrSensor () {
 

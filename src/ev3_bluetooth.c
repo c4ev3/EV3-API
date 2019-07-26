@@ -169,8 +169,9 @@ BluetoothConnectionHandle connectByBluetoothAddress(char * address) {
         int connectResult = connect(socketToServer, (struct sockaddr *) &remoteAddress, sizeof(remoteAddress));
 
         /**
-         * 'connect' block only for a small amount of time. Then it returns -1 and sets errno to EINTR (that is, we received
-         * an interrupt). Online it seems that, if connect is interrupted by an interrupt, we should be able to call 'connect'
+         * 'connect' block only for a small amount of time. Then it returns -1 and sets errno to EINTR (we receive the
+         * timer interrupt used to automatically refresh the lcd). Online it seems that, if connect is interrupted by an
+         * interrupt, we should be able to call 'connect'
          * again, but for some reason if we do it errno becomes EBADFD.
          * 
          * We didn't ask to use the socket in a non blocking wait (using the SOCK_NONBLOCK flag), but if we check the connection

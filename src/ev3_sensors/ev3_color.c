@@ -1,8 +1,7 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../ev3_time.h"
+#include "../ev3_wait.h"
 #include "ev3_color.h"
 
-// TODO: Move in copied folder
 #define EV3_COLOR_SENSOR_TYPE           29
 #define EV3_COLOR_SENSOR_REFLECT_MODE   0
 #define EV3_COLOR_SENSOR_AMBIENT_MODE   1
@@ -18,20 +17,11 @@ SensorHandler * EV3Color = &(SensorHandler){
 };
 
 bool initEV3ColorSensor(int port) {
-    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_DEFAULT_MODE);
+    return setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_DEFAULT_MODE);
 }
 
 int ReadEV3ColorSensorLight(int port, LightMode mode) {
-    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, getEV3ColorLightSensorModeConstant(mode));
-    Wait(200);
-    
-    // TODO: Modify mode
-    DATA8 data;
-    int readResult = readFromUART(port, &data, 1);
-    if (readResult < 0) { // TODO: Handle error
-        return -1;
-    }
-    return data;
+    return readEV3ColorSensorRawValue(port,  getEV3ColorLightSensorModeConstant(mode));
 }
 
 int getEV3ColorLightSensorModeConstant (LightMode mode) {
@@ -43,10 +33,11 @@ int getEV3ColorLightSensorModeConstant (LightMode mode) {
 }
 
 Color ReadEV3ColorSensor(int port) {
-    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_COLOR_MODE);
-    Wait(200);
+    return readEV3ColorSensorRawValue(port, EV3_COLOR_SENSOR_COLOR_MODE);
+}
 
-    // TODO: Modify mode
+int readEV3ColorSensorRawValue(int port, int mode) {
+    setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, mode);
     DATA8 data;
     int readResult = readFromUART(port, &data, 1);
     if (readResult < 0) { // TODO: Handle error
@@ -59,7 +50,6 @@ Color ReadEV3ColorSensor(int port) {
 RGB ReadEV3ColorSensorRGB(int port) {
     setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_RGB_MODE);
 
-
     /**
 	* The first 6 bytes in data are the colors: 2 byte for each color.
 	* The range of each color value is from 0 to 1023.
@@ -67,7 +57,6 @@ RGB ReadEV3ColorSensorRGB(int port) {
     DATA8 data[6];
     readFromUART(port, data, 6);
     // TODO: Handle error
-
     return (RGB) {
             .red    = ((uint8_t)data[0]) + (((uint8_t) data[1]) << 8u),
             .green  = ((uint8_t)data[2]) + (((uint8_t) data[3]) << 8u),

@@ -1,6 +1,6 @@
-#include "../ev3_constants.h"
-#include "../ev3_inputs/ev3_input_iic.h"
 #include "../../copied/lms2012/ev3_uart.h"
+#include "../ev3_inputs/ev3_input_iic.h"
+#include "../ev3_constants.h"
 #include "../ev3_sensor.h"
 #include "ht_compass.h"
 
@@ -16,7 +16,7 @@ static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
 
 
 bool initHTCompassSensor(int port) {
-    initIIConPort(port);
+    initIICPort(port);
 }
 
 

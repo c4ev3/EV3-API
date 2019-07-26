@@ -5,8 +5,8 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "ev3_input_analog.h"
 #include "../../copied/lms2012/ev3_analog.h"
+#include "ev3_input_analog.h"
 
 static int analogFile = 0;
 static ANALOG * analogSensors = NULL;

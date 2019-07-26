@@ -19,7 +19,7 @@ EV3IrSeekResult ReadEV3IrSensorSeek (int port);
 
 int ReadEV3IrSensorProximity (int port);
 
-// TODO: Missing remote mode
+// TODO: Implement remote mode
 //int ReadEV3IrSensorRemote (int port);
 
 void exitEV3IrSensor ();

@@ -6,7 +6,7 @@
 
 bool initEV3IICnput();
 
-bool initIIConPort(int port);
+bool initIICPort(int port);
 
 int readFromIIC(int sensorPort, DATA8 * buffer, int length);
 

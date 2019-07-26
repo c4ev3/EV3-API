@@ -7,7 +7,6 @@ extern "C" {
 
 #define BLUETOOTH_ADDRESS_LENGTH            18 // 00:00:00:00:00:00 + null terminator
 #define	MAX_BLUETOOTH_NAME_LENGTH	        128
-#define	BLUETOOTH_STRING_MESSAGE_MAX_LENGTH 128
 
 void BluetoothInit();
 

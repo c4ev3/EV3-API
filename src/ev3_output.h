@@ -43,7 +43,7 @@ extern "C" {
 #include <stdbool.h>
 #include <limits.h>
 
-#include "ev3_command.h"
+#include "ev3_wait.h"
 #include "ev3_constants.h"
 
 bool OutputInit(void);

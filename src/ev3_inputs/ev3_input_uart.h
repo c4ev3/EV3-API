@@ -15,6 +15,9 @@ int readFromUART(int port, DATA8 * buffer, int length);
 void exitEV3UARTInput();
 
 /* Utility functions */
+int getUARTStatus(int port);
+int waitNonZeroUARTStatusAndGet(int port);
+void clearUARTChanged (int port);
 bool isUARTSensorModeDifferent(int port, DATA8 sensorType, DATA8 sensorMode);
 
 #endif //EV3_API_EV3_INPUT_UART_H

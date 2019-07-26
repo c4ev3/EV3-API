@@ -1,5 +1,5 @@
-#include "../ev3_time.h"
 #include "../ev3_inputs/ev3_input_iic.h"
+#include "../ev3_wait.h"
 #include "../ev3_sensor.h"
 #include "ht_ir.h"
 
@@ -17,14 +17,14 @@ SensorHandler * HTIr = &(SensorHandler){
 };
 
 bool initHTIrSensor(int port) {
-    initIIConPort(port);
+    initIICPort(port);
     htIrInitialized[port] = true;
     switchHTIrSensorMode(port, Modulated);
     return true;
 }
 
 
-// TODO: Untested
+// TODO: Untested modulated mode
 int ReadHTIrSensor(int port, HTIrSensorMode mode) {
     switchHTIrSensorModeIfNeeded(port, mode);
     DATA8 data;

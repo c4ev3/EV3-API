@@ -1,7 +1,6 @@
 #ifndef EV3_API_EV3_GYRO_H
 #define EV3_API_EV3_GYRO_H
 
-#include "../../copied/lms2012/ev3_uart.h"
 #include "sensors.h"
 
 extern SensorHandler * EV3Gyro;
@@ -14,9 +13,6 @@ typedef enum EV3GyroMode {
 bool initEV3GyroSensor (int port);
 
 int ReadEV3GyroSensor(int port, EV3GyroMode mode);
-
-// TODO: To remove
-extern DEVCON devCon;
 
 void ResetEV3GyroSensor(int port);
 

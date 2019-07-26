@@ -41,13 +41,10 @@ extern "C" {
 #include <stdbool.h>
 
 #include "ev3_constants.h"
-#include "ev3_time.h"
+#include "ev3_timer.h"
+#include "ev3_wait.h"
 #include "ev3_output.h"
-
-#include "ev3_sensor.h"
 #include "ev3_sensors/sensors.h"
-
-
 #include "ev3_button.h"
 #include "ev3_lcd.h"
 #include "ev3_sound.h"
