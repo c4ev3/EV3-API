@@ -25,7 +25,6 @@ int __attribute__((constructor)) InitEV3 (void)
 	    return 1;
 
 	OutputInit();
-	SensorsInit();
 	initInput();
 	ButtonLedInit();
 	LcdInit();
@@ -42,7 +41,6 @@ int __attribute__((destructor)) FreeEV3()
 
 {
 	OutputExit();
-	SensorsExit();
 	exitInput();
 	ButtonLedExit();
 	LcdExit();

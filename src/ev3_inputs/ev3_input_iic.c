@@ -7,6 +7,11 @@
 #include <stdbool.h>
 #include "ev3_input_iic.h"
 #include "../../copied/lms2012/ev3_iic.h"
+#include <sys/ioctl.h>
+#include "ev3_input.h"
+
+#define IIC_SENSOR_TYPE 100
+#define IIC_SENSOR_BYTE_MODE 0
 
 static bool ev3IICInputInitialized = false;
 static int iicFile = 0;
@@ -14,6 +19,8 @@ static IIC* iicSensors = 0;
 
 // TODO: Remove
 int g_iicFile;
+
+extern DEVCON devCon;
 
 bool initEV3IICnput() {
     if (ev3IICInputInitialized) {
@@ -32,6 +39,16 @@ bool initEV3IICnput() {
     return true;
 }
 
+
+bool initIIConPort(int port) {
+    devCon.Connection[port] = CONN_NXT_IIC;
+    devCon.Type[port] = IIC_SENSOR_TYPE;
+    devCon.Mode[port] = IIC_SENSOR_BYTE_MODE;
+
+    // TODO: Improve
+    ioctl(g_iicFile, IIC_SET_CONN, &devCon);
+}
+
 int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
     if (!ev3IICInputInitialized) {
         return -1;
@@ -41,6 +58,33 @@ int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
     int toRead = length > IIC_DATA_LENGTH ? IIC_DATA_LENGTH : length;
     memcpy(buffer, data, toRead);
     return toRead;
+}
+
+/**
+ * Writes to the IIC device connected to the sensor port.
+ * If repeatTimes is zero, the message will be sent for ever until a new call this function is made.
+ * When reèeatTimes is 1, the message will be sent only one time.
+*/
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
+    static IICDAT IicDat;
+    IicDat.Port = sensorPort;
+    IicDat.Time = repeatInterval;
+    IicDat.Repeat = repeatTimes;
+    IicDat.RdLng = -responseLength;
+
+    // the first byte of data is the length of data to send
+    IicDat.WrLng = toWriteLength + 1;
+    IicDat.WrData[0] = address;
+
+    int i;
+    for (i = 0; i < toWriteLength; i++) {
+        IicDat.WrData[i + 1] = toWrite[i];
+    }
+
+    IicDat.Result = -1;
+    while (IicDat.Result) {
+        ioctl(g_iicFile, IIC_SETUP, &IicDat);
+    }
 }
 
 void exitEV3IICInput() {

@@ -1,9 +1,28 @@
+#include "../ev3_inputs/ev3_input_uart.h"
 #include "../ev3_sensor.h"
 #include "ev3_ir.h"
 
 
+#define EV3_IR_SENSOR_TYPE              33
+#define EV3_IR_SENSOR_PROXIMITY_MODE    0
+#define EV3_IR_SENSOR_SEEK_MODE         1
+#define EV3_IR_SENSOR_REMOTE_MODE       2
+
+#define EV3_IR_SENSOR_DEFAULT_MODE EV3_IR_SENSOR_PROXIMITY_MODE
+
+
+SensorHandler * EV3Ir = &(SensorHandler){
+        .Init = initEV3IrSensor,
+        .Exit = exitEV3IrSensor
+};
+
+bool initEV3IrSensor (int port) {
+    setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_DEFAULT_MODE);
+}
+
+
 EV3IrSeekResult ReadEV3IrSensorSeek (int port) {
-    SwitchSensorToModeIfNeeded(port, IR_SEEK);
+    setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_SEEK_MODE);
 
 
     /**
@@ -31,7 +50,7 @@ EV3IrSeekResult ReadEV3IrSensorSeek (int port) {
 }
 
 int ReadEV3IrSensorProximity (int port) {
-    SwitchSensorToModeIfNeeded(port, IR_PROX);
+    setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_PROXIMITY_MODE);
 
     DATA8 data;
     readFromUART(port, &data, 1);
@@ -44,3 +63,9 @@ int ReadEV3IrSensorProximity (int port) {
 			temp = (temp >> (8*ir_sensor_channel[sensorPort]))& 0xFF;
 			return temp;
  */
+
+void exitEV3IrSensor () {
+
+}
+
+

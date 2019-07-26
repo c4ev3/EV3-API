@@ -15,11 +15,11 @@ bool initInput() {
     }
     bool analogInitialized = initEV3AnalogInput();
     bool uartInitialized = initEV3UARTInput();
-    //bool iicInitialized = initEV3IICnput();
-    /*if (!analogInitialized || !uartInitialized || !iicInitialized) {
+    bool iicInitialized = initEV3IICnput();
+    if (!analogInitialized || !uartInitialized || !iicInitialized) {
         // TODO: Close initialized resources
         return false;
-    }*/
+    }
     ev3SensorsInitialized = true;
     return true;
 }

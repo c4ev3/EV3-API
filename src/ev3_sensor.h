@@ -30,31 +30,6 @@
 #include <stdbool.h>
 #include "../copied/lms2012/ev3_basictypes.h"
 
-
-void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
-
-void writeIicRequestToNxtIRToReadRegister(int sensorPort, int registerAddress);
-
-
-
-
-/**
- * Initializes sensor I/O.
- */
-int SensorsInit();
-
-/**
- * Unmap sensors and close fds.
- */
-bool SensorsExit();
-
-
-
-/**
- * Doesn't do anything. Don't use
- */
-__attribute__((deprecated)) int SetSensorMode(int sensorPort, int name);
-
 /**
  * Select channel for the Beacon control
  * Note: Can be changed while running
@@ -140,7 +115,5 @@ int GetSensorName (int port);
  */
 int* ReadIRSeekAllChannels(int port);
 
-
-void SwitchSensorToModeIfNeeded (int port, int mode);
 
 #endif // EV3SENSOR_H

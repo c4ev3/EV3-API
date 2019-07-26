@@ -16,6 +16,8 @@ SensorHandler * EV3Gyro = &(SensorHandler){
 };
 
 bool initEV3GyroSensor (int port) {
+    LcdTextf(1, 0, 10, "Initialization");
+    LcdTextf(1, 0, 20, "Gyro at %d", port + 1);
     setUARTSensorModeIfNeeded(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
 }
 
@@ -55,10 +57,12 @@ int getRateFromAngleAndRate (uint64_t angleAndRate) {
 }
 
 void ResetEV3GyroSensor(int port) {
+    LcdTextf(1, 0, 10, "Reset");
+    LcdTextf(1, 0, 20, "Gyro at %d", port + 1);
     setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_RATE_MODE);
-    sleep(1);
+    Wait(200);
     setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE); // sleep 1
-    sleep(3);
+    Wait(2000);
 }
 
 void exitEV3GyroSensor (int port) {

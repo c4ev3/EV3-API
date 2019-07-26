@@ -6,11 +6,11 @@
 
 bool initEV3IICnput();
 
+bool initIIConPort(int port);
 
 int readFromIIC(int sensorPort, DATA8 * buffer, int length);
 
-//void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
-
+void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength);
 
 void exitEV3IICInput();
 

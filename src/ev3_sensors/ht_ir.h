@@ -1,13 +1,24 @@
 #ifndef EV3_API_HT_IR_H
 #define EV3_API_HT_IR_H
 
-// TODO: single function with modes
+#include "sensors.h"
 
-int ReadHTIrSensorAC(int port);
+extern SensorHandler * HTIr;
 
-int ReadHTIrSensorDC(int port);
+typedef enum HTIrSensorMode {
+    Modulated,
+    Unmodulated
+} HTIrSensorMode;
+
+bool initHTIrSensor(int port);
+
+int ReadHTIrSensor(int port, HTIrSensorMode mode);
+
+void exitHTIrSensor(int port);
 
 /* Utility functions */
-//void writeIicRequestToHtIRToReadRegister(int sensorPort, int registerAddress);
+void writeIicRequestToHTIrToReadRegister(int sensorPort, int registerAddress);
+void switchHTIrSensorModeIfNeeded(int port, HTIrSensorMode mode);
+void switchHTIrSensorMode(int port, HTIrSensorMode mode);
 
 #endif //EV3_API_HT_IR_H

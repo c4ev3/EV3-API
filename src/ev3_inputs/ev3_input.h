@@ -7,4 +7,6 @@ bool initInput();
 
 void exitInput();
 
+
+
 #endif //EV3_API_EV3_INPUT_H

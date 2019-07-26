@@ -23,6 +23,7 @@ bool initEV3ColorSensor(int port) {
 
 int ReadEV3ColorSensorLight(int port, LightMode mode) {
     setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, getEV3ColorLightSensorModeConstant(mode));
+    Wait(200);
     
     // TODO: Modify mode
     DATA8 data;
@@ -43,7 +44,7 @@ int getEV3ColorLightSensorModeConstant (LightMode mode) {
 
 Color ReadEV3ColorSensor(int port) {
     setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_COLOR_MODE);
-
+    Wait(200);
 
     // TODO: Modify mode
     DATA8 data;
