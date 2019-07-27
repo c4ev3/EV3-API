@@ -449,7 +449,7 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 	static DEVCON devCon;
 	int sensorPort = 0;
 
-	int name[4] = {};
+	int name[4] = {0};
 
 	name[0] = name_1;
 	name[1] = name_2;
