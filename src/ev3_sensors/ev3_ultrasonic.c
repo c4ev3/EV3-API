@@ -3,22 +3,20 @@
 #include "ev3_ultrasonic.h"
 
 #define EV3_ULTRASONIC_SENSOR_TYPE              30
-#define EV3_ULTRASONIC_SENSOR_DISTANCE_MM_MODE  0
-#define EV3_ULTRASONIC_SENSOR_DISTANCE_IN_MODE  1
-#define EV3_ULTRASONIC_SENSOR_LISTEN_MODE       2
 
 SensorHandler * EV3Ultrasonic = &(SensorHandler){
         .Init = initEV3UltrasonicSensor,
-        .Exit = exitEV3UltrasonicSensor
+        .Exit = exitEV3UltrasonicSensor,
+        .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 bool initEV3UltrasonicSensor (int port) {
-    setUARTSensorMode(port, EV3_ULTRASONIC_SENSOR_TYPE, EV3_ULTRASONIC_SENSOR_DISTANCE_MM_MODE);
+    setEV3UltrasonicSensorMode(port, EV3_ULTRASONIC_SENSOR_DISTANCE_MM_MODE);
 }
 
 
 int ReadEV3UltrasonicSensorDistance(int port, EV3UltrasonicDistanceUnit mode) {
-    setUARTSensorMode(port, EV3_ULTRASONIC_SENSOR_TYPE, getEV3UltrasonicSensorDistanceModeConstant(mode));
+    setEV3UltrasonicSensorMode(port, getEV3UltrasonicSensorDistanceModeConstant(mode));
 
     DATA16 data;
     readFromUART(port, &data, 2);
@@ -39,7 +37,7 @@ int getEV3UltrasonicSensorDistanceModeConstant(EV3UltrasonicDistanceUnit mode){
 }
 
 bool ReadEV3UltrasonicSensorListen(int port)  {
-    setUARTSensorMode(port, EV3_ULTRASONIC_SENSOR_TYPE, EV3_ULTRASONIC_SENSOR_LISTEN_MODE);
+    setEV3UltrasonicSensorMode(port, EV3_ULTRASONIC_SENSOR_LISTEN_MODE);
 
     DATA8 data;
     readFromUART(port, &data, 1);
@@ -47,6 +45,10 @@ bool ReadEV3UltrasonicSensorListen(int port)  {
     return data & 0x0F;
 }
 
+void setEV3UltrasonicSensorMode(int port, int mode) {
+    EV3Ultrasonic->currentSensorMode[port] = mode;
+    setUARTSensorMode(port, EV3_ULTRASONIC_SENSOR_TYPE, mode);
+}
 
 void exitEV3UltrasonicSensor (int port) {
 

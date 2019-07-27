@@ -5,12 +5,13 @@
 
 SensorHandler * EV3Touch = &(SensorHandler){
         .Init = initEV3Touch,
-        .Exit = exitEV3Touch
+        .Exit = exitEV3Touch,
+        .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 
 bool initEV3Touch(int port) {
-    // analog sensor doesn't need any initialization
+    EV3Touch->currentSensorMode[port] = EV3_TOUCH_SENSOR_TOUCH_MODE;
     return true;
 }
 

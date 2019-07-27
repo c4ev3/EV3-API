@@ -9,7 +9,8 @@
 
 SensorHandler * HTCompass = &(SensorHandler){
     .Init = initHTCompassSensor,
-    .Exit = exitHTCompassSensor
+    .Exit = exitHTCompassSensor,
+    .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
@@ -21,6 +22,7 @@ bool initHTCompassSensor(int port) {
 
 
 int ReadHTCompassSensor(int port, HTCompassMode mode) {
+    HTCompass->currentSensorMode[port] = mode; // TODO: this is not the kind of value used for other sensors
     DATA8 data;
     readFromIIC(port, &data, 1);
 

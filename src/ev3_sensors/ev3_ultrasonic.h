@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include "sensors.h"
 
+#define EV3_ULTRASONIC_SENSOR_DISTANCE_MM_MODE  0
+#define EV3_ULTRASONIC_SENSOR_DISTANCE_IN_MODE  1
+#define EV3_ULTRASONIC_SENSOR_LISTEN_MODE       2
+
 extern SensorHandler * EV3Ultrasonic;
 
 typedef enum EV3UltrasonicDistanceUnit {

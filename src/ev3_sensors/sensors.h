@@ -2,10 +2,15 @@
 #define EV3_API_SENSORS_H
 
 #include <stdbool.h>
+#include "../ev3_constants.h"
+
+#define NONE_MODE -1
 
 typedef struct SensorHandler {
     bool (*Init)(int port);
     void (*Exit)(int port);
+
+    int currentSensorMode[NUM_INPUTS];
 } SensorHandler;
 
 #include "ev3_touch.h"
@@ -18,7 +23,10 @@ typedef struct SensorHandler {
 #include "nxt_sound.h"
 #include "ht_compass.h"
 
-bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler * port3, SensorHandler * port4);
+bool SetSensor (int port, SensorHandler * sensor);
 
+SensorHandler * GetSensor (int port);
+
+bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler * port3, SensorHandler * port4);
 
 #endif //EV3_API_SENSORS_H

@@ -3,33 +3,22 @@
 #include "ev3_color.h"
 
 #define EV3_COLOR_SENSOR_TYPE           29
-#define EV3_COLOR_SENSOR_REFLECT_MODE   0
-#define EV3_COLOR_SENSOR_AMBIENT_MODE   1
-#define EV3_COLOR_SENSOR_COLOR_MODE     2
-#define EV3_COLOR_SENSOR_RGB_MODE       4
-
 #define EV3_COLOR_SENSOR_DEFAULT_MODE   EV3_COLOR_SENSOR_REFLECT_MODE
 
 
 SensorHandler * EV3Color = &(SensorHandler){
         .Init = initEV3ColorSensor,
-        .Exit = exitEV3ColorSensor
+        .Exit = exitEV3ColorSensor,
+        .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 bool initEV3ColorSensor(int port) {
-    return setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_DEFAULT_MODE);
+    setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_DEFAULT_MODE);
+    return true;
 }
 
-int ReadEV3ColorSensorLight(int port, LightMode mode) {
-    return readEV3ColorSensorRawValue(port,  getEV3ColorLightSensorModeConstant(mode));
-}
-
-int getEV3ColorLightSensorModeConstant (LightMode mode) {
-    if (mode == ReflectedLight) {
-        return EV3_COLOR_SENSOR_REFLECT_MODE;
-    } else {
-        return EV3_COLOR_SENSOR_AMBIENT_MODE;
-    }
+int ReadEV3ColorSensorLight(int port, LightMode lightMode) {
+    return readEV3ColorSensorRawValue(port, lightMode);
 }
 
 Color ReadEV3ColorSensor(int port) {
@@ -37,7 +26,8 @@ Color ReadEV3ColorSensor(int port) {
 }
 
 int readEV3ColorSensorRawValue(int port, int mode) {
-    setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, mode);
+    setEV3ColorSensorMode(port, mode);
+
     DATA8 data;
     int readResult = readFromUART(port, &data, 1);
     if (readResult < 0) { // TODO: Handle error
@@ -46,9 +36,15 @@ int readEV3ColorSensorRawValue(int port, int mode) {
     return data;
 }
 
+void setEV3ColorSensorMode(int port, int mode) {
+    setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, mode);
+    EV3Color->currentSensorMode[port] = mode;
+}
+
 
 RGB ReadEV3ColorSensorRGB(int port) {
-    setUARTSensorModeIfNeeded(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_RGB_MODE);
+    setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_RGB_MODE);
+    EV3Color->currentSensorMode[port] = EV3_COLOR_SENSOR_RGB_MODE;
 
     /**
 	* The first 6 bytes in data are the colors: 2 byte for each color.

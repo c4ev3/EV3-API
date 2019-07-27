@@ -9,11 +9,11 @@
 #define HT_IR_SENSOR_AC_MODE_REGISTER 0x49
 
 static bool htIrInitialized[NUM_INPUTS] = {false, false, false, false};
-static HTIrSensorMode htIrCurrentModes[NUM_INPUTS];
 
 SensorHandler * HTIr = &(SensorHandler){
     .Init = initHTIrSensor,
     .Exit = exitHTIrSensor,
+    .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 bool initHTIrSensor(int port) {
@@ -45,9 +45,9 @@ void exitHTIrSensor(int port) {
 }
 
 void switchHTIrSensorModeIfNeeded(int port, HTIrSensorMode mode) {
-    if (htIrInitialized[port] && htIrCurrentModes[port] != mode) {
+    if (htIrInitialized[port] && HTIr->currentSensorMode[port] != mode) {
         switchHTIrSensorMode(port, mode);
-        htIrCurrentModes[port] = mode;
+        HTIr->currentSensorMode[port] = mode;
     }
 }
 

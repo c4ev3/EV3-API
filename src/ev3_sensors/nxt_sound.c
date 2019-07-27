@@ -7,10 +7,12 @@
 
 SensorHandler * NXTSound = &(SensorHandler){
         .Init = initNXTSoundSensor,
-        .Exit = exitNXTSoundSensor
+        .Exit = exitNXTSoundSensor,
+        .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 bool initNXTSoundSensor (int port) {
+    NXTSound->currentSensorMode[port] = 0;
     return true;
 }
 

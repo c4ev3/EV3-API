@@ -6,11 +6,13 @@
 
 SensorHandler * NXTTemperature = &(SensorHandler) {
     .Init = initNXTTemperatureSensor,
-    .Exit = exitNXTTemperatureSensor
+    .Exit = exitNXTTemperatureSensor,
+    .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
 bool initNXTTemperatureSensor (int port) {
-
+    NXTSound->currentSensorMode[port] = 0;
+    return true;
 }
 
 // TODO: Not tested

@@ -2,12 +2,14 @@
 #include "../ev3_constants.h"
 #include "sensors.h"
 
-bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler * port3, SensorHandler * port4) {
-    SensorHandler * handlers[NUM_INPUTS] = {port1, port2, port3, port4};
+static SensorHandler *currentSensorHandlers[NUM_INPUTS] = {NULL, NULL, NULL, NULL};
+
+bool SetAllSensors(SensorHandler *port1, SensorHandler *port2, SensorHandler *port3, SensorHandler *port4) {
+    SensorHandler * sensorHandlers[] = {port1, port2, port3, port4};
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
-        if (handlers[i] != NULL) {
-            bool res = handlers[i]->Init(i);
+        if (sensorHandlers[i] != NULL) {
+            bool res = SetSensor(i, sensorHandlers[i]);
             if (!res) {
                 // TODO: Deallocate
                 return false;
@@ -16,3 +18,15 @@ bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler 
     }
 }
 
+bool SetSensor(int port, SensorHandler *sensor) {
+    currentSensorHandlers[port] = sensor;
+    bool res = currentSensorHandlers[port]->Init(port);
+    if (!res) {
+        // TODO: Deallocate
+        return false;
+    }
+}
+
+SensorHandler *GetSensor(int port) {
+    return currentSensorHandlers[port];
+}

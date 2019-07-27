@@ -6,6 +6,7 @@
 
 extern SensorHandler * NXTSound;
 
+// TODO: Mode not implemented yet
 typedef enum NXTSoundSensorMode {
     DB,
     DBA
