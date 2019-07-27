@@ -59,10 +59,9 @@ int ReadSensor(int sensorPort);
 void* ReadSensorData(int sensorPort);
 
 /**
- * Set sensor mode for a specific port.
- * Example: setSensorMode(INPUT_1, COL_REFLECT)
+ * Doesn't do anything. Don't use
  */
-int SetSensorMode(int sensorPort, int name);
+__attribute__((deprecated)) int SetSensorMode(int sensorPort, int name);
 
 /**
  * Set sensor mode for a all ports
