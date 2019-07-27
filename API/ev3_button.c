@@ -219,7 +219,7 @@ float HardwareVersion()
 	return Result;
 }
 
-char* HardwareVersionString()
+const char* HardwareVersionString()
 {
 	if (!ButtonLedInitialized())
 		return "";
