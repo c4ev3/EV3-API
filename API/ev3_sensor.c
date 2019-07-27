@@ -297,7 +297,7 @@ void* ReadSensorData(int sensorPort)
 */
 int ReadSensor(int sensorPort)
 {
-	uint64_t* data = ReadSensorData(sensorPort);
+	uint64_t* data = (uint64_t*)ReadSensorData(sensorPort);
 	int32_t help=0;
 	if (!data)
 		return -1;

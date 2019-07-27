@@ -1724,7 +1724,7 @@ int vasprintf(char **buf, const char *fmt, va_list _va)
 
 	if (len < 0) return len;
 
-	*buf = malloc(len + 1);
+	*buf = (char*)malloc(len + 1);
 	if (!*buf)
 		return -1; /* out of memory */
 
