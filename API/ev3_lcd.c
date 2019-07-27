@@ -173,7 +173,7 @@ short dLcdGetFontHeight(uint8_t Font)
 
 typedef   struct
 {
-	const char  *pIconBits;
+	const unsigned char  *pIconBits;
 	const short IconSize;
 	const short IconHeight;
 	const short IconWidth;
