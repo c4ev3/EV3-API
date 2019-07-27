@@ -64,7 +64,7 @@ bool ButtonLedInitialized();
 
 float HardwareVersion();
 
-char* HardwareVersionString();
+const char* HardwareVersionString();
 
 void SetLedWarning(bool Value);
 
