@@ -1,7 +1,7 @@
 #ifndef EV3_API_HT_IR_H
 #define EV3_API_HT_IR_H
 
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 extern SensorHandler * HTIr;
 

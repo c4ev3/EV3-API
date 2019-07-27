@@ -2,7 +2,7 @@
 #define EV3_API_EV3_TOUCH_SENSOR_H
 
 #include <stdbool.h>
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 #define EV3_TOUCH_SENSOR_TOUCH_MODE 0
 

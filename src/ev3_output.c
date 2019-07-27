@@ -94,7 +94,7 @@ int WriteToPWMDevice(int8_t * bytes, int num_bytes)
 	// for some reason write is not returning num_bytes -
 	// it usually returns zero
 	result = write(OutputInstance.PwmFile, bytes, num_bytes);
-	Wait(1);
+	Wait(2);
 	if (result >= 0) {
         return num_bytes;
     }

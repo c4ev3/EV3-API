@@ -37,8 +37,12 @@ int readEV3ColorSensorRawValue(int port, int mode) {
 }
 
 void setEV3ColorSensorMode(int port, int mode) {
+    int previousMode = EV3Color->currentSensorMode[port];
     setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, mode);
     EV3Color->currentSensorMode[port] = mode;
+    if (previousMode != mode) {
+        Wait(200);
+    }
 }
 
 

@@ -1,5 +1,5 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../ev3_sensor.h"
+#include "../ev3_wait.h"
 #include "ev3_ultrasonic.h"
 
 #define EV3_ULTRASONIC_SENSOR_TYPE              30
@@ -12,6 +12,7 @@ SensorHandler * EV3Ultrasonic = &(SensorHandler){
 
 bool initEV3UltrasonicSensor (int port) {
     setEV3UltrasonicSensorMode(port, EV3_ULTRASONIC_SENSOR_DISTANCE_MM_MODE);
+    return true;
 }
 
 
@@ -46,8 +47,13 @@ bool ReadEV3UltrasonicSensorListen(int port)  {
 }
 
 void setEV3UltrasonicSensorMode(int port, int mode) {
+    int previousMode = EV3Ultrasonic->currentSensorMode[port];
+    bool modeChanged = previousMode != mode;
     EV3Ultrasonic->currentSensorMode[port] = mode;
     setUARTSensorMode(port, EV3_ULTRASONIC_SENSOR_TYPE, mode);
+    if (modeChanged) {
+        Wait(1000);
+    }
 }
 
 void exitEV3UltrasonicSensor (int port) {

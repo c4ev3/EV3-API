@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include "../ev3_constants.h"
-#include "sensors.h"
+#include "ev3_sensors.h"
+
 
 static SensorHandler *currentSensorHandlers[NUM_INPUTS] = {NULL, NULL, NULL, NULL};
 
@@ -16,10 +17,12 @@ bool SetAllSensors(SensorHandler *port1, SensorHandler *port2, SensorHandler *po
             }
         }
     }
+    return true;
 }
 
 bool SetSensor(int port, SensorHandler *sensor) {
     currentSensorHandlers[port] = sensor;
+    //sleep(1);
     bool res = currentSensorHandlers[port]->Init(port);
     if (!res) {
         // TODO: Deallocate

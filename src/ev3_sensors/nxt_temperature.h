@@ -1,7 +1,7 @@
 #ifndef EV3_API_NXT_TEMPERATURE_H
 #define EV3_API_NXT_TEMPERATURE_H
 
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 extern SensorHandler * NXTTemperature;
 

@@ -2,9 +2,10 @@
 #define EV3_API_EV3_INPUT_ANALOG_H
 
 #include <stdbool.h>
+#include "../../copied/lms2012/ev3_analog.h"
 #include "../../copied/lms2012/ev3_basictypes.h"
 
-bool initEV3AnalogInput();
+ANALOG * initEV3AnalogInput();
 
 DATA16 readNewDumbSensor(int port);
 

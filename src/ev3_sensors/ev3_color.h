@@ -1,8 +1,7 @@
 #ifndef EV3_API_EV3_COLOR_H
 #define EV3_API_EV3_COLOR_H
 
-#include "../ev3_sensor.h"
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 #define EV3_COLOR_SENSOR_REFLECT_MODE   0
 #define EV3_COLOR_SENSOR_AMBIENT_MODE   1
@@ -25,7 +24,8 @@ typedef enum Color {
     Violet,
     Crimson,
     Purple,
-    Grey
+    Grey,
+    Magenta
 } Color;
 
 typedef struct RGB {

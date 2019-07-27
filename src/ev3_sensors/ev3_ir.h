@@ -1,7 +1,7 @@
 #ifndef EV3_API_EV3_IR_H
 #define EV3_API_EV3_IR_H
 
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 #define EV3_IR_CHANNELS 4
 

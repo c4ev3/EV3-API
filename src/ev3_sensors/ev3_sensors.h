@@ -1,5 +1,5 @@
-#ifndef EV3_API_SENSORS_H
-#define EV3_API_SENSORS_H
+#ifndef EV3_API_EV3_SENSORS_H
+#define EV3_API_EV3_SENSORS_H
 
 #include <stdbool.h>
 #include "../ev3_constants.h"
@@ -29,4 +29,4 @@ SensorHandler * GetSensor (int port);
 
 bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler * port3, SensorHandler * port4);
 
-#endif //EV3_API_SENSORS_H
+#endif //EV3_API_EV3_SENSORS_H

@@ -1,6 +1,5 @@
 #include "../../copied/lms2012/ev3_uart.h"
 #include "../ev3_inputs/ev3_input_iic.h"
-#include "../ev3_sensor.h"
 #include "nxt_temperature.h"
 
 

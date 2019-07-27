@@ -1,7 +1,7 @@
 #ifndef EV3_API_EV3_GYRO_H
 #define EV3_API_EV3_GYRO_H
 
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 #define EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE 3
 

@@ -3,11 +3,12 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include "../../copied/lms2012/ev3_uart.h"
 #include "../ev3_wait.h"
+#include "../ev3_constants.h"
 #include "ev3_input_uart.h"
 
 static bool ev3UARTInputInitialized = false;
@@ -16,7 +17,7 @@ static UART * uartSensors = NULL;
 
 extern DEVCON devCon;
 
-bool initEV3UARTInput() {
+bool initEV3UARTInput(ANALOG * analogSensors) {
     uartFile = open("/dev/lms_uart", O_RDWR | O_SYNC);
     if (uartFile == -1) {
         return false;
@@ -30,24 +31,12 @@ bool initEV3UARTInput() {
 
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
-        devCon.Connection[i] = -1;
+        devCon.Connection[i] = analogSensors->InConn[i];
+        devCon.Type[i] = 0;
+        devCon.Mode[i] = 0;
     }
     return true;
 }
-
-bool setUARTSensorModeIfNeeded (int port, DATA8 sensorType, DATA8 sensorMode) {
-    if(isUARTSensorModeDifferent(port, sensorType, sensorMode)) {
-        return setUARTSensorMode(port, sensorType, sensorMode);
-    }
-    return true;
-}
-
-bool isUARTSensorModeDifferent(int port, DATA8 sensorType, DATA8 sensorMode) {
-    return devCon.Connection[port] != CONN_INPUT_UART ||
-        devCon.Type[port] != sensorType ||
-        devCon.Mode[port] != sensorMode;
-}
-
 
 
 bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode) {
@@ -59,8 +48,8 @@ bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode) {
         devCon.Type[port] = sensorType;
         devCon.Mode[port] = sensorMode;
 
-        // TODO: Handle with care
         ioctl(uartFile, UART_SET_CONN, &devCon);
+
         int status = waitNonZeroUARTStatusAndGet(port);
 
         if (status & UART_PORT_CHANGED) {
@@ -69,9 +58,8 @@ bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode) {
             break;
         }
         Wait(10);
-        return true;
     }
-
+    return true;
 }
 
 int waitNonZeroUARTStatusAndGet(int port) {
@@ -80,7 +68,8 @@ int waitNonZeroUARTStatusAndGet(int port) {
         if (status != 0) {
             return status;
         }
-        usleep(25000);
+        Wait(25);
+        //usleep(25000);
     }
 }
 

@@ -1,6 +1,5 @@
 #include "../../copied/lms2012/ev3_basictypes.h"
 #include "../ev3_inputs/ev3_input_analog.h"
-#include "../ev3_sensor.h"
 #include "ev3_touch.h"
 
 SensorHandler * EV3Touch = &(SensorHandler){

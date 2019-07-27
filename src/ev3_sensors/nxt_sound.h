@@ -1,8 +1,7 @@
 #ifndef EV3_API_NXT_SOUND_H
 #define EV3_API_NXT_SOUND_H
 
-#include "../ev3_sensor.h"
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 extern SensorHandler * NXTSound;
 

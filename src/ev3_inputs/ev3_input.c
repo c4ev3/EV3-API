@@ -1,8 +1,8 @@
+#include "../../copied/lms2012/ev3_analog.h"
 #include "ev3_input.h"
 #include "ev3_input_uart.h"
 #include "ev3_input_analog.h"
 #include "ev3_input_iic.h"
-#include "../../copied/lms2012/ev3_uart.h"
 
 
 DEVCON devCon;
@@ -13,11 +13,14 @@ bool initInput() {
     if (ev3SensorsInitialized) {
         return false;
     }
-    bool analogInitialized = initEV3AnalogInput();
-    bool uartInitialized = initEV3UARTInput();
+    ANALOG * analogSensors = initEV3AnalogInput();
+//    if (analogSensors == NULL) {
+//        return false;
+//    }
+    bool uartInitialized = initEV3UARTInput(analogSensors);
     bool iicInitialized = initEV3IICnput();
-    if (!analogInitialized || !uartInitialized || !iicInitialized) {
-        // TODO: Close initialized resources
+    if (!uartInitialized || !iicInitialized) {
+        exitInput();
         return false;
     }
     ev3SensorsInitialized = true;

@@ -22,7 +22,7 @@ bool initEV3GyroSensor (int port) {
 
 
 int ReadEV3GyroSensor(int port, EV3GyroMode mode) {
-    setUARTSensorModeIfNeeded(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
+    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
 
     uint64_t angleAndRate;
     readFromUART(port, &angleAndRate, 4);

@@ -1,7 +1,7 @@
 #ifndef EV3_API_HT_COMPASS_H
 #define EV3_API_HT_COMPASS_H
 
-#include "sensors.h"
+#include "ev3_sensors.h"
 
 extern SensorHandler * HTCompass;
 

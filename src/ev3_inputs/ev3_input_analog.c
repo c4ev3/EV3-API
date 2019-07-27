@@ -8,25 +8,26 @@
 #include "../../copied/lms2012/ev3_analog.h"
 #include "ev3_input_analog.h"
 
+
 static int analogFile = 0;
 static ANALOG * analogSensors = NULL;
 static bool ev3AnalogInputInitialized = false;
 
-bool initEV3AnalogInput(){
+ANALOG * initEV3AnalogInput(){
     if (ev3AnalogInputInitialized) {
-        return false;
+        return NULL;
     }
     analogFile = open("/dev/lms_analog", O_RDWR | O_SYNC);
     if (analogFile == -1) {
-        return false;
+        return NULL;
     }
     analogSensors = (ANALOG*) mmap(0, sizeof(ANALOG), PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, analogFile, 0);
     if (analogSensors == MAP_FAILED) {
         close(analogFile);
-        return false;
+        return NULL;
     }
     ev3AnalogInputInitialized = true;
-    return true;
+    return analogSensors;
 }
 
 DATA16 readNewDumbSensor(int sensorPort) {
