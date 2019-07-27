@@ -387,54 +387,9 @@ int ReadSensor(int sensorPort)
 */
 int SetSensorMode(int sensorPort, int name)
 {
-	static DEVCON devCon;
-
-	if (!g_analogSensors)
-		InitSensors();
-
-	if (sensorPort < 0 || sensorPort >= INPUTS)
-		return -1;
-
-	sensor_setup_NAME[sensorPort] = name;
-	// Setup of Input
-	switch (name)
-	{
-		case NO_SEN:
-			break;
-		case TOUCH_PRESS:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_DUMB;
-			devCon.Type[sensorPort] 		= TOUCH_TYPE;
-			devCon.Mode[sensorPort] 		= TOUCH_PRESS_MODE;
-			break;
-		case COL_REFLECT:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-			devCon.Type[sensorPort] 		= COL_TYPE;
-			devCon.Mode[sensorPort] 		= COL_REFLECT_MODE;
-			break;
-		case COL_AMBIENT:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-			devCon.Type[sensorPort] 		= COL_TYPE;
-			devCon.Mode[sensorPort] 		= COL_AMBIENT_MODE;
-			break;
-		case COL_COLOR:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-			devCon.Type[sensorPort] 		= COL_TYPE;
-			devCon.Mode[sensorPort] 		= COL_COLOR_MODE;
-			break;
-		case US_DIST_CM:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-			devCon.Type[sensorPort] 		= US_TYPE;
-			devCon.Mode[sensorPort] 		= US_DIST_CM_MODE;
-			break;
-		case US_DIST_MM:
-			devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
-			devCon.Type[sensorPort] 		= US_TYPE;
-			devCon.Mode[sensorPort] 		= US_DIST_MM_MODE;
-			break;
-		default: return -1;
-	}
-
-	return 0;
+	(void)sensorPort;
+	(void)name;
+	return -1;
 }
 
 /********************************************************************************************/
