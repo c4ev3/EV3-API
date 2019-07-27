@@ -5,7 +5,7 @@ CC = $(PREFIX)gcc
 AR = $(PREFIX)ar
 SRCS = $(wildcard *.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
-CFLAGS += -fno-strict-aliasing
+CFLAGS += -fno-strict-aliasing -fwrapv
 
 .DEFAULT: libev3api.a
 libev3api.a: $(OBJS)
