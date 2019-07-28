@@ -17,6 +17,9 @@
 
 #include "ev3_output.h"
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 static int __RAMP_UP_PCT = 10;
 static int __RAMP_UP_DEGREES = 0;
 static int __RAMP_DOWN_PCT = 10;
@@ -94,7 +97,6 @@ int WriteToPWMDevice(int8_t * bytes, int num_bytes)
 	// for some reason write is not returning num_bytes -
 	// it usually returns zero
 	result = write(OutputInstance.PwmFile, bytes, num_bytes);
-	Wait(2);
 	if (result >= 0) {
         return num_bytes;
     }
@@ -389,6 +391,19 @@ bool OutputReset(uint8_t Outputs)
   }
 }
 
+/**
+ * Wait some milliseconds according to the speed/power.
+ * Without this delay, if a function to set the motor speed is called too frequently the motor behaves strangely.
+ * We choose the delay according to the speed/power to keep it as low as possible, important if the robot is a line
+ * follower or a self-balancing
+ * @param powerOrSpeed
+ */
+void waitAccordingToPowerOrSpeed(int powerOrSpeed) {
+    powerOrSpeed = abs(powerOrSpeed);
+    int delay = MAX(powerOrSpeed / 20, 2);
+    Wait(delay);
+}
+
 bool OutputSpeed(uint8_t Outputs, int8_t Speed)
 {
   if (!OutputInitialized())
@@ -406,32 +421,13 @@ bool OutputSpeed(uint8_t Outputs, int8_t Speed)
 	cmd[0] = opOutputSpeed;
 	cmd[1] = Outputs;
 	cmd[2] = Speed;
-	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	int res = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+      waitAccordingToPowerOrSpeed(Speed);
+    return res;
   }
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_SPEED;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Speed, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
   }
 }
 
@@ -450,40 +446,16 @@ bool OutputPower(uint8_t Outputs, int8_t Power)
 	cmd[0] = opOutputPower;
 	cmd[1] = Outputs;
 	cmd[2] = Power;
-	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+	int res = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
+    waitAccordingToPowerOrSpeed(Power);
+	return res;
   }
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_POWER;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Power, &(DaisyBuf[Len]));
-
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		else
-		{
-		  // printf("cOutPut @ opOUTPUT_POWER after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
   }
 }
+
 
 bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
 {
@@ -1412,8 +1384,6 @@ void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
 {
   OnFwdSyncEx(Outputs, Speed*-1, Turn, reset);
 }
-
-#define MIN(a,b) (((a)<(b))?(a):(b))
 
 void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop)
 {
