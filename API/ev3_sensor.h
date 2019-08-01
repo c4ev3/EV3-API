@@ -125,6 +125,16 @@ int SetIRBeaconCH(int sensorPort, int channel);
 #define BEACON_LEFT 		10
 #define BEACON_RIGHT 		11
 
+//HiTechnic IR Sensor
+#define HT_DIR_DC 30
+#define HT_DIR_AC 31
+#define HT_DIR_DALL 32
+#define HT_DIR_AALL 33
+
+//HiTechnic Compass Sensor
+#define HT_COMP 34
+
+
 
 /**
  * COMPATIBILITY FUNCTION NAMES
