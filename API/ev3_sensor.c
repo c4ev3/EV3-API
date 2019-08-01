@@ -81,6 +81,17 @@
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
 
+//HiTechnic IR Sensor
+#define HT_DIR_TYPE 52
+#define HT_DIR_DC_MODE 0
+#define HT_DIR_AC_MODE 1
+#define HT_DIR_DALL_MODE 2
+#define HT_DIR_AALL_MODE 3
+
+//HiTechnic Compass Sensor
+#define HT_COMP_TYPE 56
+#define HT_COMP_MODE 0
+
 /***********************************/
 
 int g_uartFile = 0;
@@ -274,6 +285,17 @@ void* ReadSensorData(int sensorPort)
 			return readIicSensor(sensorPort);
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
+		//new for HiTechnic IRSEEKER V2
+		case HT_DIR_DC:
+			return readIicSensor(sensorPort);
+		case HT_DIR_AC:
+			return readIicSensor(sensorPort);
+		case HT_DIR_DALL:
+			return readIicSensor(sensorPort);
+		case HT_DIR_AALL:
+			return readIicSensor(sensorPort);
+		case HT_COMP:
+			return readIicSensor(sensorPort);
 		default: return 0;
 	}
 
@@ -297,6 +319,7 @@ void* ReadSensorData(int sensorPort)
 */
 int ReadSensor(int sensorPort)
 {
+
 	uint64_t* data = (uint64_t*)ReadSensorData(sensorPort);
 	int32_t help=0;
 	if (!data)
@@ -372,6 +395,17 @@ int ReadSensor(int sensorPort)
 				return (-1)*(((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
 			}
 			return (((help>>4) & 0xFF)*10 + ((help & 0xF) * 10 / 15)) * 9/5 + 320;
+		//New for HiTechnic IRSEEKER V2
+		case HT_DIR_DC:
+			return *((DATA16*)data);
+		case HT_DIR_AC:
+			return *((DATA16*)data);
+		case HT_DIR_DALL:
+			return *((DATA16*)data);
+		case HT_DIR_AALL:
+			return *((DATA16*)data);
+		case HT_COMP:
+			return *((DATA16*)data)*2;
 		default: break;
 	}
 	return *((DATA16*)data);
@@ -502,6 +536,32 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
 				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
+				break;
+				//HiTechnic IR Seeker
+			case HT_DIR_DC:
+				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
+				devCon.Type[sensorPort]			= HT_DIR_TYPE;
+				devCon.Mode[sensorPort]			= HT_DIR_DC_MODE;
+				break;
+			case HT_DIR_AC:
+				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
+				devCon.Type[sensorPort]			= HT_DIR_TYPE;
+				devCon.Mode[sensorPort]			= HT_DIR_AC_MODE;
+				break;
+			case HT_DIR_DALL:
+				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
+				devCon.Type[sensorPort]			= IR_TYPE;
+				devCon.Mode[sensorPort]			= IR_REMOTE_MODE;
+				break;
+			case HT_DIR_AALL:
+				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
+				devCon.Type[sensorPort]			= IR_TYPE;
+				devCon.Mode[sensorPort]			= IR_REMOTE_MODE;
+				break;
+			case HT_COMP:
+				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
+				devCon.Type[sensorPort]			= HT_COMP_TYPE;
+				devCon.Mode[sensorPort]			= HT_COMP_MODE;
 				break;
 			default: return -1;
 		}
