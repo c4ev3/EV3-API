@@ -13,10 +13,9 @@ before_install:
   - export PATH="$PWD/arm-2009q1/bin:$PATH"
   - sudo apt-get install -y libc6-i386
   - cd API
-  - echo 'int main(void) { return EV3IsInitialized() == 1; }' > test.c
 
 before_script:
-  - arm-none-linux-gnueabi-gcc test.c libev3api.a -I. -include ev3.h
+  - make PREFIX=arm-none-linux-gnueabi- example
   - nm -g libev3api.a | tee symbols.before
   - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
 
@@ -25,7 +24,7 @@ script:
   - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
 
 after_script:
-  - arm-none-linux-gnueabi-gcc -Os -Wl,--gc-sections test.c -L. -lev3api -I. -include ev3.h
+  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Os -Wl,--gc-sections" example
   - nm -g libev3api.a | tee symbols.after
   - grep InitEV3 symbols.after || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
   - nm -g a.out

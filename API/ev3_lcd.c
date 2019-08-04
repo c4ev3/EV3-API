@@ -173,7 +173,7 @@ short dLcdGetFontHeight(uint8_t Font)
 
 typedef   struct
 {
-	const char  *pIconBits;
+	const unsigned char  *pIconBits;
 	const short IconSize;
 	const short IconHeight;
 	const short IconWidth;
@@ -440,7 +440,7 @@ char dLcdReadPixel(uint8_t *pImage, short X0, short Y0)
 	return (Result);
 }
 
-void dLcdDrawChar(uint8_t *pImage, char Color, short X0, short Y0, char Font, char Char)
+void dLcdDrawChar(uint8_t *pImage, char Color, short X0, short Y0, uint8_t Font, char Char)
 {
 	short CharWidth;
 	short CharHeight;
@@ -527,7 +527,7 @@ void dLcdDrawChar(uint8_t *pImage, char Color, short X0, short Y0, char Font, ch
 	}
 }
 
-void dLcdDrawText(uint8_t *pImage, char Color, short X0, short Y0, char Font, char *pText)
+void dLcdDrawText(uint8_t *pImage, char Color, short X0, short Y0, uint8_t Font, char *pText)
 {
 	while (*pText)
 	{
@@ -570,7 +570,7 @@ void dLcdDrawPicture(uint8_t *pImage,char Color,short X0,short Y0,short IconWidt
 	}
 }
 
-void dLcdDrawIcon(uint8_t *pImage, char Color, short X0, short Y0, char Icon, char Num)
+void dLcdDrawIcon(uint8_t *pImage, char Color, short X0, short Y0, char Icon, uint8_t Num)
 {
 	short IconByteIndex;
 	short IconHeight;
@@ -580,7 +580,7 @@ void dLcdDrawIcon(uint8_t *pImage, char Color, short X0, short Y0, char Icon, ch
 	IconHeight = dLcdGetIconHeight(Icon);
 	IconWidth  = dLcdGetIconWidth(Icon);
 
-	if ((Num >= 0) && (Num <= dLcdGetNumIcons(Icon)))
+	if (Num <= dLcdGetNumIcons(Icon))
 	{
 		pIconBits     = dLcdGetIconBits(Icon);
 		IconByteIndex = ((short)Num * IconWidth * IconHeight) / 8;
@@ -927,6 +927,9 @@ bool LcdText(char Color, short X, short Y, char* Text)
 bool LcdIcon(char Color, short X, short Y, char IconType, char IconNum)
 {
 	if (!LcdInitialized())
+		return false;
+
+	if ((signed char)IconNum < 0)
 		return false;
 
 	dLcdDrawIcon(LCDInstance.pLcd, Color, X, Y, IconType, IconNum);
@@ -1721,7 +1724,7 @@ int vasprintf(char **buf, const char *fmt, va_list _va)
 
 	if (len < 0) return len;
 
-	*buf = malloc(len + 1);
+	*buf = (char*)malloc(len + 1);
 	if (!*buf)
 		return -1; /* out of memory */
 
@@ -1788,8 +1791,9 @@ int LcdPrintf(char color, const char *fmt, ...)
 		}
 		switch (*c)
 		{
-			case '\n': /* fallthrough */
+			case '\n':
 				Y0 += height + 2;
+				/* fall through */
 			case '\r':
 				X0 = 0;
 				break;
@@ -1884,8 +1888,9 @@ int TermPrintf(const char *fmt, ...)
         }
 		switch (*c)
 		{
-			case '\n': /* fallthrough */
+			case '\n':
 				Y0 += height + 2;
+				/* fallthrough */
 			case '\r':
 				X0 = 0;
 				break;
