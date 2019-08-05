@@ -83,6 +83,10 @@
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
 
+//NXT-Ultrasonic
+#define NXT_US_TYPE 5
+#define NXT_DIST_CM_MODE 0  // NXT-Ultrasonic-Cm
+
 /***********************************/
 
 int g_uartFile = 0;
@@ -266,6 +270,7 @@ void* ReadSensorData(int sensorPort)
 		case NXT_IR_SEEKER:
 		case NXT_TEMP_C:
 		case NXT_TEMP_F:
+        case NXT_US_DIST_CM:
 			return readIicSensor(sensorPort);
 		default: return 0;
 	}
@@ -319,8 +324,8 @@ int ReadSensor(int sensorPort)
 			// Ultrasonic
 		case US_DIST_CM:
 			return (*((DATA16*)data)&0x0FFF)/10;
-		case US_DIST_MM:
-			return *((DATA16*)data)&0x0FFF;
+        case NXT_US_DIST_CM:
+        case US_DIST_MM:
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
 			// Gyroskop
@@ -501,7 +506,12 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_NXT_IIC;
 				devCon.Type[sensorPort] 		= NXT_TEMP_TYPE;
 				devCon.Mode[sensorPort] 		= NXT_TEMP_F_MODE;
-				break;
+                break;
+            case NXT_US_DIST_CM:
+                devCon.Connection[sensorPort] = CONN_NXT_IIC;
+                devCon.Type[sensorPort] = NXT_US_TYPE;
+                devCon.Mode[sensorPort] = NXT_DIST_CM_MODE;
+                break;
 			default: return -1;
 		}
 	}
