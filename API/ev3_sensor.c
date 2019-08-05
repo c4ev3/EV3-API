@@ -65,6 +65,8 @@
 #define GYRO_TYPE 32
 #define GYRO_ANG_MODE 0 	// angle
 #define GYRO_RATE_MODE 1	// rate
+// tilt mode is not mentioned in the Lego ev3 firmware dev kit doc but is supported by modern ev3 Gyro sensors
+#define GYRO_TILT_ANG_MODE 6
 
 // Infrared
 #define IR_TYPE 33
@@ -265,6 +267,7 @@ void* ReadSensorData(int sensorPort)
 			// Gyroskop
 		case GYRO_ANG:
 		case GYRO_RATE:
+		case GYRO_TILT_ANG:
 			// Infrared
 		case IR_PROX:
 		case IR_SEEK:
@@ -335,6 +338,7 @@ int ReadSensor(int sensorPort)
 			return (*((DATA16*)data)&0x0FFF)/10;
 		case GYRO_ANG:
 		case GYRO_RATE:
+		case GYRO_TILT_ANG:
 			help = *(data)&0xFFFF;
 			if(help & 0x8000)
 			{
@@ -480,6 +484,11 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort] 	= CONN_INPUT_UART;
 				devCon.Type[sensorPort] 		= GYRO_TYPE;
 				devCon.Mode[sensorPort] 		= GYRO_RATE_MODE;
+				break;
+			case GYRO_TILT_ANG:
+				devCon.Connection[sensorPort] = CONN_INPUT_UART;
+				devCon.Type[sensorPort] = GYRO_TYPE;
+				devCon.Mode[sensorPort] = GYRO_TILT_ANG_MODE;
 				break;
 				// Infrared
 			case IR_PROX:
