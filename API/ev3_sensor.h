@@ -96,6 +96,7 @@ int SetIRBeaconCH(int sensorPort, int channel);
 //Gyroskop
 #define GYRO_ANG 8		// angle
 #define GYRO_RATE 9		// rate
+#define GYRO_TILT_ANG 13
 
 //Infrared
 #define IR_PROX 10		// Proximity
