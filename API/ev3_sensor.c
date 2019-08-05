@@ -83,6 +83,10 @@
 #define NXT_TEMP_C_MODE 0	// Temperature in C
 #define NXT_TEMP_F_MODE 1	// Temperature in F
 
+//NXT-Ultrasonic
+#define NXT_US_TYPE 5
+#define NXT_DIST_CM_MODE 0  // NXT-Ultrasonic-Cm
+
 //HiTechnic IR Sensor
 #define HT_DIR_TYPE 52
 #define HT_DIR_DC_MODE 0
@@ -277,6 +281,7 @@ void* ReadSensorData(int sensorPort)
 		case NXT_IR_SEEKER:
 		case NXT_TEMP_C:
 		case NXT_TEMP_F:
+		case NXT_US_DIST_CM:
 		//new for HiTechnic IRSEEKER V2
 		case HT_DIR_DC:
 		case HT_DIR_AC:
@@ -330,6 +335,7 @@ int ReadSensor(int sensorPort)
 		case COL_AMBIENT:
 		case COL_COLOR:
 			// Ultrasonic
+		case NXT_US_DIST_CM:
 		case US_DIST_MM:
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
@@ -547,6 +553,11 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4)
 				devCon.Connection[sensorPort]	= CONN_NXT_IIC;
 				devCon.Type[sensorPort]			= HT_COMP_TYPE;
 				devCon.Mode[sensorPort]			= HT_COMP_MODE;
+				break;
+			case NXT_US_DIST_CM:
+				devCon.Connection[sensorPort] = CONN_NXT_IIC;
+				devCon.Type[sensorPort] = NXT_US_TYPE;
+				devCon.Mode[sensorPort] = NXT_DIST_CM_MODE;
 				break;
 			default: return -1;
 		}
