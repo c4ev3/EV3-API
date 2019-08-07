@@ -25,7 +25,7 @@ int ReadEV3GyroSensor(int port, EV3GyroMode mode) {
     setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
 
     uint64_t angleAndRate;
-    readFromUART(port, &angleAndRate, 4);
+    readFromUART(port, (DATA8 *) &angleAndRate, 4);
 
     if (mode == EV3GyroAngle) {
         int angle = getAngleFromAngleAndRate(angleAndRate);
@@ -63,7 +63,7 @@ void ResetEV3GyroSensor(int port) {
 
 void setEV3GyroSensorMode(int port, int mode) {
     EV3Gyro->currentSensorMode[port] = mode;
-    return setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, mode);
+    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, mode);
 }
 
 void setEV3GyroSoftwareReset(int port) {

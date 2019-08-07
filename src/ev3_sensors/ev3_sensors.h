@@ -24,10 +24,14 @@ typedef struct SensorHandler {
 #include "nxt_sound.h"
 #include "ht_compass.h"
 
+bool SensorInit ();
+
 bool SetSensor (int port, SensorHandler * sensor);
 
 SensorHandler * GetSensor (int port);
 
 bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler * port3, SensorHandler * port4);
+
+void SensorExit ();
 
 #endif //EV3_API_EV3_SENSORS_H

@@ -9,7 +9,7 @@ DEVCON devCon;
 
 static bool ev3SensorsInitialized = false;
 
-bool initInput() {
+bool InputInit() {
     if (ev3SensorsInitialized) {
         return false;
     }
@@ -20,14 +20,14 @@ bool initInput() {
     bool uartInitialized = initEV3UARTInput(analogSensors);
     bool iicInitialized = initEV3IICnput();
     if (!uartInitialized || !iicInitialized) {
-        exitInput();
+        InputExit();
         return false;
     }
     ev3SensorsInitialized = true;
     return true;
 }
 
-void exitInput(){
+void InputExit(){
     exitEV3AnalogInput();
     exitEV3UARTInput();
     exitEV3IICInput();

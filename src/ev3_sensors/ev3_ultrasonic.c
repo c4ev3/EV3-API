@@ -20,7 +20,7 @@ int ReadEV3UltrasonicSensorDistance(int port, EV3UltrasonicDistanceUnit mode) {
     setEV3UltrasonicSensorMode(port, getEV3UltrasonicSensorDistanceModeConstant(mode));
 
     DATA16 data;
-    readFromUART(port, &data, 2);
+    readFromUART(port, (DATA8 *) &data, 2);
 
     int distance = data & 0x0FFF;
     if (mode == CM) {

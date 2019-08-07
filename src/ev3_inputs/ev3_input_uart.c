@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
+#include <unistd.h>
 #include "../../copied/lms2012/ev3_uart.h"
 #include "../ev3_wait.h"
 #include "../ev3_constants.h"

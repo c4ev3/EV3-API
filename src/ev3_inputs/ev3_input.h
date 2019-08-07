@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 
-bool initInput();
+bool InputInit();
 
-void exitInput();
+void InputExit();
 
 
 
