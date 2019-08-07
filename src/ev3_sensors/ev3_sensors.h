@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "../ev3_constants.h"
+#include "back_compatibility.h"
 
 #define NONE_MODE -1
 
