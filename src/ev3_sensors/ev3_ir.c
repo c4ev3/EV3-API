@@ -15,6 +15,7 @@ SensorHandler * EV3Ir = &(SensorHandler){
 
 bool initEV3IrSensor (int port) {
     setEV3IrSensorMode(port, EV3_IR_SENSOR_DEFAULT_MODE);
+    return true;
 }
 
 
@@ -58,6 +59,14 @@ int ReadEV3IrSensorProximity (int port) {
 void setEV3IrSensorMode(int port, int mode) {
     EV3Ir->currentSensorMode[port] = mode;
     setUARTSensorMode(port, EV3_IR_SENSOR_TYPE, mode);
+    Wait(200);
+}
+
+int ReadEV3IrSensorRemote (int port, int channel) {
+    setEV3IrSensorMode(port, EV3_IR_SENSOR_REMOTE_MODE);
+    DATA8 data[EV3_IR_CHANNELS];
+    readFromUART(port, data, EV3_IR_CHANNELS);
+    return data[channel];
 }
 
 void exitEV3IrSensor () {

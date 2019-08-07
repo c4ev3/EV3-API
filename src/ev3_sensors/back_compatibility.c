@@ -79,7 +79,7 @@ int ReadSensor(int port) {
         case IR_SEEK:
             return readEV3IrSensorSeekForBackCompatibility(port);
         case IR_REMOTE:
-            // TODO: Implement
+            return ReadEV3IrSensorRemote(port, ev3IrSensorChannel[port]);
         case NXT_IR_SEEKER:
             return ReadHTIrSensor(port, Modulated);// TODO: is 'Modulated' the default mode?
         case NXT_TEMP_C:

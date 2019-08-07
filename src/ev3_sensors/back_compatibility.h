@@ -32,24 +32,6 @@
 #define NXT_TEMP_C 21 	// Temperature in C
 #define NXT_TEMP_F 22 	// Temperature in F
 
-// Infrared Beacon Buttons
-#define BEACON_CH_1 0
-#define BEACON_CH_2 1
-#define BEACON_CH_3 2
-#define BEACON_CH_4 3
-#define BEACON_OFF 			0
-#define BEACON_UP_LEFT 		1
-#define BEACON_DOWN_LEFT 	2
-#define BEACON_UP_RIGHT 	3
-#define BEACON_DOWN_RIGHT 	4
-#define BEACON_UP			5
-#define BEACON_DIAG_UP_LEFT		6
-#define BEACON_DIAG_UP_RIGHT	7
-#define BEACON_DOWN 		8
-#define BEACON_ON			9
-#define BEACON_LEFT 		10
-#define BEACON_RIGHT 		11
-
 /**
  * Initializes the sensors. This function may be called only once at the beginning
  * @param name_1
