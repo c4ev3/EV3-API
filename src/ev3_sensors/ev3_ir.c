@@ -58,9 +58,12 @@ int ReadEV3IrSensorProximity (int port) {
 }
 
 void setEV3IrSensorMode(int port, int mode) {
+    int previousMode = EV3Ir->currentSensorMode[port];
     EV3Ir->currentSensorMode[port] = mode;
     setUARTSensorMode(port, EV3_IR_SENSOR_TYPE, mode);
-    Wait(200);
+    if (previousMode != mode) {
+        Wait(200);
+    }
 }
 
 int ReadEV3IrSensorRemote (int port, int channel) {

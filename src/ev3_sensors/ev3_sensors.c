@@ -5,7 +5,7 @@
 
 static SensorHandler *currentSensorHandlers[NUM_INPUTS] = {NULL, NULL, NULL, NULL};
 
-bool SensorsInit() {
+bool SensorInit() {
     return true;
 }
 
