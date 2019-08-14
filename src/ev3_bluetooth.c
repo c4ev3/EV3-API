@@ -4,10 +4,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <bluetooth/rfcomm.h>
+#include "../copied/bluetooth/bluetooth.h"
+#include "../copied/bluetooth/hci.h"
+#include "../copied/bluetooth/hci_lib.h"
+#include "../copied/bluetooth/rfcomm.h"
 #include <errno.h>
 #include <poll.h>
 #include <sys/types.h>
