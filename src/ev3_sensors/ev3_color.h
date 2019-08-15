@@ -10,6 +10,7 @@
 
 extern SensorHandler * EV3Color;
 
+// TODO: Some of these are not colors returned from the sensor, remove them
 typedef enum Color {
     None,
     Black,
@@ -47,6 +48,11 @@ int ReadEV3ColorSensorLight(int port, EV3ColorLightReadingMode mode);
 
 Color ReadEV3ColorSensor(int port);
 
+/**
+ * Read RGB values. Each value ranges from 0 to 1023
+ * @param port
+ * @return
+ */
 RGB ReadEV3ColorSensorRGB(int port);
 
 void exitEV3ColorSensor(int port);
