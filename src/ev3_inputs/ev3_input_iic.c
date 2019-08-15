@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include "../../copied/lms2012/ev3_iic.h"
+#include "../ev3_wait.h"
+#include "../ev3_constants.h"
 #include "ev3_input_iic.h"
 #include "ev3_input.h"
 
@@ -17,10 +19,11 @@
 static bool ev3IICInputInitialized = false;
 static int iicFile = 0;
 static IIC* iicSensors = 0;
+static int ev3IICDeviceAddresses[NUM_INPUTS];
 
 extern DEVCON devCon;
 
-bool initEV3IICnput() {
+bool initEV3IICInput() {
     if (ev3IICInputInitialized) {
         return false;
     }
@@ -38,7 +41,8 @@ bool initEV3IICnput() {
 }
 
 
-bool initIICPort(int port) {
+bool initIICPort(int port, int deviceAddress) {
+    ev3IICDeviceAddresses[port] = deviceAddress;
     devCon.Connection[port] = CONN_NXT_IIC;
     devCon.Type[port] = IIC_SENSOR_TYPE;
     devCon.Mode[port] = IIC_SENSOR_BYTE_MODE;
@@ -46,7 +50,22 @@ bool initIICPort(int port) {
     return true;
 }
 
-int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
+int readFromIIC(int port, int registerAddress, DATA8 * buffer, int length) {
+    DATA8 request[1] = { registerAddress };
+    writeToIIC(port, request, 1, 1, 0, length);
+    Wait(1);
+    return readFromIICSharedMemory(port, buffer, length);
+}
+
+/**
+ * Read values, received from IIC device, from shared memory.
+ * You need to call this function to get the read value from the sensor after calling writeToIIC or startPollingFromIIC.
+ * @param sensorPort
+ * @param buffer
+ * @param length
+ * @return bytes read count
+ */
+int readFromIICSharedMemory(int sensorPort, DATA8 * buffer, int length) {
     if (!ev3IICInputInitialized) {
         return -1;
     }
@@ -58,20 +77,24 @@ int readFromIIC (int sensorPort, DATA8 * buffer, int length) {
 }
 
 /**
- * Writes to the IIC device connected to the sensor port.
- * If repeatTimes is zero, the message will be sent for ever until a new call this function is made.
- * When reèeatTimes is 1, the message will be sent only one time.
-*/
-void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int toWriteLength, int repeatTimes, int repeatInterval,  int responseLength) {
+ * Writes to IIC device connected to sensor port
+ * @param port
+ * @param toWrite
+ * @param toWriteLength
+ * @param repeatTimes how many times send the message. If 0 the message is sent every repeatInterval milliseconds.
+ * @param repeatInterval delay between consecutive writings
+ * @param responseLength number of bytes that will be read from the IIC device and copied to shared memory
+ */
+void writeToIIC(int port, DATA8 * toWrite, int toWriteLength, int repeatTimes, int repeatInterval, int responseLength) {
     static IICDAT IicDat;
-    IicDat.Port = sensorPort;
+    IicDat.Port = port;
     IicDat.Time = repeatInterval;
     IicDat.Repeat = repeatTimes;
     IicDat.RdLng = -responseLength;
 
     // the first byte of data is the length of data to send
     IicDat.WrLng = toWriteLength + 1;
-    IicDat.WrData[0] = address;
+    IicDat.WrData[0] = ev3IICDeviceAddresses[port];
 
     int i;
     for (i = 0; i < toWriteLength; i++) {
@@ -82,6 +105,19 @@ void writeIicRequestUsingIoctl(int sensorPort, int address, DATA8 toWrite[], int
     while (IicDat.Result) {
         ioctl(iicFile, IIC_SETUP, &IicDat);
     }
+}
+
+/**
+ * Start to continuously send an IIC message to ask for data. The data from the sensor can be
+ * read using readFromIICSharedMemory
+ * @param sensorPort
+ * @param registerAddress
+ * @param pollDelay
+ */
+void startPollingFromIIC(int sensorPort, int registerAddress, int pollDelay) {
+    DATA8 request[] = {registerAddress};
+    Wait(pollDelay); // TODO: investigate. Without this it doesn't always work. Maybe we need to receive at least one value?
+    writeToIIC(sensorPort, request, 1, 0, pollDelay, 1);
 }
 
 void exitEV3IICInput() {

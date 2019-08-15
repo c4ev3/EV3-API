@@ -16,14 +16,15 @@ static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
 
 
 bool initHTCompassSensor(int port) {
-    initIICPort(port);
+    initIICPort(port, HT_COMPASS_SENSOR_IIC_ADDRESS);
+    return true;
 }
 
 
 int ReadHTCompassSensor(int port, HTCompassMode mode) {
     HTCompass->currentSensorMode[port] = mode; // TODO: this is not the kind of value used for other sensors
     DATA8 data;
-    readFromIIC(port, &data, 1);
+    readFromIIC(port, 0x42, &data, 1);
 
     if (mode == HTCompassCompass) {
         return ((data & 0xFF) << 1);
@@ -35,16 +36,15 @@ int ReadHTCompassSensor(int port, HTCompassMode mode) {
 
 void StartHTCompassCalibration(int port) {
     DATA8 request[] = {0x41, 0x43};
-    writeIicRequestUsingIoctl(port, HT_COMPASS_SENSOR_IIC_ADDRESS, request, 2, 1, 0, 1);
+    writeToIIC(port, request, 2, 1, 0, 1);
     htCompassIsCalibrating[port] = true;
 }
 
 void StopHTCompassCalibration(int port) {
     DATA8 request[] = {0x41, 0x00};
-    writeIicRequestUsingIoctl(port, HT_COMPASS_SENSOR_IIC_ADDRESS, request, 2, 0, 100, 1);
+    writeToIIC(port, request, 2, 1, 0, 1);
     htCompassIsCalibrating[port] = false;
 }
-
 
 
 void exitHTCompassSensor(int port) {

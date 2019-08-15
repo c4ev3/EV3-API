@@ -18,7 +18,7 @@ bool initNXTTemperatureSensor (int port) {
 // TODO: Clean
 int ReadNXTTemperatureSensor(int port, NXTTemperatureUnit unit) {
     DATA16 data;
-    readFromIIC(port, (DATA8 *) &data, 2);
+    readFromIICSharedMemory(port, (DATA8 *) &data, 2);
     int temp = (data>>4) & 0x0FFF;
     // TODO: Clean
     if (unit == C) {

@@ -18,7 +18,7 @@ bool InputInit() {
 //        return false;
 //    }
     bool uartInitialized = initEV3UARTInput(analogSensors);
-    bool iicInitialized = initEV3IICnput();
+    bool iicInitialized = initEV3IICInput();
     if (!uartInitialized || !iicInitialized) {
         InputExit();
         return false;

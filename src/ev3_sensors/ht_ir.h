@@ -17,8 +17,6 @@ int ReadHTIrSensor(int port, HTIrSensorMode mode);
 void exitHTIrSensor(int port);
 
 /* Utility functions */
-void writeIicRequestToHTIrToReadRegister(int sensorPort, int registerAddress);
-void switchHTIrSensorModeIfNeeded(int port, HTIrSensorMode mode);
-void switchHTIrSensorMode(int port, HTIrSensorMode mode);
+int getHTIrRegisterForMode (HTIrSensorMode mode);
 
 #endif //EV3_API_HT_IR_H

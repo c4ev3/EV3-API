@@ -16,20 +16,24 @@ SensorHandler * HTIr = &(SensorHandler){
 };
 
 bool initHTIrSensor(int port) {
-    initIICPort(port);
+    initIICPort(port, HT_IR_SENSOR_IIC_ADDRESS);
     htIrInitialized[port] = true;
-    switchHTIrSensorMode(port, Modulated);
     return true;
 }
 
 
 // TODO: Untested modulated mode
 int ReadHTIrSensor(int port, HTIrSensorMode mode) {
-    switchHTIrSensorModeIfNeeded(port, mode);
     DATA8 data;
-    readFromIIC(port, &data, 1);
+    HTIr->currentSensorMode[port] = mode;
+    readFromIIC(port, getHTIrRegisterForMode(mode), &data, 1);
     return ((uint8_t)data) & 0x0Fu;
 }
+
+int getHTIrRegisterForMode (HTIrSensorMode mode) {
+    return mode == Modulated ? HT_IR_SENSOR_AC_MODE_REGISTER : HT_IR_SENSOR_DC_MODE_REGISTER;
+}
+
 
 void exitHTIrSensor(int port) {
     /**
@@ -37,26 +41,13 @@ void exitHTIrSensor(int port) {
      * If the user used this library and read the IR sensor in AC mode, the EV3 will show the AC values, saying that
      * they are DC values. This is why we need to switch back to the DC mode if we are in AC mode
     */
+    /*
+     * // TODO: NOT Working
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
-        switchHTIrSensorModeIfNeeded(i, Unmodulated);
-    }
+        if (htIrInitialized[port]) {
+            startPollingFromIIC(port, HT_IR_SENSOR_DC_MODE_REGISTER, 100);
+        }
+    }*/
 }
 
-void switchHTIrSensorModeIfNeeded(int port, HTIrSensorMode mode) {
-    if (htIrInitialized[port] && HTIr->currentSensorMode[port] != mode) {
-        switchHTIrSensorMode(port, mode);
-        HTIr->currentSensorMode[port] = mode;
-    }
-}
-
-void switchHTIrSensorMode(int port, HTIrSensorMode mode) {
-    int sensorRegister = mode == Modulated ? HT_IR_SENSOR_AC_MODE_REGISTER : HT_IR_SENSOR_DC_MODE_REGISTER;
-    writeIicRequestToHTIrToReadRegister(port, sensorRegister);
-}
-
-void writeIicRequestToHTIrToReadRegister(int sensorPort, int registerAddress) {
-    DATA8 request[] = {registerAddress};
-    Wait(100); // TODO: investigate. Without this it doesn't always work. Maybe we need to receive at least one value?
-    writeIicRequestUsingIoctl(sensorPort, HT_IR_SENSOR_IIC_ADDRESS, request, 1, 0, 100, 1);
-}
