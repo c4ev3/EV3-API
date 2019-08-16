@@ -4,8 +4,6 @@
 #include "ev3_gyro.h"
 
 #define EV3_GYRO_SENSOR_TYPE                32
-#define EV3_GYRO_SENSOR_ANGLE_MODE          0
-#define EV3_GYRO_SENSOR_RATE_MODE           1
 #define EV3_GYRO_SENSOR_DEFAULT_MODE        EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE
 
 int ev3GyroSoftwareResetOffset[] = {0, 0, 0, 0};
@@ -18,11 +16,12 @@ SensorHandler * EV3Gyro = &(SensorHandler){
 
 bool initEV3GyroSensor (int port) {
     setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_DEFAULT_MODE);
+    return true;
 }
 
 
-int ReadEV3GyroSensor(int port, EV3GyroMode mode) {
-    setUARTSensorMode(port, EV3_GYRO_SENSOR_TYPE, EV3_GYRO_SENSOR_DEFAULT_MODE);
+int ReadEV3GyroSensor(int port, EV3GyroReadingMode mode) {
+    setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_DEFAULT_MODE);
 
     uint64_t angleAndRate;
     readFromUART(port, (DATA8 *) &angleAndRate, 4);

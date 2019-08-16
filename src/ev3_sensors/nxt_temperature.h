@@ -3,6 +3,9 @@
 
 #include "ev3_sensors.h"
 
+#define NXT_TEMPERATURE_SENSOR_DEFAULT_MODE 0
+
+
 extern SensorHandler * NXTTemperature;
 
 typedef enum NXTTemperatureUnit {

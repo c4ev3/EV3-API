@@ -17,7 +17,7 @@ bool initEV3UltrasonicSensor (int port) {
 
 
 int ReadEV3UltrasonicSensorDistance(int port, EV3UltrasonicDistanceUnit mode) {
-    setEV3UltrasonicSensorMode(port, getEV3UltrasonicSensorDistanceModeConstant(mode));
+    setEV3UltrasonicSensorMode(port, getEV3UltrasonicSensorModeFromDistanceUnit(mode));
 
     DATA16 data;
     readFromUART(port, (DATA8 *) &data, 2);
@@ -29,7 +29,7 @@ int ReadEV3UltrasonicSensorDistance(int port, EV3UltrasonicDistanceUnit mode) {
     return distance;
 }
 
-int getEV3UltrasonicSensorDistanceModeConstant(EV3UltrasonicDistanceUnit mode){
+int getEV3UltrasonicSensorModeFromDistanceUnit(EV3UltrasonicDistanceUnit mode){
     if (mode == IN) {
         return EV3_ULTRASONIC_SENSOR_DISTANCE_IN_MODE;
     } else {

@@ -17,8 +17,17 @@ bool initEV3ColorSensor(int port) {
     return true;
 }
 
-int ReadEV3ColorSensorLight(int port, LightMode lightMode) {
-    return readEV3ColorSensorRawValue(port, lightMode);
+int ReadEV3ColorSensorLight(int port, EV3ColorLightReadingMode lightMode) {
+    int sensorMode = getEV3ColorSensorModeFromReadingLightMode(lightMode);
+    return readEV3ColorSensorRawValue(port, sensorMode);
+}
+
+int getEV3ColorSensorModeFromReadingLightMode(EV3ColorLightReadingMode readingLightMode) {
+    if (readingLightMode == ReflectedLight) {
+        return EV3_COLOR_SENSOR_REFLECT_MODE;
+    } else {
+        return EV3_COLOR_SENSOR_AMBIENT_MODE;
+    }
 }
 
 Color ReadEV3ColorSensor(int port) {

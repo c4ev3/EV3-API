@@ -17,11 +17,12 @@ static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
 
 bool initHTCompassSensor(int port) {
     initIICPort(port, HT_COMPASS_SENSOR_IIC_ADDRESS);
+    HTCompass->currentSensorMode[port] = HT_COMPASS_SENSOR_DEFAULT_MODE;
     return true;
 }
 
 
-int ReadHTCompassSensor(int port, HTCompassMode mode) {
+int ReadHTCompassSensor(int port, HTCompassReadingMode mode) {
     HTCompass->currentSensorMode[port] = mode; // TODO: this is not the kind of value used for other sensors
     DATA8 data;
     readFromIIC(port, 0x42, &data, 1);

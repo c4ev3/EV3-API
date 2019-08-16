@@ -5,6 +5,8 @@
 #define NXT_SOUND_SENSOR_DB_MODE    0
 #define NXT_SOUND_SENSOR_DBA_MODE   1
 
+// TODO: Default mode
+
 SensorHandler * NXTSound = &(SensorHandler){
         .Init = initNXTSoundSensor,
         .Exit = exitNXTSoundSensor,
@@ -12,11 +14,11 @@ SensorHandler * NXTSound = &(SensorHandler){
 };
 
 bool initNXTSoundSensor (int port) {
-    NXTSound->currentSensorMode[port] = 0;
+    NXTSound->currentSensorMode[port] = NXT_SOUND_SENSOR_DEFAULT_MODE;
     return true;
 }
 
-int ReadNXTSoundSensor(int port, NXTSoundSensorMode mode) {
+int ReadNXTSoundSensor(int port, NXTSoundReadingMode mode) {
     // TODO: Implement mode switching
     DATA16 data = readOldDumbSensor(port);
     int temp = data;

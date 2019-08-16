@@ -10,7 +10,7 @@ SensorHandler * NXTTemperature = &(SensorHandler) {
 };
 
 bool initNXTTemperatureSensor (int port) {
-    NXTSound->currentSensorMode[port] = 0;
+    NXTSound->currentSensorMode[port] = NXT_TEMPERATURE_SENSOR_DEFAULT_MODE;
     return true;
 }
 

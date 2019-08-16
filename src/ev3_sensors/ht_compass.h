@@ -3,16 +3,18 @@
 
 #include "ev3_sensors.h"
 
+#define HT_COMPASS_SENSOR_DEFAULT_MODE 0
+
 extern SensorHandler * HTCompass;
 
-typedef enum HTCompassMode {
+typedef enum HTCompassReadingMode {
     HTCompassCompass,
     HTCompassAngle
-} HTCompassMode;
+} HTCompassReadingMode;
 
 bool initHTCompassSensor(int port);
 
-int ReadHTCompassSensor(int port, HTCompassMode mode);
+int ReadHTCompassSensor(int port, HTCompassReadingMode mode);
 
 void StartHTCompassCalibration(int port);
 

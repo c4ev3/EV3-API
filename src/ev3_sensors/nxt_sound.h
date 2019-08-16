@@ -3,17 +3,19 @@
 
 #include "ev3_sensors.h"
 
+#define NXT_SOUND_SENSOR_DEFAULT_MODE 0
+
 extern SensorHandler * NXTSound;
 
 // TODO: Mode not implemented yet
-typedef enum NXTSoundSensorMode {
+typedef enum NXTSoundReadingMode {
     DB,
     DBA
-} NXTSoundSensorMode;
+} NXTSoundReadingMode;
 
 bool initNXTSoundSensor (int port);
 
-int ReadNXTSoundSensor(int port, NXTSoundSensorMode mode);
+int ReadNXTSoundSensor(int port, NXTSoundReadingMode mode);
 
 void exitNXTSoundSensor(int port);
 

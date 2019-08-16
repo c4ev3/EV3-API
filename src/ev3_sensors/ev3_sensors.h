@@ -11,6 +11,18 @@ typedef struct SensorHandler {
     bool (*Init)(int port);
     void (*Exit)(int port);
 
+    /**
+     * Contains a value for each sensor that represents the mode in which the sensor it's working.
+     *
+     * For example take the EV3 ultrasonic sensor:
+     * the currentSensorMode could have three different values:
+     * - listen mode
+     * - distance mode mm
+     * - distance mode in
+     *
+     * Reading the distance in cm is a different reading mode, because the conversion is done from code, it's not a value
+     * that we receive from the sensor.
+     */
     int currentSensorMode[NUM_INPUTS];
 } SensorHandler;
 

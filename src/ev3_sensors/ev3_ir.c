@@ -22,8 +22,6 @@ bool initEV3IrSensor (int port) {
 
 EV3IrSeekResult ReadEV3IrSensorSeek (int port) {
     setEV3IrSensorMode(port, EV3_IR_SENSOR_SEEK_MODE);
-    // TODO: test
-    //setUARTSensorModeIfNeeded(port, EV3_IR_SENSOR_TYPE, EV3_IR_SENSOR_SEEK_MODE);
 
     /**
      * The first byte of data contains the bearing, the second the distance.

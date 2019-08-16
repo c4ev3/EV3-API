@@ -38,7 +38,6 @@ typedef struct EV3IrSeekResult {
 
 bool initEV3IrSensor (int port);
 
-
 EV3IrSeekResult ReadEV3IrSensorSeek (int port);
 
 int ReadEV3IrSensorProximity (int port);

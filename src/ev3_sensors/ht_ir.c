@@ -4,10 +4,8 @@
 
 #define HT_IR_SENSOR_IIC_ADDRESS 0x08
 
-#define HT_IR_SENSOR_DC_MODE_REGISTER 0x42
-#define HT_IR_SENSOR_AC_MODE_REGISTER 0x49
-
-static bool htIrInitialized[NUM_INPUTS] = {false, false, false, false};
+#define HT_IR_SENSOR_DC_READING_MODE_REGISTER 0x42
+#define HT_IR_SENSOR_AC_READING_MODE_REGISTER 0x49
 
 SensorHandler * HTIr = &(SensorHandler){
     .Init = initHTIrSensor,
@@ -17,21 +15,21 @@ SensorHandler * HTIr = &(SensorHandler){
 
 bool initHTIrSensor(int port) {
     initIICPort(port, HT_IR_SENSOR_IIC_ADDRESS);
-    htIrInitialized[port] = true;
+    HTIr->currentSensorMode[port] = HT_IR_SENSOR_DEFAULT_MODE;
     return true;
 }
 
 
 // TODO: Untested modulated mode
-int ReadHTIrSensor(int port, HTIrSensorMode mode) {
+int ReadHTIrSensor(int port, HTIrReadingMode mode) {
     DATA8 data;
     HTIr->currentSensorMode[port] = mode;
-    readFromIIC(port, getHTIrRegisterForMode(mode), &data, 1);
+    readFromIIC(port, getHTIrRegisterForReadingMode(mode), &data, 1);
     return ((uint8_t)data) & 0x0Fu;
 }
 
-int getHTIrRegisterForMode (HTIrSensorMode mode) {
-    return mode == Modulated ? HT_IR_SENSOR_AC_MODE_REGISTER : HT_IR_SENSOR_DC_MODE_REGISTER;
+int getHTIrRegisterForReadingMode(HTIrReadingMode mode) {
+    return mode == Modulated ? HT_IR_SENSOR_AC_READING_MODE_REGISTER : HT_IR_SENSOR_DC_READING_MODE_REGISTER;
 }
 
 
@@ -46,7 +44,7 @@ void exitHTIrSensor(int port) {
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
         if (htIrInitialized[port]) {
-            startPollingFromIIC(port, HT_IR_SENSOR_DC_MODE_REGISTER, 100);
+            startPollingFromIIC(port, HT_IR_SENSOR_DC_READING_MODE_REGISTER, 100);
         }
     }*/
 }
