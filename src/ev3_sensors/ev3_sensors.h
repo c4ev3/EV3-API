@@ -36,6 +36,7 @@ typedef struct SensorHandler {
 #include "nxt_sound.h"
 #include "ht_compass.h"
 
+
 bool SensorInit ();
 
 bool SetSensor (int port, SensorHandler * sensor);
