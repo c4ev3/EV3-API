@@ -5,6 +5,7 @@
 
 #define HT_IR_SENSOR_DEFAULT_MODE 0
 
+// TODO: Specify version 2
 extern SensorHandler * HTIr;
 
 typedef enum HTIrReadingMode {
