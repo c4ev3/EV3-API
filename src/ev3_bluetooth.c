@@ -4,15 +4,17 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <poll.h>
+#include <ctype.h>
 #include "../copied/bluetooth/bluetooth.h"
 #include "../copied/bluetooth/hci.h"
 #include "../copied/bluetooth/hci_lib.h"
 #include "../copied/bluetooth/rfcomm.h"
-#include <errno.h>
-#include <poll.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
 #include "ev3_bluetooth.h"
 
 #define DEFAULT_C4EV3_RFCOMM_CHANNEL    2

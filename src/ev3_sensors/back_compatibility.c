@@ -15,7 +15,7 @@ int SetAllSensorMode(int name_1, int name_2, int name_3, int name_4) {
     return 0;
 }
 
-int initializeAllSensors () {
+void initializeAllSensors () {
     initializeBackCompatibilityIfNeeded();
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
@@ -26,6 +26,7 @@ int initializeAllSensors () {
         }
     }
 }
+
 
 static bool backCompatibilityInitialized = false;
 

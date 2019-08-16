@@ -47,7 +47,7 @@ int ReadSensor(int sensorPort);
 int SetIRBeaconCH(int sensorPort, int channel);
 
 /* utility functions */
-int initializeAllSensors ();
+void initializeAllSensors ();
 void initializeBackCompatibilityIfNeeded ();
 int readEV3IrSensorSeekForBackCompatibility (int port);
 
