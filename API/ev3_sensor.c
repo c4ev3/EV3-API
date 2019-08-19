@@ -451,7 +451,9 @@ int SetSensorMode(int sensorPort, int name)
 			break;
 		default: return -1;
 	}
-
+	// Set actual device mode
+	ioctl(g_uartFile, UART_SET_CONN, &devCon);
+	//ioctl(g_iicFile, IIC_SET_CONN, &devCon);
 	return 0;
 }
 
