@@ -390,6 +390,67 @@ int ReadSensor(int sensorPort)
 	return *((DATA16*)data);
 }
 
+// gives the raw values of rgb, from 0 to 1023
+int ReadSensorRed(int sensorPort)
+{
+	uint64_t* data = ReadSensorData(sensorPort);
+	int32_t help=0;
+	if (!data)
+		return -1;
+
+	switch (sensor_setup_NAME[sensorPort])
+	{
+		case COL_COLOR_RGB: {
+			uint16_t rgb[3];
+			memcpy(rgb, data, sizeof rgb);
+
+			return rgb[0];
+		}
+		default: break;
+	}
+	return -1;
+}
+// gives the raw values of rgb, from 0 to 1023
+int ReadSensorGreen(int sensorPort)
+{
+	uint64_t* data = ReadSensorData(sensorPort);
+	int32_t help=0;
+	if (!data)
+		return -1;
+
+	switch (sensor_setup_NAME[sensorPort])
+	{
+		case COL_COLOR_RGB: {
+			uint16_t rgb[3];
+			memcpy(rgb, data, sizeof rgb);
+
+			return rgb[1];
+		}
+		default: break;
+	}
+	return -1;
+}
+// gives the raw values of rgb, from 0 to 1023
+int ReadSensorBlue(int sensorPort)
+{
+	uint64_t* data = ReadSensorData(sensorPort);
+	int32_t help=0;
+	if (!data)
+		return -1;
+
+	switch (sensor_setup_NAME[sensorPort])
+	{
+		case COL_COLOR_RGB: {
+			uint16_t rgb[3];
+			memcpy(rgb, data, sizeof rgb);
+
+			return rgb[2];
+		}
+		default: break;
+	}
+	return -1;
+}
+
 /********************************************************************************************/
 /**
 * Initialisation for one Sensor 

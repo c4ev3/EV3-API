@@ -50,6 +50,9 @@ bool SensorsExit();
  * Returns a raw sensor value.
  */
 int ReadSensor(int sensorPort);
+int ReadSensorRed(int sensorPort);
+int ReadSensorGreen(int sensorPort);
+int ReadSensorBlue(int sensorPort);
 
 /**
  * Returns pointer to the current sensor value.
