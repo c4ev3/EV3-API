@@ -35,6 +35,8 @@ typedef struct SensorHandler {
 #include "nxt_temperature.h"
 #include "nxt_sound.h"
 #include "ht_compass.h"
+#include "ht_color.h"
+#include "pixy_cam.h"
 
 
 bool SensorInit ();

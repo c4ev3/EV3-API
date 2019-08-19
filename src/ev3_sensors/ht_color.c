@@ -8,10 +8,10 @@
 
 #define HT_COLOR_SENSOR_V2_MODE_REGISTER       0x41
 #define HT_COLOR_SENSOR_V2_COLOR_REGISTER      0x42
-#define HT_COLOR_SENSOR_V2_R_REGISTER          0x43
-#define HT_COLOR_SENSOR_V2_G_REGISTER          0x44
-#define HT_COLOR_SENSOR_V2_B_REGISTER          0x45
-#define HT_COLOR_SENSOR_V2_W_REGISTER          0x46 // TODO: Verify
+#define HT_COLOR_SENSOR_V2_R_1BYTE_REGISTER    0x43
+#define HT_COLOR_SENSOR_V2_G_1BYTE_REGISTER    0x44
+#define HT_COLOR_SENSOR_V2_B_1BYTE_REGISTER    0x45
+#define HT_COLOR_SENSOR_V2_W_1BYTE_REGISTER    0x46 // TODO: Verify
 
 
 SensorHandler * HTColorV2 = &(SensorHandler){
@@ -44,7 +44,7 @@ RGBA ReadHTColorSensorV2RGBA(int port, HTColorV2ReadingMode mode) {
 
 RGBA readHTColorV2RGBA1ByteColor(int port) {
     DATA8 data[4];
-    readFromIIC(port, HT_COLOR_SENSOR_V2_R_REGISTER, data, 4);
+    readFromIIC(port, HT_COLOR_SENSOR_V2_R_1BYTE_REGISTER, data, 4);
     return (RGBA) {
             .red    = ((data[0] && 0xff) * 1023) / 255,
             .green  = ((data[1] && 0xff) * 1023) / 255,
@@ -55,7 +55,7 @@ RGBA readHTColorV2RGBA1ByteColor(int port) {
 
 RGBA readHTColorV2RGBA2ByteColor(int port) {
     DATA8 data[8];
-    readFromIIC(port, HT_COLOR_SENSOR_V2_R_REGISTER, data, 8);
+    readFromIIC(port, 0x42, data, 8);
     return (RGBA) {
             .red    = ((data[0] && 0xff) << 8) | (data[1] && 0xff),
             .green  = ((data[2] && 0xff) << 8) | (data[3] && 0xff),
