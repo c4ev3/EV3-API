@@ -46,10 +46,10 @@ RGBA readHTColorV2RGBA1ByteColor(int port) {
     DATA8 data[4];
     readFromIIC(port, HT_COLOR_SENSOR_V2_R_1BYTE_REGISTER, data, 4);
     return (RGBA) {
-            .red    = ((data[0] && 0xff) * 1023) / 255,
-            .green  = ((data[1] && 0xff) * 1023) / 255,
-            .blue   = ((data[2] && 0xff) * 1023) / 255,
-            .white  = ((data[3] && 0xff) * 1023) / 255,
+            .red    = ((data[0] & 0xff) * 1023) / 255,
+            .green  = ((data[1] & 0xff) * 1023) / 255,
+            .blue   = ((data[2] & 0xff) * 1023) / 255,
+            .white  = ((data[3] & 0xff) * 1023) / 255,
     };
 }
 
@@ -57,10 +57,10 @@ RGBA readHTColorV2RGBA2ByteColor(int port) {
     DATA8 data[8];
     readFromIIC(port, 0x42, data, 8);
     return (RGBA) {
-            .red    = ((data[0] && 0xff) << 8) | (data[1] && 0xff),
-            .green  = ((data[2] && 0xff) << 8) | (data[3] && 0xff),
-            .blue   = ((data[4] && 0xff) << 8) | (data[5] && 0xff),
-            .white  = ((data[6] && 0xff) << 8) | (data[7] && 0xff),
+            .red    = ((data[0] & 0xff) << 8) | (data[1] & 0xff),
+            .green  = ((data[2] & 0xff) << 8) | (data[3] & 0xff),
+            .blue   = ((data[4] & 0xff) << 8) | (data[5] & 0xff),
+            .white  = ((data[6] & 0xff) << 8) | (data[7] & 0xff),
     };
 }
 
@@ -73,7 +73,6 @@ int getHTColorSensorV2ModeFromReadingMode(HTColorV2ReadingMode readingMode) {
         return HT_COLOR_SENSOR_V2_RAW_MODE;
     }
 }
-
 
 void setHTColorSensorV2Mode(int port, int sensorMode) {
     if (sensorMode != HTColorV2->currentSensorMode[port]) {
