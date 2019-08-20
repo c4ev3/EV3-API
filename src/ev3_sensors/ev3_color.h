@@ -10,7 +10,6 @@
 
 extern SensorHandler * EV3Color;
 
-// TODO: Some of these are not colors returned from the sensor, remove them
 typedef enum Color {
     None,
     Black,
@@ -19,16 +18,7 @@ typedef enum Color {
     Yellow,
     Red,
     White,
-    Brown,
-
-    // TODO: Colors below are not from the sensor, remove them
-    Orange,
-    Lime,
-    Violet,
-    Crimson,
-    Purple,
-    Grey,
-    Magenta
+    Brown
 } Color;
 
 typedef struct RGB {
