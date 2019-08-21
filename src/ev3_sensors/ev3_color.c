@@ -56,7 +56,7 @@ void setEV3ColorSensorMode(int port, int mode) {
 
 
 RGB ReadEV3ColorSensorRGB(int port) {
-    setUARTSensorMode(port, EV3_COLOR_SENSOR_TYPE, EV3_COLOR_SENSOR_RGB_MODE);
+    setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_RGB_MODE);
     EV3Color->currentSensorMode[port] = EV3_COLOR_SENSOR_RGB_MODE;
 
     /**
