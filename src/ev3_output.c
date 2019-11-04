@@ -391,19 +391,6 @@ bool OutputReset(uint8_t Outputs)
   }
 }
 
-/**
- * Wait some milliseconds according to the speed/power.
- * Without this delay, if a function to set the motor speed is called too frequently the motor behaves strangely.
- * We choose the delay according to the speed/power to keep it as low as possible, important if the robot is a line
- * follower or a self-balancing
- * @param powerOrSpeed
- */
-void waitAccordingToPowerOrSpeed(int powerOrSpeed) {
-    powerOrSpeed = abs(powerOrSpeed);
-    int delay = MAX(powerOrSpeed / 20, 2);
-    Wait(delay);
-}
-
 bool OutputSpeed(uint8_t Outputs, int8_t Speed)
 {
   if (!OutputInitialized())
@@ -421,9 +408,7 @@ bool OutputSpeed(uint8_t Outputs, int8_t Speed)
 	cmd[0] = opOutputSpeed;
 	cmd[1] = Outputs;
 	cmd[2] = Speed;
-	int res = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
-      waitAccordingToPowerOrSpeed(Speed);
-    return res;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
@@ -446,9 +431,7 @@ bool OutputPower(uint8_t Outputs, int8_t Power)
 	cmd[0] = opOutputPower;
 	cmd[1] = Outputs;
 	cmd[2] = Power;
-	int res = WriteToPWMDevice(cmd, cmdLen) == cmdLen;
-    waitAccordingToPowerOrSpeed(Power);
-	return res;
+	return WriteToPWMDevice(cmd, cmdLen) == cmdLen;
   }
   else
   {
