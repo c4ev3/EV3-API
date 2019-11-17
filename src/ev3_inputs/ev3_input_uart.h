@@ -2,8 +2,8 @@
 #define EV3_API_EV3_INPUT_UART_H
 
 #include <stdbool.h>
-#include "../../copied/lms2012/ev3_analog.h"
-#include "../../copied/lms2012/ev3_basictypes.h"
+#include "../../firmware_headers/lms2012/ev3_analog.h"
+#include "../../firmware_headers/lms2012/ev3_basictypes.h"
 
 bool initEV3UARTInput(ANALOG * analogSensors);
 

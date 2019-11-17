@@ -2,7 +2,7 @@
 #define EV3_API_EV3_INPUT_IIC_H
 
 #include <stdbool.h>
-#include "../../copied/lms2012/ev3_basictypes.h"
+#include "../../firmware_headers/lms2012/ev3_basictypes.h"
 
 bool initEV3IICInput();
 

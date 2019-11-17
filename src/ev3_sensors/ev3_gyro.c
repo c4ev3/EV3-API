@@ -1,5 +1,5 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../../copied/lms2012/ev3_basictypes.h"
+#include "../../firmware_headers/lms2012/ev3_basictypes.h"
 #include "../ev3_wait.h"
 #include "ev3_gyro.h"
 

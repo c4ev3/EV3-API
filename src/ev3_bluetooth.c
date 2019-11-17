@@ -10,10 +10,10 @@
 #include <errno.h>
 #include <poll.h>
 #include <ctype.h>
-#include "../copied/bluetooth/bluetooth.h"
-#include "../copied/bluetooth/hci.h"
-#include "../copied/bluetooth/hci_lib.h"
-#include "../copied/bluetooth/rfcomm.h"
+#include "../firmware_headers/bluetooth/bluetooth.h"
+#include "../firmware_headers/bluetooth/hci.h"
+#include "../firmware_headers/bluetooth/hci_lib.h"
+#include "../firmware_headers/bluetooth/rfcomm.h"
 
 #include "ev3_bluetooth.h"
 

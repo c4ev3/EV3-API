@@ -1,4 +1,4 @@
-#include "../../copied/lms2012/ev3_analog.h"
+#include "../../firmware_headers/lms2012/ev3_analog.h"
 #include "ev3_input.h"
 #include "ev3_input_uart.h"
 #include "ev3_input_analog.h"

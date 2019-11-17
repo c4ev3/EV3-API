@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "../../copied/lms2012/ev3_analog.h"
+#include "../../firmware_headers/lms2012/ev3_analog.h"
 #include "ev3_input_analog.h"
 
 
