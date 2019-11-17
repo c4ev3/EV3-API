@@ -248,6 +248,11 @@ int vasprintf(char **, const char *, va_list)
 #endif
 
 
+#define LCD_COLOR_BLACK 1
+#define LCD_COLOR_WHITE 0
+
+short LcdRowToY(int row);
+
 int Ev3Printf(const char *fmt, ...);
 
 /**
