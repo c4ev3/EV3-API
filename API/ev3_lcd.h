@@ -87,6 +87,9 @@ typedef enum {
 	ifPNG
 } ImageFormat;
 
+#define LCD_COLOR_BLACK 1
+#define LCD_COLOR_WHITE 0
+
 /*
 #define SCREEN_WIDTH 178
 #define SCREEN_HEIGHT 128
@@ -260,6 +263,7 @@ int asprintf(char **, const char *, ...);
 int vasprintf(char **, const char *, va_list)
 #endif
 
+
 /**
  * Print formatted text on the display. Works like the normal printf.
  * 
@@ -312,6 +316,17 @@ void LcdSetCursorX(short x);
  * \sa LcdSetCursorX(), LcdGetCursorX(), LcdGetCursorY(), LcdResetCursor()
  */
 void LcdSetCursorY(short y);
+
+/**
+ * \brief Get Y coordinate that corresponds to the specified row.
+ *
+ * Returns the y coordinate corresponding to the specified row, according to
+ * the character height of the current font.
+ *
+ * @param row
+ * @return y coordinate corresponding to the row
+ */
+short LcdRowToY(int row);
 
 /**
  * \brief Get the X coordinate of the text cursor.
