@@ -21,8 +21,8 @@
  * \note printf function added
  */
 
-#include "ev3_lcd.h"
-#include "ev3_timer.h"
+#include "../include/ev3_lcd.h"
+#include "../include/ev3_timer.h"
 #include <stdarg.h>
 
 #define DRAW_PIXELS_SET    0x00 //Basic options for pixel, line and shape drawing.

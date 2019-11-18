@@ -1,5 +1,5 @@
 #include "../ev3_inputs/ev3_input_iic.h"
-#include "../ev3_constants.h"
+#include "../../include/ev3_constants.h"
 #include "ht_compass.h"
 
 

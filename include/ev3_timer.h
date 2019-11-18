@@ -42,7 +42,7 @@ extern "C" {
 
 #ifndef DISABLE_TIMERS
 
-#include "ev3_constants.h"
+#include "../include/ev3_constants.h"
 
 typedef enum {
     ti10ms,

@@ -16,7 +16,7 @@
  */
 
 #include "ev3_inputs/ev3_input.h"
-#include "ev3.h"
+#include "../include/ev3.h"
 
 static bool initialized;
 int __attribute__((constructor)) InitEV3 (void)

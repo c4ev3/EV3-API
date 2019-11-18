@@ -1,5 +1,5 @@
 #include "../ev3_inputs/ev3_input_iic.h"
-#include "../ev3_wait.h"
+#include "../../include/ev3_wait.h"
 #include "ht_ir.h"
 
 #define HT_IR_SENSOR_IIC_ADDRESS 0x08

@@ -1,5 +1,5 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../ev3_wait.h"
+#include "../../include/ev3_wait.h"
 #include "ev3_ultrasonic.h"
 
 #define EV3_ULTRASONIC_SENSOR_TYPE              30

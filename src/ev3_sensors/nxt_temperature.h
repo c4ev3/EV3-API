@@ -1,22 +1,10 @@
-#ifndef EV3_API_NXT_TEMPERATURE_H
-#define EV3_API_NXT_TEMPERATURE_H
+#ifndef EV3_API_NXT_TEMPERATURE_PRIVATE_H
+#define EV3_API_NXT_TEMPERATURE_PRIVATE_H
 
-#include "ev3_sensors.h"
-
-#define NXT_TEMPERATURE_SENSOR_DEFAULT_MODE 0
-
-
-extern SensorHandler * NXTTemperature;
-
-typedef enum NXTTemperatureUnit {
-    C,
-    F
-} NXTTemperatureUnit;
+#include "../../include/ev3_sensors/nxt_temperature.h"
 
 bool initNXTTemperatureSensor(int port);
 
-int ReadNXTTemperatureSensor(int port, NXTTemperatureUnit unit);
-
 void exitNXTTemperatureSensor(int port);
 
-#endif //EV3_API_NXT_TEMPERATURE_H
+#endif

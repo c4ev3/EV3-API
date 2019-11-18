@@ -9,8 +9,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "../../firmware_headers/lms2012/ev3_uart.h"
-#include "../ev3_wait.h"
-#include "../ev3_constants.h"
+#include "../../include/ev3_wait.h"
+#include "../../include/ev3_constants.h"
 #include "ev3_input_uart.h"
 
 static bool ev3UARTInputInitialized = false;

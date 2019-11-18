@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "ev3_sensors.h"
+#include "../../include/ev3_sensors/ev3_sensors.h"
 #include "back_compatibility.h"
 
 static int sensorModeNames[NUM_INPUTS] = {NO_SEN};

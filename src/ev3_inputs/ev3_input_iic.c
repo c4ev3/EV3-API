@@ -8,8 +8,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include "../../firmware_headers/lms2012/ev3_iic.h"
-#include "../ev3_wait.h"
-#include "../ev3_constants.h"
+#include "../../include/ev3_wait.h"
+#include "../../include/ev3_constants.h"
 #include "ev3_input_iic.h"
 #include "ev3_input.h"
 

@@ -409,7 +409,7 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 		if (_readShort(SoundInstance.hSoundFile, false) != RIFF_FMT_1CHAN)
 			return;
 
-		int sampleRate = _readInt(SoundInstance.hSoundFile, true);
+		_readInt(SoundInstance.hSoundFile, true);
 
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
@@ -557,7 +557,7 @@ void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 
 void _playSoundSamplesFromRSOStream(int fileHandle) {
     uint8_t AdPcmData[SOUND_ADPCM_CHUNK];
-    unsigned short BytesToRead, BytesRead, BytesWritten, Delta;
+    unsigned short BytesToRead, BytesRead, Delta;
     int i;
 
     // Get new sound data

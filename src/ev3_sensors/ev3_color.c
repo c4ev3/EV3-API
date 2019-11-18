@@ -1,10 +1,9 @@
 #include "../ev3_inputs/ev3_input_uart.h"
-#include "../ev3_wait.h"
+#include "../../include/ev3_wait.h"
 #include "ev3_color.h"
 
 #define EV3_COLOR_SENSOR_TYPE           29
 #define EV3_COLOR_SENSOR_DEFAULT_MODE   EV3_COLOR_SENSOR_REFLECT_MODE
-
 
 SensorHandler * EV3Color = &(SensorHandler){
         .Init = initEV3ColorSensor,

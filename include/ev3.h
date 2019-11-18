@@ -1,7 +1,7 @@
 /** \file ev3.h
  * \brief Initialisation for all working EV3 functions (sensors, lcd, motors, buttons)
  *
- * ev3.h contains declarations for the EV3 C API Initialisationfunctions.
+ * ev3.h contains declarations for the EV3 C API Initialisationzfunctions.
  *
  * License:
  *
