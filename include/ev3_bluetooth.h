@@ -8,8 +8,6 @@ extern "C" {
 #define BLUETOOTH_ADDRESS_LENGTH            18 // 00:00:00:00:00:00 + null terminator
 #define	MAX_BLUETOOTH_NAME_LENGTH	        128
 
-void BluetoothInit();
-
 typedef int BluetoothConnectionHandle;
 
 /**
@@ -25,8 +23,6 @@ void SendStringTo(BluetoothConnectionHandle to, char * str);
 int ReceiveStringFrom(BluetoothConnectionHandle from, char * buffer, int bufferLength);
 
 void DisconnectFrom(BluetoothConnectionHandle from);
-
-void BluetoothExit();
 
 #endif // ev3_bluetooth_h
 

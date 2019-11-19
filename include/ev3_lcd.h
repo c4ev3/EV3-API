@@ -84,35 +84,6 @@ typedef enum {
 	ifPNG
 } ImageFormat;
 
-/*
-#define SCREEN_WIDTH 178
-#define SCREEN_HEIGHT 128
-#define NOOF_CHARS 96
-#define FONT_WIDTH 10
-#define FONT_HEIGHT 16
-#define CELL_WIDTH FONT_WIDTH
-#define CELL_HEIGHT FONT_HEIGHT
-#define DISPLAY_CHAR_WIDTH SCREEN_WIDTH / CELL_WIDTH
-#define DISPLAY_CHAR_DEPTH SCREEN_HEIGHT / CELL_HEIGHT
-
-#define ROP_CLEAR 0x00000000
-#define ROP_AND 0xff000000
-#define ROP_ANDREVERSE 0xff00ff00
-#define ROP_COPY 0x0000ff00
-#define ROP_ANDINVERTED 0xffff0000
-#define ROP_NOOP 0x00ff0000
-#define ROP_XOR 0x00ffff00
-#define ROP_OR 0xffffff00
-#define ROP_NOR 0xffffffff
-#define ROP_EQUIV 0x00ffffff
-#define ROP_INVERT 0x00ff00ff
-#define ROP_ORREVERSE 0xffff00ff
-#define ROP_COPYINVERTED 0x0000ffff
-#define ROP_ORINVERTED 0xff00ffff
-#define ROP_NAND 0xff0000ff
-#define ROP_SET 0x000000ff
-*/
-
 bool LcdInit();
 bool LcdExit();
 bool LcdInitialized();
@@ -122,13 +93,6 @@ bool LcdUpdate();
 bool LcdClean();
 bool LcdScroll(short Y);
 
-
-/*******************
- * Redundant functions
- */
-#if 1
-void LcdRefresh();
-#endif
 
 bool LcdSelectFont(uint8_t FontType);
 uint8_t* LcdGetDisplay();

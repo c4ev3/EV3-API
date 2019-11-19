@@ -15,7 +15,7 @@
  *
  */
 
-#include "../include/ev3_output.h"
+#include "ev3_output.h"
 
 #define MIN(a, b) (((a)<(b))?(a):(b))
 #define MAX(a, b) (((a)>(b))?(a):(b))

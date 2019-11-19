@@ -15,7 +15,7 @@
 #include "../firmware_headers/bluetooth/hci_lib.h"
 #include "../firmware_headers/bluetooth/rfcomm.h"
 
-#include "../include/ev3_bluetooth.h"
+#include "ev3_bluetooth.h"
 
 #define DEFAULT_C4EV3_RFCOMM_CHANNEL    2
 #define MAX_CONNECTIONS				    7

@@ -37,54 +37,20 @@
 extern "C" {
 #endif
 
-#ifndef ev3_button_h
-#define ev3_button_h
+#ifndef EV3_BUTTON_PRIVATE_H
+#define EV3_BUTTON_PRIVATE_H
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/mman.h>
-#include <stdbool.h>
-#include <limits.h>
+#include "../include/ev3_button.h"
 
-#include "ev3_constants.h"
+bool ButtonLedInit();
 
-float HardwareVersion();
+bool ButtonLedOpen();
 
-const char* HardwareVersionString();
+bool ButtonLedClose();
 
-void SetLedWarning(bool Value);
+bool ButtonLedExit();
 
-uint8_t LedWarning();
-
-void SetLedPattern(uint8_t Pattern);
-
-uint8_t LedPattern();
-
-uint16_t ButtonWaitForAnyEvent(unsigned int timeout);
-
-uint16_t ButtonWaitForAnyPress(unsigned int timeout);
-
-bool ButtonIsUp(uint8_t Button);
-
-bool ButtonIsDown(uint8_t Button);
-
-void ButtonWaitForPress(uint8_t Button);
-
-void ButtonWaitForPressAndRelease(uint8_t Button);
-
-// NXC-style API functions (no support for short press, long press,
-// short release, long release, or press counts
-bool ButtonPressedEx(uint8_t btn, bool resetCount);
-
-#define ButtonPressed(_btn) ButtonPressedEx((_btn), false)
-
-char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count);
-
-uint8_t ButtonState(uint8_t btn);
+bool ButtonLedInitialized();
 
 #endif // ev3_button_h
 
