@@ -138,7 +138,15 @@ bool OutputInit(void) {
                 OutputInstance.pMotor = pTmp;
                 bool outputOpenTest =  OutputOpen();
 
-                Fwd(OUT_ALL); // polarity forward
+                /**
+                 * Set the polarity here to fix the issue:
+                 * https://github.com/simonedegiacomi/EV3-API/issues/13
+                 *
+                 * Then simply use a negative speed/power to go in reverse
+                 */
+                 // TODO: If the fix works, change function name
+                Fwd(OUT_ALL);
+                Off(OUT_ALL);
 
                 return outputOpenTest;
             }
@@ -1074,26 +1082,14 @@ void OnFwdEx(uint8_t Outputs, int8_t Power, uint8_t reset) {
     OnEx(Outputs, reset);
 }
 
-void OnRevEx(uint8_t Outputs, int8_t Power, uint8_t reset) {
-    OnFwdEx(Outputs, -Power, reset);
-}
-
 void OnFwdRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset) {
     SetSpeed(Outputs, Speed);
     OnEx(Outputs, reset);
 }
 
-void OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset) {
-    OnFwdRegEx(Outputs, -Speed, RegMode, reset);
-}
-
 void OnFwdSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset) {
     ResetCount(Outputs, reset);
     OutputStepSyncEx(Outputs, Speed, Turn, INT_MAX, false, OWNER_NONE);
-}
-
-void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset) {
-    OnFwdSyncEx(Outputs, -Speed, Turn, reset);
 }
 
 void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop) {
