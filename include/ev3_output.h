@@ -60,69 +60,69 @@ void OffEx(uint8_t Outputs, uint8_t reset);
 
 void FloatEx(uint8_t Outputs, uint8_t reset);
 
-void inline Off(uint8_t _outputs) {
+static inline void Off(uint8_t _outputs) {
     OffEx(_outputs, RESET_NONE);
 }
 
-void inline Float(uint8_t _outputs) {
+static inline void Float(uint8_t _outputs) {
     FloatEx(_outputs, RESET_NONE);
 }
 
 void OnFwdEx(uint8_t Outputs, int8_t Power, uint8_t reset);
 
-void inline OnRevEx(uint8_t Outputs, int8_t Power, uint8_t reset) {
+static inline void OnRevEx(uint8_t Outputs, int8_t Power, uint8_t reset) {
     OnFwdEx(Outputs, -Power, reset);
 }
 
 void OnFwdRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset);
 
-void inline OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset) {
+static inline void OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset) {
     OnFwdRegEx(Outputs, -Speed, RegMode, reset);
 }
 
-void inline OnFwdReg(uint8_t _outputs, int8_t _speed) {
+static inline void OnFwdReg(uint8_t _outputs, int8_t _speed) {
     OnFwdRegEx(_outputs, _speed, OUT_REGMODE_SPEED, RESET_NONE);
 }
 
-void inline OnRevReg(uint8_t _outputs, int8_t _speed) {
+static inline void OnRevReg(uint8_t _outputs, int8_t _speed) {
     OnRevRegEx(_outputs, _speed, OUT_REGMODE_SPEED, RESET_NONE);
 }
 
 void OnFwdSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset);
 
-void inline OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset) {
+static inline void OnRevSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset) {
     OnFwdSyncEx(Outputs, -Speed, Turn, reset);
 }
 
-void inline OnFwdSync(uint8_t  _outputs, int8_t _speed) {
+static inline void OnFwdSync(uint8_t  _outputs, int8_t _speed) {
     OnFwdSyncEx(_outputs, _speed, 0, RESET_NONE);
 }
 
-void inline OnRevSync(uint8_t  _outputs, int8_t _speed) {
+static inline void OnRevSync(uint8_t  _outputs, int8_t _speed) {
     OnRevSyncEx(_outputs, _speed, 0, RESET_NONE);
 }
 
 void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop);
 
-void inline RotateMotorNoWait(uint8_t _outputs, int8_t _speed, int _angle) {
+static inline void RotateMotorNoWait(uint8_t _outputs, int8_t _speed, int _angle) {
     RotateMotorNoWaitEx(_outputs, _speed, _angle, 0, true, true);
 }
 
 void RotateMotorEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop);
 
-void inline RotateMotor(uint8_t _outputs, int8_t _speed, int _angle) {
+static inline void RotateMotor(uint8_t _outputs, int8_t _speed, int _angle) {
     RotateMotorEx(_outputs, _speed, _angle, 0, true, true);
 }
 
 void OnForSyncEx(uint8_t Outputs, int Time, int8_t Speed, short Turn, bool Stop);
 
-void inline OnForSync(uint8_t _outputs, int _time, int _speed) {
+static inline void OnForSync(uint8_t _outputs, int _time, int _speed) {
     OnForSyncEx(_outputs, _time, _speed, 0, true);
 }
 
 void OnForEx(uint8_t Outputs, int Time, int8_t Power, uint8_t reset);
 
-void inline OnFor(uint8_t _outputs, int _time) {
+static inline void OnFor(uint8_t _outputs, int _time) {
     OnForEx(_outputs, _time, OUT_POWER_DEFAULT, RESET_NONE);
 }
 

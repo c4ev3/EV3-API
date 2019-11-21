@@ -56,13 +56,13 @@ typedef struct
 
 void PlayFileEx(char* pFileName, uint8_t volume, bool loop);
 
-inline void PlayFile(char* fileName) {
+static inline void PlayFile(char* fileName) {
     PlayFileEx(fileName, 100, false);
 }
 
 void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volume);
 
-void inline PlayTone(unsigned short frequency, unsigned short duration) {
+static inline void PlayTone(unsigned short frequency, unsigned short duration) {
     PlayToneEx(frequency, duration, 100);
 }
 
@@ -83,7 +83,7 @@ void PlaySoundEx(uint8_t aCode, uint8_t volume);
  * </TABLE>
  * \param aCode The system sound to play.  See \ref RCXSoundConstants.
  */
-inline void PlaySound(uint8_t aCode) {
+static inline void PlaySound(uint8_t aCode) {
     PlaySoundEx(aCode, 100);
 }
 

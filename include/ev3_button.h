@@ -92,7 +92,7 @@ void ButtonWaitForPressAndRelease(uint8_t Button);
 // short release, long release, or press counts
 bool ButtonPressedEx(uint8_t btn, bool resetCount);
 
-inline bool ButtonPressed(uint8_t btn) {
+static inline bool ButtonPressed(uint8_t btn) {
     return ButtonPressedEx(btn, false);
 }
 

@@ -118,7 +118,7 @@ void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt);
  * \return The result of the drawing operation.
  */
 char CircleOutEx(int x, int y, uint8_t radius, unsigned long options);
-char inline CircleOut(int x, int y, int r) {
+char static inline CircleOut(int x, int y, int r) {
     return CircleOutEx(x, y, r, DRAW_OPT_NORMAL);
 }
 
@@ -138,7 +138,7 @@ char inline CircleOut(int x, int y, int r) {
  * \return The result of the drawing operation.
  */
 char LineOutEx(int x1, int y1, int x2, int y2, unsigned long options);
-char inline LineOut(int x1, int y1, int x2, int y2) {
+char static inline LineOut(int x1, int y1, int x2, int y2) {
     return LineOutEx(x1, y1, x2, y2, DRAW_OPT_NORMAL);
 }
 
@@ -156,7 +156,7 @@ char inline LineOut(int x1, int y1, int x2, int y2) {
  * \return The result of the drawing operation.
  */
 char PointOutEx(int x, int y, unsigned long options);
-char inline PointOut(int x, int y) {
+char static inline PointOut(int x, int y) {
     return PointOutEx(x, y, DRAW_OPT_NORMAL);
 }
 
@@ -177,7 +177,7 @@ char inline PointOut(int x, int y) {
  * \return The result of the drawing operation.
  */
 char RectOutEx(int x, int y, int width, int height, unsigned long options);
-char inline RectOut(int x, int y, int w, int h) {
+char static inline RectOut(int x, int y, int w, int h) {
     return RectOutEx(x, y, w, h, DRAW_OPT_NORMAL);
 }
 
@@ -200,7 +200,7 @@ char inline RectOut(int x, int y, int w, int h) {
  * \return The result of the drawing operation.
  */
 char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
-char inline EllipseOut(int x, int y, int rx, int ry) {
+char static inline EllipseOut(int x, int y, int rx, int ry) {
     return EllipseOutEx(x, y, rx, ry, DRAW_OPT_NORMAL);
 }
 

@@ -189,6 +189,7 @@ bool AddTimerCallback(TimerInterval interval, TimerCallback callback) {
                 return false;
         }
     }
+    return false;
 }
 
 void TimerInit(unsigned long interval_multiplier) {
