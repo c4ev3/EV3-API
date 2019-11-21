@@ -1,19 +1,38 @@
 language: c
 dist: trusty
 os: linux
-sudo: false #required
-
-branches:
-  only:
-    - master
+sudo: fals
 
 addons:
   apt:
     packages:
       - doxygen
+      - libc6-i386
+
+
+before_install:
+  - wget -c http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+  - tar xjf arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+  - export PATH="$PWD/arm-2009q1/bin:$PATH"
+  - wget https://github.com/c4ev3/C4EV3.Toolchain/releases/download/C4EV3.Toolchain-2019.08.0/C4EV3.Toolchain-v2019.08.0-arm-c4ev3-linux-uclibceabi-gcc-8.2.1-uclibc-ng-1.0.31-binutils-2.31.1-kernel-2.6.33-rc4-sanitized_linux-amd64.tar.xz
+  - tar xf C4EV3.Toolchain-v2019.08.0-arm-c4ev3-linux-uclibceabi-gcc-8.2.1-uclibc-ng-1.0.31-binutils-2.31.1-kernel-2.6.33-rc4-sanitized_linux-amd64.tar.xz
+  - export PATH="$PWD/C4EV3.Toolchain-2019.08.0/arm-c4ev3-linux-uclibceabi/gcc-8.2.1-uclibc-ng-1.0.31-binutils-2.31.1-kernel-2.6.33-rc4-sanitized/bin:$PATH"
+
+#
+#before_script:
+#  - make PREFIX=arm-none-linux-gnueabi- example
+#  - nm -g libev3api.a | tee symbols.before
+#  - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+#
 
 script:
   - doxygen Doxyfile
+  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
+  - mkdir doxy_out/html/gnueabi && mv libev3api.a doxy_out/html/gnueabi
+  # build also using uclibc
+  - make clean
+  - make PREFIX=arm-c4ev3-linux-uclibceabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
+  - mkdir doxy_out/html/uclibc && mv libev3api.a doxy_out/html/uclibc
 
 deploy:
   provider: pages
@@ -23,23 +42,6 @@ deploy:
   on:
     branch: master
 
-
-#before_install:
-#  - wget -c http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-#  - tar xjf arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-#  - export PATH="$PWD/arm-2009q1/bin:$PATH"
-#  - sudo apt-get install -y libc6-i386
-#  - cd API
-#
-#before_script:
-#  - make PREFIX=arm-none-linux-gnueabi- example
-#  - nm -g libev3api.a | tee symbols.before
-#  - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
-#
-#script:
-#  - rm libev3api.a
-#  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
-#
 #after_script:
 #  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Os -Wl,--gc-sections" example
 #  - nm -g libev3api.a | tee symbols.after
