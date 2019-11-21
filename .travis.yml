@@ -5,7 +5,7 @@ sudo: false #required
 
 branches:
   only:
-    - develop #master
+    - master
 
 addons:
   apt:
@@ -21,7 +21,7 @@ deploy:
   local_dir: doxy_out/html
   github_token: $GH_REPO_TOKEN
   on:
-    branch: develop #master
+    branch: master
 
 
 #before_install:
