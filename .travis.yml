@@ -1,31 +1,49 @@
 language: c
 dist: trusty
 os: linux
-sudo: required
+sudo: false #required
 
-git:
-  depth: 5
+branches:
+  only:
+    - develop #master
 
-
-before_install:
-  - wget -c http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-  - tar xjf arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-  - export PATH="$PWD/arm-2009q1/bin:$PATH"
-  - sudo apt-get install -y libc6-i386
-  - cd API
-
-before_script:
-  - make PREFIX=arm-none-linux-gnueabi- example
-  - nm -g libev3api.a | tee symbols.before
-  - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+addons:
+  apt:
+    packages:
+      - doxygen
 
 script:
-  - rm libev3api.a
-  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
+  - doxygen Doxyfile
 
-after_script:
-  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Os -Wl,--gc-sections" example
-  - nm -g libev3api.a | tee symbols.after
-  - grep InitEV3 symbols.after || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
-  - nm -g a.out
-  - nm -g a.out | grep InitEV3 || (echo "The InitEV3 constructor has not been included!! Aborting..." && false)
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: doxy_out/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: develop #master
+
+
+#before_install:
+#  - wget -c http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#  - tar xjf arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#  - export PATH="$PWD/arm-2009q1/bin:$PATH"
+#  - sudo apt-get install -y libc6-i386
+#  - cd API
+#
+#before_script:
+#  - make PREFIX=arm-none-linux-gnueabi- example
+#  - nm -g libev3api.a | tee symbols.before
+#  - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+#
+#script:
+#  - rm libev3api.a
+#  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
+#
+#after_script:
+#  - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Os -Wl,--gc-sections" example
+#  - nm -g libev3api.a | tee symbols.after
+#  - grep InitEV3 symbols.after || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+#  - nm -g a.out
+#  - nm -g a.out | grep InitEV3 || (echo "The InitEV3 constructor has not been included!! Aborting..." && false)
+#
