@@ -1,3 +1,8 @@
+/** \file ev3_sensors.h
+ * \brief Imports all the c4ev3 supported sensors.
+ *
+ */
+
 #ifndef EV3_API_EV3_SENSORS_H
 #define EV3_API_EV3_SENSORS_H
 
@@ -26,6 +31,12 @@ typedef struct SensorHandler {
     int currentSensorMode[NUM_INPUTS];
 } SensorHandler;
 
+/**
+ * Initializes the specified sensor connected to the specified port
+ * @param port
+ * @param sensor
+ * @return true if the initialization was successful
+ */
 bool SetSensor (int port, SensorHandler * sensor);
 
 SensorHandler * GetSensor (int port);

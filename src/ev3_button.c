@@ -169,7 +169,7 @@ void SetLedWarning(bool Value) {
     }
 }
 
-uint8_t LedWarning() {
+bool IsLedWarning() {
     if (!ButtonLedInitialized())
         return false;
     return ButtonLedInstance.WarnLight;
@@ -184,7 +184,7 @@ void SetLedPattern(uint8_t Pattern) {
     }
 }
 
-uint8_t LedPattern() {
+uint8_t GetLedPattern() {
     if (!ButtonLedInitialized())
         return LED_BLACK;
     return MappedPattern(ButtonLedInstance.LedPattern);

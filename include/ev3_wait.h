@@ -33,6 +33,10 @@ extern "C" {
 #ifndef ev3_command_h
 #define ev3_command_h
 
+/**
+ * Blocks for the specified amount of time
+ * @param ms
+ */
 void Wait(unsigned long ms);
 
 #endif // ev3_command_h

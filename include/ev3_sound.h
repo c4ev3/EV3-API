@@ -56,11 +56,15 @@ typedef struct
 
 void PlayFileEx(char* pFileName, uint8_t volume, bool loop);
 
-#define PlayFile(_f) PlayFileEx((_f), 100, false)
+inline void PlayFile(char* fileName) {
+    PlayFileEx(fileName, 100, false);
+}
 
 void PlayToneEx(unsigned short frequency, unsigned short duration, uint8_t volume);
 
-#define PlayTone(_f, _d) PlayToneEx((_f), (_d), 100)
+void inline PlayTone(unsigned short frequency, unsigned short duration) {
+    PlayToneEx(frequency, duration, 100);
+}
 
 void PlaySoundEx(uint8_t aCode, uint8_t volume);
 
@@ -79,7 +83,9 @@ void PlaySoundEx(uint8_t aCode, uint8_t volume);
  * </TABLE>
  * \param aCode The system sound to play.  See \ref RCXSoundConstants.
  */
-#define PlaySound(aCode) PlaySoundEx((aCode), 100)
+inline void PlaySound(uint8_t aCode) {
+    PlaySoundEx(aCode, 100);
+}
 
 /**
  * Play multiple tones.
@@ -90,9 +96,7 @@ void PlaySoundEx(uint8_t aCode, uint8_t volume);
  * \param tones The array of tones to play.
  * \param size The number of tones to play.
  */
-void PlayTonesEx(Tone tones[], size_t size);
-
-#define PlayTones(_tones) PlayTonesEx(_tones, sizeof(_tones)/sizeof(_tones[0]))
+void PlayTones(Tone tones[], size_t size);
 
 int SoundState();
 

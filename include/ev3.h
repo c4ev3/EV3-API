@@ -1,7 +1,6 @@
 /** \file ev3.h
- * \brief Initialisation for all working EV3 functions (sensors, lcd, motors, buttons)
+ * \brief Imports all the c4ev3 headers and define initialization functions.
  *
- * ev3.h contains declarations for the EV3 C API Initialisationzfunctions.
  *
  * License:
  *
@@ -50,10 +49,20 @@ extern "C" {
 #include "ev3_sound.h"
 #include "ev3_bluetooth.h"
 
+/**
+ * Initializes the c4ev3 library. You need to call this function at the beginning of your program.
+ * \return 1 if initialization is successful
+ */
+int InitEV3();
 
-int InitEV3(void);
-int FreeEV3(void);
-bool EV3IsInitialized(void);
+/**
+ * Closes all the resources acquired by the library. You need to call this function at the end of
+ * your program.
+ */
+int FreeEV3();
+
+
+bool EV3IsInitialized();
 
 
 

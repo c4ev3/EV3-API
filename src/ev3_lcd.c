@@ -383,7 +383,7 @@ bool LcdInit()
 			TimerInit(25);
 
 			// register update handler with timer system
-			SetTimerCallback(ti250ms, &LcdUpdateHandler);
+            AddTimerCallback(ti250ms, &LcdUpdateHandler);
 #endif
 
 			return true;
@@ -1850,32 +1850,3 @@ int LcdPrintf(char color, const char *fmt, ...){
 	return LcdPrintfEx(1, false, "%s", buffer2);
 }
 
-int TermPrintf(const char *fmt, ...)
-{
-	va_list args;
-	char *buffer2;
-
-	va_start(args, fmt);
-	vasprintf(&buffer2, fmt, args);
-	va_end(args);
-
-	return LcdPrintfEx(1, true, "%s\n", buffer2);
-}
-
-int TermPrintln(const char *fmt, ...)
-{
-    va_list args;
-	char *buffer2;
-
-	va_start(args, fmt);
-	vasprintf(&buffer2, fmt, args);
-	va_end(args);
-	
-	return TermPrintf("%s\n", buffer2);
-}
-
-void Ev3Clear()
-{
-	LcdClean();
-	LcdPrintf(1, "%s", "\f");
-}

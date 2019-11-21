@@ -1,3 +1,8 @@
+/** \file back_compatibility.h
+ * \brief Back-compatible functions to read sensors like in the original c4ev3
+ *
+ */
+
 #ifndef EV3_API_BACK_COMPATIBILITY_H
 #define EV3_API_BACK_COMPATIBILITY_H
 

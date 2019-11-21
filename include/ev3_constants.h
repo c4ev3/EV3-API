@@ -332,18 +332,6 @@ extern "C" {
 #define IP_SIZE       16  //!< Max WIFI IP size including zero termination
 #define BT_SIZE       13  //!< Max bluetooth address size including zero termination
 
-#define LED_BLACK        0  //!< LED black pattern
-#define LED_GREEN        1  //!< LED green pattern
-#define LED_RED          2  //!< LED red pattern
-#define LED_ORANGE       3  //!< LED orange pattern
-#define LED_GREEN_FLASH  4  //!< LED green flash pattern
-#define LED_RED_FLASH    5  //!< LED red flash pattern
-#define LED_ORANGE_FLASH 6  //!< LED orange flash pattern
-#define LED_GREEN_PULSE  7  //!< LED green pulse pattern
-#define LED_RED_PULSE    8  //!< LED red pulse pattern
-#define LED_ORANGE_PULSE 9  //!< LED orange pulse pattern
-#define NUM_LED_PATTERNS 10 //!< The number of LED patterns
-
 
 /** @addtogroup CommandModuleConstants
  * @{

@@ -40,8 +40,6 @@ extern "C" {
 #ifndef ev3_lcd_h
 #define ev3_lcd_h
 
-/* Print Text with Variables - Ahmad Fatoum*/
-
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
@@ -120,7 +118,9 @@ void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt);
  * \return The result of the drawing operation.
  */
 char CircleOutEx(int x, int y, uint8_t radius, unsigned long options);
-#define CircleOut(_x, _y, _r) CircleOutEx((_x), (_y), (_r), DRAW_OPT_NORMAL)
+char inline CircleOut(int x, int y, int r) {
+    return CircleOutEx(x, y, r, DRAW_OPT_NORMAL);
+}
 
 /**
  * Draw a line.
@@ -138,7 +138,9 @@ char CircleOutEx(int x, int y, uint8_t radius, unsigned long options);
  * \return The result of the drawing operation.
  */
 char LineOutEx(int x1, int y1, int x2, int y2, unsigned long options);
-#define LineOut(_x1, _y1, _x2, _y2) LineOutEx((_x1), (_y1), (_x2), (_y2), DRAW_OPT_NORMAL)
+char inline LineOut(int x1, int y1, int x2, int y2) {
+    return LineOutEx(x1, y1, x2, y2, DRAW_OPT_NORMAL);
+}
 
 /**
  * Draw a point.
@@ -154,7 +156,9 @@ char LineOutEx(int x1, int y1, int x2, int y2, unsigned long options);
  * \return The result of the drawing operation.
  */
 char PointOutEx(int x, int y, unsigned long options);
-#define PointOut(_x, _y) PointOutEx((_x), (_y), DRAW_OPT_NORMAL)
+char inline PointOut(int x, int y) {
+    return PointOutEx(x, y, DRAW_OPT_NORMAL);
+}
 
 /**
  * Draw a rectangle.
@@ -173,7 +177,9 @@ char PointOutEx(int x, int y, unsigned long options);
  * \return The result of the drawing operation.
  */
 char RectOutEx(int x, int y, int width, int height, unsigned long options);
-#define RectOut(_x, _y, _w, _h) RectOutEx((_x), (_y), (_w), (_h), DRAW_OPT_NORMAL)
+char inline RectOut(int x, int y, int w, int h) {
+    return RectOutEx(x, y, w, h, DRAW_OPT_NORMAL);
+}
 
 
 /**
@@ -194,14 +200,41 @@ char RectOutEx(int x, int y, int width, int height, unsigned long options);
  * \return The result of the drawing operation.
  */
 char EllipseOutEx(int x, int y, uint8_t radiusX, uint8_t radiusY, unsigned long options);
-#define EllipseOut(_x, _y, _rx, _ry) EllipseOutEx((_x), (_y), (_rx), (_ry), DRAW_OPT_NORMAL)
+char inline EllipseOut(int x, int y, int rx, int ry) {
+    return EllipseOutEx(x, y, rx, ry, DRAW_OPT_NORMAL);
+}
+
+#define LCD_COLOR_BLACK 1
+#define LCD_COLOR_WHITE 0
 
 
+/**
+ * Prints the formatted text on the screen at the specified position
+ * @param Color
+ * @param X
+ * @param Y
+ * @param fmt
+ * @param ...
+ * @return
+ */
 bool LcdTextf(char Color, short X, short Y, const char *fmt, ...);
 
-
+/**
+ * Prints the formatted text on the next line of the previous wrote by this function.
+ * @param color
+ * @param fmt
+ * @param ...
+ * @return
+ */
 int LcdPrintf(char color, const char * fmt, ...);
 
+/**
+ * Same as @ref LcdPrintf, but automatically adds a new at the end of the string
+ * @param color
+ * @param fmt
+ * @param ...
+ * @return
+ */
 int LcdPrintln(char color, const char * fmt, ...);
 
 
@@ -211,36 +244,12 @@ int asprintf(char **, const char *, ...);
 int vasprintf(char **, const char *, va_list)
 #endif
 
-
-#define LCD_COLOR_BLACK 1
-#define LCD_COLOR_WHITE 0
-
+/**
+ * Computes the y coordinate from which the specified row starts (using the current font)
+ * @param row
+ * @return
+ */
 short LcdRowToY(int row);
-
-int Ev3Printf(const char *fmt, ...);
-
-/**
- * Print formatted text on the display with a new line at the end.
- * Works like the normal printf but appends a linefeed at the end.
- */
-int Ev3Println(const char *fmt, ...);
-
-/**
- * Clear the display and reset the cursor to the top left corner.
- */
-void Ev3Clear();
-
-/**
- * Analog to Ev3Printf but automatically scrolls upwards to prevent 
- * text from being out of bounds.
- */
-int TermPrintf(const char *fmt, ...);
-
-/**
- * Analog to Ev3Printf but automatically scrolls upwards to prevent 
- * text from being out of bounds.
- */
-int TermPrintln(const char *fmt, ...);
 
 /**
  * Set cursor position for TermPrint*, LcdPrint* and Ev3Print*

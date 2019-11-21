@@ -56,13 +56,25 @@ float HardwareVersion();
 
 const char* HardwareVersionString();
 
+#define LED_BLACK        0  //!< LED black pattern
+#define LED_GREEN        1  //!< LED green pattern
+#define LED_RED          2  //!< LED red pattern
+#define LED_ORANGE       3  //!< LED orange pattern
+#define LED_GREEN_FLASH  4  //!< LED green flash pattern
+#define LED_RED_FLASH    5  //!< LED red flash pattern
+#define LED_ORANGE_FLASH 6  //!< LED orange flash pattern
+#define LED_GREEN_PULSE  7  //!< LED green pulse pattern
+#define LED_RED_PULSE    8  //!< LED red pulse pattern
+#define LED_ORANGE_PULSE 9  //!< LED orange pulse pattern
+#define NUM_LED_PATTERNS 10 //!< The number of LED patterns
+
 void SetLedWarning(bool Value);
 
-uint8_t LedWarning();
+bool IsLedWarning();
 
 void SetLedPattern(uint8_t Pattern);
 
-uint8_t LedPattern();
+uint8_t GetLedPattern();
 
 uint16_t ButtonWaitForAnyEvent(unsigned int timeout);
 
@@ -80,7 +92,9 @@ void ButtonWaitForPressAndRelease(uint8_t Button);
 // short release, long release, or press counts
 bool ButtonPressedEx(uint8_t btn, bool resetCount);
 
-#define ButtonPressed(_btn) ButtonPressedEx((_btn), false)
+inline bool ButtonPressed(uint8_t btn) {
+    return ButtonPressedEx(btn, false);
+}
 
 char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count);
 

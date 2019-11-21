@@ -37,8 +37,7 @@ extern "C" {
 #include <sys/time.h>
 #include <signal.h>
 #include <string.h>
-//#include <stdio.h>
-//#include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef DISABLE_TIMERS
 
@@ -55,32 +54,60 @@ typedef enum {
 
 typedef void (*TimerCallback)(int sig);
 
-
+/**
+ * Creates a new timer that will expire after the specified amount of time.
+ * Call @ref TimerReady to wait for the times to elapse
+ * @param Time in ms
+ * @return
+ */
 unsigned long TimerWait(unsigned long Time);
+
+/**
+ * Blocks until the time has elapsed
+ * @param Timer time to wait for
+ */
 void TimerReady(unsigned long Timer);
 
-unsigned long Timer(uint8_t Timer);
-unsigned long FastTimer(uint8_t Timer);
-void ClearTimer(uint8_t Timer);
-void SetTimer(uint8_t Timer, unsigned long Value);
+/**
+ * Return the value of the timer
+ * @param timerId Id of the timer, between 0 and (@ref NUM_MS_TIMERS - 1)
+ * @return
+ */
+unsigned long TimerMS(uint8_t timerId);
 
-unsigned long TimerMS(uint8_t Timer);
-void ClearTimerMS(uint8_t Timer);
-void SetTimerMS(uint8_t Timer, unsigned long Value);
+/**
+ * Clears the timer
+ * @param timerId Id of the timer, between 0 and (@ref NUM_MS_TIMERS - 1)
+ */
+void ClearTimerMS(uint8_t timerId);
 
-unsigned long TimerUS(uint8_t Timer);
-void ClearTimerUS(uint8_t Timer);
-void SetTimerUS(uint8_t Timer, unsigned long Value);
+/**
+ * Return the value of the timer
+ * @param timerId Id of the timer, between 0 and (@ref NUM_US_TIMERS - 1)
+ * @return
+ */
+unsigned long TimerUS(uint8_t timerId);
+
+/**
+ * Clears the timer
+ * @param timerId Id of the timer, between 0 and (@ref NUM_US_TIMERS - 1)
+ */
+void ClearTimerUS(uint8_t timerId);
 
 void TimerInit(unsigned long interval_multiplier);
 
-void SetTimerCallback(TimerInterval interval, TimerCallback callback);
+/**
+ * Adds a callback that will be called every specified interval
+ * @param interval
+ * @param callback
+ * @return true if the callback was added, false otherwise
+ */
+bool AddTimerCallback(TimerInterval interval, TimerCallback callback);
 
 #endif // !DISABLE_TIMERS
 
 unsigned long long TimerGetUS();
 unsigned long long TimerGetMS();
-unsigned long long TimerGetCS();
 
 #endif // ev3_timer_h
 
