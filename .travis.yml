@@ -28,7 +28,7 @@ before_install:
 script:
   - doxygen Doxyfile
   - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
-  - mkdir doxy_out/html/gnueabi && mv libev3api.a doxy_out/html/gnueabi
+  - mkdir doxy_out/html/glibc && mv libev3api.a doxy_out/html/glibc
   # build also using uclibc
   - make clean
   - make PREFIX=arm-c4ev3-linux-uclibceabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
