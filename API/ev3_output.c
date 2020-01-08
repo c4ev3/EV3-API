@@ -918,18 +918,38 @@ void OnRevEx(uint8_t Outputs, int8_t Power, uint8_t reset)
 
 void OnFwdRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset)
 {
-  // regmode parameter is ignored
-  Fwd(Outputs);
-  SetSpeed(Outputs, Speed);
-  OnEx(Outputs, reset);
+	switch (RegMode) {
+		case OUT_REGMODE_IDLE:
+			OnFwdEx(Outputs, Speed, reset);
+			break;
+		case OUT_REGMODE_SPEED:
+		default:
+			Fwd(Outputs);
+			SetSpeed(Outputs, Speed);
+			OnEx(Outputs, reset);
+			break;
+		case OUT_REGMODE_SYNC:
+			OnFwdSyncEx(Outputs, Speed, 0, reset);
+			break;
+	}
 }
 
 void OnRevRegEx(uint8_t Outputs, int8_t Speed, uint8_t RegMode, uint8_t reset)
 {
-  // regmode parameter is ignored
-  Rev(Outputs);
-  SetSpeed(Outputs, Speed);
-  OnEx(Outputs, reset);
+	switch (RegMode) {
+		case OUT_REGMODE_IDLE:
+			OnRevEx(Outputs, Speed, reset);
+			break;
+		case OUT_REGMODE_SPEED:
+		default:
+			Rev(Outputs);
+			SetSpeed(Outputs, Speed);
+			OnEx(Outputs, reset);
+			break;
+		case OUT_REGMODE_SYNC:
+			OnRevSyncEx(Outputs, Speed, 0, reset);
+			break;
+	}
 }
 
 void OnFwdSyncEx(uint8_t Outputs, int8_t Speed, short Turn, uint8_t reset)
