@@ -980,8 +980,27 @@ void RotateMotorNoWaitEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, b
 	}
   }
   // otherwise use a non-synchronized API call
-  int s3 = MIN(Angle / __RAMP_DOWN_PCT, __RAMP_DOWN_DEGREES), s1 = MIN(Angle / __RAMP_UP_PCT, __RAMP_UP_DEGREES), s2 = Angle - s3 - s1;
-  OutputStepSpeedEx(Outputs, Speed, s1, s2, s3, Stop, OWNER_NONE);
+  int up   = MIN(Angle / __RAMP_UP_PCT,   __RAMP_UP_DEGREES);
+  int down = MIN(Angle / __RAMP_DOWN_PCT, __RAMP_DOWN_DEGREES);
+  int rest = Angle - up - down;
+  RotateMotorRampNoWait(Outputs, Speed, up, rest, down, Stop);
+}
+
+void RotateMotorRampNoWait(uint8_t Outputs, int8_t Speed, int accelAngle, int steadyAngle, int decelAngle, bool Stop)
+{
+  OutputStepSpeedEx(Outputs, Speed, accelAngle, steadyAngle, decelAngle, Stop, OWNER_NONE);
+}
+
+void RotateMotorRamp(uint8_t Outputs, int8_t Speed, int accelAngle, int steadyAngle, int decelAngle, bool Stop) {
+  RotateMotorRampNoWait(Outputs, Speed, accelAngle, steadyAngle, decelAngle, Stop);
+  bool busy;
+  while (true)
+  {
+    Wait(MS_2); // 2ms between checks
+    busy = false;
+    OutputTest(Outputs, &busy);
+    if (!busy) break;
+  }
 }
 
 void RotateMotorEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sync, bool Stop)

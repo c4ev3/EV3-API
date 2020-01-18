@@ -194,6 +194,10 @@ void RotateMotorEx(uint8_t Outputs, int8_t Speed, int Angle, short Turn, bool Sy
 
 #define RotateMotor(_outputs, _speed, _angle) RotateMotorEx((_outputs), (_speed), (_angle), 0, true, true)
 
+void RotateMotorRampNoWait(uint8_t Outputs, int8_t Speed, int accelAngle, int steadyAngle, int decelAngle, bool Stop);
+
+void RotateMotorRamp      (uint8_t Outputs, int8_t Speed, int accelAngle, int steadyAngle, int decelAngle, bool Stop);
+
 void OnForSyncEx(uint8_t Outputs, int Time, int8_t Speed, short Turn, bool Stop);
 
 #define OnForSync(_outputs, _time, _speed) OnForSyncEx((_outputs), (_time), (_speed), 0, true)
