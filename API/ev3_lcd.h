@@ -27,7 +27,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- * \author Ahmand Fatoum & Simón Rodriguez Perez(Hochschule Aschaffenburg)
+ * \author Ahmad Fatoum & Simón Rodriguez Perez(Hochschule Aschaffenburg)
  * \date 2015-02-28
  * \version 2
  * \note printf function added
