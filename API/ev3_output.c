@@ -225,31 +225,7 @@ bool OutputStop(uint8_t Outputs, bool useBrake)
   else
   {
 	return false;
-	// support for daisychaining not yet implemented
-/*
-
-	  if (cDaisyReady() != BUSY)
-
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_STOP;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Brake, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -289,28 +265,7 @@ bool OutputSetType(uint8_t Output, int8_t DeviceType)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_RESET;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)No, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Type, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -363,27 +318,7 @@ bool OutputReset(uint8_t Outputs)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_RESET;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -409,27 +344,7 @@ bool OutputSpeed(uint8_t Outputs, int8_t Speed)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_SPEED;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Speed, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -453,33 +368,7 @@ bool OutputPower(uint8_t Outputs, int8_t Power)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_POWER;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Power, &(DaisyBuf[Len]));
-
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		else
-		{
-		  // printf("cOutPut @ opOUTPUT_POWER after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -513,32 +402,7 @@ bool OutputStartEx(uint8_t Outputs, uint8_t Owner)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_START;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Nos, &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		else
-		{
-		  //printf("cOutPut @ opOUTPUT_START after cDaisyDownStreamCmd - OK and WriteState = %d\n\r", cDaisyGetLastWriteState());
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -566,28 +430,7 @@ bool OutputPolarity(uint8_t Outputs, int8_t Polarity)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_POLARITY;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Polarity[1], &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)Polarity[2], &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -626,36 +469,7 @@ bool OutputStepPowerEx(uint8_t Outputs, int8_t Power, int Step1, int Step2, int 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_STEP_POWER;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Power, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Step1, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Step2, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Step3, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepPower.Brake, &(DaisyBuf[Len]));
-
-		//if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepPower.Nos);
-
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -694,32 +508,7 @@ bool OutputTimePowerEx(uint8_t Outputs, int8_t Power, int Time1, int Time2, int 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_TIME_POWER;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Power, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Time1, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Time2, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Time3, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimePower.Brake, &(DaisyBuf[Len]));
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimePower.Nos);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -758,37 +547,7 @@ bool OutputStepSpeedEx(uint8_t Outputs, int8_t Speed, int Step1, int Step2, int 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_STEP_SPEED;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Speed, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step1, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step2, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Step3, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSpeed.Brake, &(DaisyBuf[Len]));
-
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos))
-		{
-		  printf("NOT ok txed cOutputStepSpeed\n\r");
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		else
-		{
-		}
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSpeed.Nos);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -827,32 +586,7 @@ bool OutputTimeSpeedEx(uint8_t Outputs, int8_t Speed, int Time1, int Time2, int 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_TIME_SPEED;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Speed, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time1, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time2, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Time3, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSpeed.Brake, &(DaisyBuf[Len]));
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSpeed.Nos);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
 
   }
 
@@ -896,31 +630,7 @@ bool OutputStepSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Step, bool 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_STEP_SYNC;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSync.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSync.Speed, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSync.Turn,  &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSync.Step,  &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)StepSync.Brake, &(DaisyBuf[Len]));
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, StepSync.Nos);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -962,31 +672,7 @@ bool OutputTimeSyncEx(uint8_t Outputs, int8_t Speed, short Turn, int Time, bool 
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_TIME_SYNC;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSync.Nos,   &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSync.Speed, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSync.Turn,  &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSync.Time,  &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)TimeSync.Brake, &(DaisyBuf[Len]));
-		if(OK != cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyMotorDownStream(DaisyBuf, Len, Layer, TimeSync.Nos);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
+	// TODO support for daisychaining not yet implemented
   }
 }
 
@@ -1019,96 +705,6 @@ bool OutputRead(uint8_t Output, int8_t * Speed, int * TachoCount, int * TachoSen
   // the firmware code does not contain any sign of letting you read
   // tacho values from other layers via this opcode.
 }
-
-/*
-// the firmware implementation of this call is a blocking
-// call that won't let a program continue executing the current object
-// until the output(s) are ready.
-bool OutputReady(uint8_t Outputs, uint8_t * Busy, uint8_t Owner)
-{
-  if (!OutputInitialized())
-	return false;
-
-  bool Result = true;
-  *Busy = 0;
-  int test = 0;
-  int test2 = 0;
-  int8_t busyReturn[10];
-  uint8_t Layer;
-  DecodeOutputs(&Outputs, &Layer);
-  if (Layer == LAYER_MASTER)
-  {
-
-	if (OutputInstance.PwmFile >= 0)
-
-	{
-
-	  read(OutputInstance.PwmFile, busyReturn, 4);
-
-	  sscanf(busyReturn,"%u %u",&test,&test2);
-
-	  int Tmp;
-
-	  for (Tmp = 0; Tmp < NUM_OUTPUTS - 1; Tmp++)
-
-	  {
-
-		// Check resources for NOTREADY
-
-		if (Outputs & (0x01 << Tmp))
-
-		{
-
-		  // Only relevant ones
-
-		  if (test & (0x01 << Tmp))
-
-		  {
-
-			// If BUSY check for OVERRULED
-
-			if (OutputInstance.Owners[Tmp] == Owner)
-
-			  break;
-
-		  }
-
-		}
-
-	  }
-
-	}
-
-  }
-
-  else
-
-  {
-
-//    Bits = cDaisyCheckBusyBit(Layer, Nos);
-
-//    Bits = 0;
-//
-//    for (Tmp = 0;(Tmp < OUTPUTS) && (DspStat == NOBREAK);Tmp++)
-//    {
-//      // Check resources for NOTREADY
-//      if (Nos & (1 << Tmp))
-//      {
-//        // Only relevant ones
-//        if (Bits & (1 << Tmp))
-//        {
-//          // If BUSY check for OVERRULED
-//          if (OutputInstance.Owners[Tmp] == Owner)
-//          {
-//            DspStat  =  BUSYBREAK;
-//          }
-//        }
-//      }
-//    }
-  }
-
-}
-*/
 
 bool OutputTest(uint8_t Outputs, bool * isBusy)
 {
@@ -1203,27 +799,6 @@ bool OutputClearCount(uint8_t Outputs)
   else
   {
 	return false;
-/*
-	  if (cDaisyReady() != BUSY)
-	  {
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  0;
-		DaisyBuf[Len++]  =  opOUTPUT_CLR_COUNT;
-		Len             +=  cOutputPackParam((DATA32)0, &(DaisyBuf[Len]));
-		Len             +=  cOutputPackParam((DATA32)ClrCnt[1], &(DaisyBuf[Len]));
-		if(OK != cDaisyDownStreamCmd(DaisyBuf, Len, Layer))
-		{
-		  SetObjectIp(TmpIp - 1);
-		  DspStat  =  BUSYBREAK;
-		}
-		//cDaisyDownStreamCmd(DaisyBuf, Len, Layer);
-	  }
-	  else
-	  {
-		SetObjectIp(TmpIp - 1);
-		DspStat  =  BUSYBREAK;
-	  }
-*/
   }
 }
 
@@ -1247,49 +822,6 @@ bool OutputGetActualSpeed(uint8_t Output, int8_t * Speed)
   int tsensor = 0;
   return OutputRead(Output, Speed, &tcount, &tsensor);
 }
-
-/*
-uint DELAY_COUNTER = 0;
-UBYTE	BusyOnes = 0;
-
-void ResetDelayCounter(UBYTE Pattern)
-{
-	BusyOnes = Pattern;
-	DELAY_COUNTER = 0;
-}
-
-UBYTE     cMotorGetBusyFlags(void)
-{
-  int     test, test2;
-  int8_t    BusyReturn[10]; // Busy mask
-
-  if (OutputInstance.PwmFile >= 0)
-  {
-	read(OutputInstance.PwmFile,BusyReturn,4);
-	sscanf(BusyReturn,"%u %u",&test,&test2);
-  }
-  else
-  {
-	test = 0;
-  }
-  if(DELAY_COUNTER < 25)
-  {
-	  test = BusyOnes;
-	  DELAY_COUNTER++;
-  }
-
-  return(test);
-}
-
-
-void      cMotorSetBusyFlags(UBYTE Flags)
-{
-  if (OutputInstance.MotorFile >= 0)
-  {
-	write(OutputInstance.MotorFile, &Flags, sizeof(Flags));
-  }
-}
-*/
 
 void SetOutputEx(uint8_t Outputs, uint8_t Mode, uint8_t reset)
 {
