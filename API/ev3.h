@@ -51,6 +51,14 @@ extern "C" {
 #include <ev3_lcd.h>
 #include <ev3_sound.h>
 
+// Priority of the InitEV3/FreeEV3 functions for automatic construction and destruction
+// see https://gcc.gnu.org/onlinedocs/gcc-4.3.3/gcc/Function-Attributes.html
+// see https://stackoverflow.com/a/24361145
+// - 0-100 is reserved for the compiler
+// - 101-200 is left for the user
+#define EV3_CONSTRUCTOR_PRIORITY 201
+#define EV3_DESTRUCTOR_PRIORITY 201
+
 int InitEV3(void);
 int FreeEV3(void);
 bool EV3IsInitialized(void);
