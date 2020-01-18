@@ -139,10 +139,26 @@ bool LcdText(char Color, short X, short Y, char* Text);
 bool LcdIcon(char Color, short X, short Y, char IconType, char IconNum);
 bool LcdBmpFile(char Color, short X, short Y, char* Name);
 bool LcdPicture(char Color, short X, short Y, IP pBitmap);
+bool LcdSplash(char Color, short X, short Y, short W, short H, uint8_t *pXbmData);
 bool LcdFillWindow(char Color, short Y, short Y1);
 uint8_t* LcdGetFrameBuffer();
 void LcdWriteDisplayToFile(char* filename, ImageFormat fmt);
 void LcdWriteFrameBufferToFile(char* filename, ImageFormat fmt);
+
+/**
+ * To draw a loading splash:
+ *  1) Create a splash picture and save it as a .xbm file.
+ *     Please note that the image width must be a multiple of eight.
+ *  2) Include the XBM file:
+ *         #include "my_splash.xbm"
+ *  3) Create a new initialization function:
+ *         void __attribute__((constructor(101))) MyFancyInit (void)
+ *         {
+ *             LcdInit();
+ *             LcdSplash(1, 0, 0, my_splash_width, my_splash_height, my_splash_bits);
+ *         }
+ *     For this purpose, you can use priorities 101-200 (EV3_CONSTRUCTOR_PRIORITY - 1).
+ */
 
 /**
  * Draw a circle.

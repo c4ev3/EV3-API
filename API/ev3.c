@@ -21,7 +21,7 @@
 #include "ev3.h"
 
 static bool initialized;
-int __attribute__((constructor)) InitEV3 (void)
+int __attribute__((constructor(EV3_CONSTRUCTOR_PRIORITY))) InitEV3 (void)
 {
 	if (EV3IsInitialized())
 	    return 1;
@@ -38,7 +38,7 @@ int __attribute__((constructor)) InitEV3 (void)
 	return 1;
 }
 
-int __attribute__((destructor)) FreeEV3()
+int __attribute__((destructor(EV3_DESTRUCTOR_PRIORITY))) FreeEV3()
 
 {
 	OutputExit();

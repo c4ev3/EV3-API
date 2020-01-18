@@ -969,6 +969,15 @@ bool LcdPicture(char Color, short X, short Y, IP pBitmap)
 	return true;
 }
 
+bool LcdSplash(char Color, short X, short Y, short W, short H, uint8_t *pXbmData) {
+	if (!LcdInitialized())
+		return false;
+
+	dLcdDrawPicture(LCDInstance.pLcd, Color, X, Y, W, H, pXbmData);
+	LCDInstance.Dirty = true;
+	return LcdUpdate();
+}
+
 bool LcdFillWindow(char Color, short Y, short Y1)
 {
 	if (!LcdInitialized())
