@@ -23,8 +23,8 @@ This plugin has been originally written for use in the teaching of Informatics a
 The work is part of the [EVELIN](http://www.evelinprojekt.de/en/) project, which was funded by the German Federal Ministry of Education and Research (Bundesministerium für Bildung und Forschung) under grant number 01PL12022B.
 The authors are responsible for the content of this publication.
 
-In agreement with the university, it's hereby released under the terms of the Mozilla Public License Version 1.1 and GNU General Public License 3.0 for the Sensors-API.
+The code is provided under the terms of the GNU General Public License v3.0 or, at your option, any later version. New contributions via the Github Pull Request mechanism must be licensed under the GNU GPL 2.0 or later.
 
 # Binary Releases and Relicensing
 
-As the GNU GPL and the MPL 1.1 are incompatible, redistribution of compiled artifacts is a license violation. We thus no longer distribute pre-built binaries. Users may still build the software themselves for personal use. We hope to relicense the MPL 1.1 parts under the MPL 2.0, so we can continue to distribute pre-built packages. See [Issue #34](https://github.com/c4ev3/EV3-API/issues/34) for more information.
+We temporarily ceased distributing pre-built binaries till [licensing violations were addressed](https://github.com/c4ev3/EV3-API/issues/34). Users may still build the software themselves for personal use. After finishing a continous deployment infrastructure, we will continue to distribute pre-built packages.
