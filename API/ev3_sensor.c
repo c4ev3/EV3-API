@@ -245,23 +245,15 @@ void* ReadSensorData(int sensorPort)
 			return readNewDumbSensor(sensorPort);
 			// Lightsensor
 		case COL_REFLECT:
-			return readUartSensor(sensorPort);
 		case COL_AMBIENT:
-			return readUartSensor(sensorPort);
 		case COL_COLOR:
-			return readUartSensor(sensorPort);
 			// Ultrasonic
 		case US_DIST_CM:
-			return readUartSensor(sensorPort);
 		case US_DIST_MM:
-			return readUartSensor(sensorPort);
 		case US_DIST_IN:
-			return readUartSensor(sensorPort);
 			// Gyroskop
 		case GYRO_ANG:
-			return readUartSensor(sensorPort);
 		case GYRO_RATE:
-			return readUartSensor(sensorPort);
 			// Infrared
 		case IR_PROX:
 		case IR_SEEK:
@@ -269,9 +261,7 @@ void* ReadSensorData(int sensorPort)
 			return readUartSensor(sensorPort);
 			// NXT
 		case NXT_IR_SEEKER:
-			return readIicSensor(sensorPort);
 		case NXT_TEMP_C:
-			return readIicSensor(sensorPort);
 		case NXT_TEMP_F:
 			return readIicSensor(sensorPort);
 		default: return 0;
@@ -312,25 +302,20 @@ int ReadSensor(int sensorPort)
 			help = help/256;
 			if (help==0)
 				return 0;
-			else if(help==0xD)
+			if(help==0xD)
 				return 1;
-			else
-				return -1;
+			return -1;
 			// Lightsensor
 		case COL_REFLECT:
-			return *((DATA16*)data)&0x00FF;
 		case COL_AMBIENT:
-			return *((DATA16*)data)&0x00FF;
 		case COL_COLOR:
-			return *((DATA16*)data)&0x000F;
 			// Ultrasonic
-		case US_DIST_CM:
-			return (*((DATA16*)data)&0x0FFF)/10;
 		case US_DIST_MM:
-			return *((DATA16*)data)&0x0FFF;
 		case US_DIST_IN:
 			return *((DATA16*)data)&0x0FFF;
 			// Gyroskop
+		case US_DIST_CM:
+			return (*((DATA16*)data)&0x0FFF)/10;
 		case GYRO_ANG:
 		case GYRO_RATE:
 			help = *(data)&0xFFFF;
@@ -526,6 +511,3 @@ int SetIRBeaconCH(int sensorPort, int channel)
 
 	return 0;
 }
-
-
-
