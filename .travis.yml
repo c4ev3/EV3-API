@@ -15,7 +15,7 @@ before_install:
   - cd API
 
 before_script:
-  - ls API/libev3api.a && (echo "libev3api.a shouldn't be part of version control! Aborting..." && false)
+  - test ! -e API/libev3api.a || (echo "libev3api.a shouldn't be part of version control! Aborting..."; false)
 
 script:
   - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
