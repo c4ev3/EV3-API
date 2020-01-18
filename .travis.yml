@@ -15,7 +15,6 @@ before_install:
   - cd API
 
 before_script:
-  - make PREFIX=arm-none-linux-gnueabi- example
   - ls API/libev3api.a && (echo "libev3api.a shouldn't be part of version control! Aborting..." && false)
 
 script:
