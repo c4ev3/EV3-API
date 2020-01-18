@@ -16,16 +16,14 @@ before_install:
 
 before_script:
   - make PREFIX=arm-none-linux-gnueabi- example
-  - nm -g libev3api.a | tee symbols.before
-  - grep EV3IsInitialized symbols.before || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+  - ls API/libev3api.a && (echo "libev3api.a shouldn't be part of version control! Aborting..." && false)
 
 script:
-  - rm libev3api.a
   - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-pointer-sign -fdata-sections -ffunction-sections"
 
 after_script:
   - make PREFIX=arm-none-linux-gnueabi- CFLAGS="-Os -Wl,--gc-sections" example
-  - nm -g libev3api.a | tee symbols.after
-  - grep InitEV3 symbols.after || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
+  - nm -g libev3api.a | tee symbols
+  - grep InitEV3 symbols || (echo "libev3api.a doesn't contain symbols! Aborting..." && false)
   - nm -g a.out
   - nm -g a.out | grep InitEV3 || (echo "The InitEV3 constructor has not been included!! Aborting..." && false)
