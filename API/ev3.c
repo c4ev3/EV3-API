@@ -29,6 +29,7 @@ int __attribute__((constructor(EV3_CONSTRUCTOR_PRIORITY))) InitEV3 (void)
 	OutputInit();
 	SensorsInit();
 	ButtonLedInit();
+	TimerInit();
 	LcdInit();
 	SoundInit();
 	BluetoothInit();
@@ -45,6 +46,7 @@ int __attribute__((destructor(EV3_DESTRUCTOR_PRIORITY))) FreeEV3()
 	OutputExit();
 	SensorsExit();
 	ButtonLedExit();
+	TimerExit();
 	LcdExit();
 	SoundExit();
 	BluetoothExit();

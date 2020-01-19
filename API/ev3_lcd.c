@@ -380,14 +380,11 @@ bool LcdInit()
 //      LCDInstance.font := @(font_data[0]);
 			LCDInstance.pLcd = LCDInstance.displayBuf;
 
-#ifndef DISABLE_TIMERS
-
 			// initialize timer system
-			TimerInit(25);
+			TimerInit();
 
 			// register update handler with timer system
 			SetTimerCallback(ti250ms, &LcdUpdateHandler);
-#endif
 
 			return true;
 		}
