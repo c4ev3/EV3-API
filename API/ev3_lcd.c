@@ -705,6 +705,11 @@ bool LcdUpdate()
 	return true;
 }
 
+static short X0 = 0;
+static short Y0 = 0;
+static short CURSOR_X = 0;
+static short CURSOR_Y = 0;
+
 bool LcdClean()
 {
 	if (!LcdInitialized())
@@ -712,6 +717,7 @@ bool LcdClean()
 	LCDInstance.currentFont = FONTTYPE_NORMAL;
 	memset((void*)LCDInstance.pLcd, 0, LCD_BUFFER_SIZE);
 	LCDInstance.Dirty = true;
+	X0 = Y0 = CURSOR_X = CURSOR_Y = 0;
 	return true;
 }
 bool LcdScroll(short Y)
@@ -1711,20 +1717,18 @@ void LcdRefresh()
 
 /********************************************************************************************/
 /**
-* Print Text with Variables 
+* Print Text with Variables
 * author: Ahmad Fatoum
 *
 *
 */
 
-static short CURSOR_X = 0;
-static short CURSOR_Y = 0;
 
 #ifdef __GNUC__
 #define ___FORMAT(x,y) __attribute__ ((format (printf, x, y)))
 #define ___NONNULL(...) __attribute__((nonnull (##__VA_ARGS__)))
 #else
-#define ___FORMAT(x,y) 
+#define ___FORMAT(x,y)
 #endif
 
 int vasprintf(char **buf, const char *fmt, va_list _va)
@@ -1771,13 +1775,13 @@ bool LcdTextf(char Color, short X, short Y, const char *fmt, ...)
 #define TAB_SIZE 2
 int LcdPrintf(char color, const char *fmt, ...)
 {
-	static short X0 = 0;
-	static short Y0 = 0;
+	X0 = 0;
+	Y0 = 0;
 	static short indent = 0;
-    
+
     X0 = CURSOR_X;
     Y0 = CURSOR_Y;
-    
+
 	if (!LcdInitialized())
 		return -1;
 
@@ -1858,7 +1862,7 @@ int Ev3Println(const char *fmt, ...)
 	va_start(args, fmt);
 	vasprintf(&buffer2, fmt, args);
 	va_end(args);
-	
+
 	return Ev3Printf("%s\n", buffer2);
 }
 
@@ -1867,10 +1871,10 @@ int TermPrintf(const char *fmt, ...)
     static short X0 = 0;
 	static short Y0 = 0;
 	static short indent = 0;
-    
+
     X0 = CURSOR_X;
     Y0 = CURSOR_Y;
-    
+
 	if (!LcdInitialized())
 		return -1;
 
@@ -1930,7 +1934,7 @@ int TermPrintf(const char *fmt, ...)
 
     CURSOR_X = X0;
     CURSOR_Y = Y0;
-    
+
     return c - buf;
 }
 
@@ -1942,7 +1946,7 @@ int TermPrintln(const char *fmt, ...)
 	va_start(args, fmt);
 	vasprintf(&buffer2, fmt, args);
 	va_end(args);
-	
+
 	return TermPrintf("%s\n", buffer2);
 }
 
