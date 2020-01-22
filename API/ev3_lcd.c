@@ -705,8 +705,6 @@ bool LcdUpdate()
 	return true;
 }
 
-static short X0 = 0;
-static short Y0 = 0;
 static short CURSOR_X = 0;
 static short CURSOR_Y = 0;
 
@@ -717,7 +715,7 @@ bool LcdClean()
 	LCDInstance.currentFont = FONTTYPE_NORMAL;
 	memset((void*)LCDInstance.pLcd, 0, LCD_BUFFER_SIZE);
 	LCDInstance.Dirty = true;
-	X0 = Y0 = CURSOR_X = CURSOR_Y = 0;
+	CURSOR_X = CURSOR_Y = 0;
 	return true;
 }
 bool LcdScroll(short Y)
@@ -1775,12 +1773,7 @@ bool LcdTextf(char Color, short X, short Y, const char *fmt, ...)
 #define TAB_SIZE 2
 int LcdPrintf(char color, const char *fmt, ...)
 {
-	X0 = 0;
-	Y0 = 0;
 	static short indent = 0;
-
-    X0 = CURSOR_X;
-    Y0 = CURSOR_Y;
 
 	if (!LcdInitialized())
 		return -1;
@@ -1800,44 +1793,41 @@ int LcdPrintf(char color, const char *fmt, ...)
 	while (*c)
 	{
 		if (indent == TAB_SIZE) indent = 0;
-		if (! (0 <= X0 && X0 < LCD_WIDTH - width) )
+		if (! (0 <= CURSOR_X && CURSOR_X < LCD_WIDTH - width) )
 		{
-			Y0 += height + 2;
-			X0 = 0;
+			CURSOR_Y += height + 2;
+			CURSOR_X = 0;
 		}
 		switch (*c)
 		{
 			case '\n':
-				Y0 += height + 2;
+				CURSOR_Y += height + 2;
 				/* fall through */
 			case '\r':
-				X0 = 0;
+				CURSOR_X = 0;
 				break;
 			case '\b':
-				X0 -= width;
+				CURSOR_X -= width;
 				break;
 			case '\v':
-				Y0 += height + 2;
+				CURSOR_Y += height + 2;
 				break;
 			case '\f':
-				X0 = Y0 = 0;
+				CURSOR_X = CURSOR_Y = 0;
 				break;
 			case '\t':
-				X0 += width * (TAB_SIZE - indent);
+				CURSOR_X += width * (TAB_SIZE - indent);
 				break;
 			default:
 				indent++;
 				dLcdDrawChar(LCDInstance.pLcd, color, X0, Y0, LCDInstance.currentFont, *c);
-				X0 += width;
+				CURSOR_X += width;
 		}
 		indent++;
 		c++;
 	}
 	LCDInstance.Dirty = true;
-
-    CURSOR_X = X0;
-    CURSOR_Y = Y0;
-    return c - buf;
+  return c - buf;
 }
 
 int Ev3Printf(const char *fmt, ...)
