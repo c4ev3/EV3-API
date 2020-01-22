@@ -1820,7 +1820,7 @@ int LcdPrintf(char color, const char *fmt, ...)
 				break;
 			default:
 				indent++;
-				dLcdDrawChar(LCDInstance.pLcd, color, X0, Y0, LCDInstance.currentFont, *c);
+				dLcdDrawChar(LCDInstance.pLcd, color, CURSOR_X, CURSOR_Y, LCDInstance.currentFont, *c);
 				CURSOR_X += width;
 		}
 		indent++;
