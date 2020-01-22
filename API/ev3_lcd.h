@@ -289,6 +289,65 @@ int TermPrintf(const char *fmt, ...);
  */
 int TermPrintln(const char *fmt, ...);
 
+/**
+ * \brief Set the X coordinate of the text cursor.
+ *
+ * This will overwrite the X (horizontal) pixel coordinate of the top left corner
+ * of the next character to be typed via Ev3Printf()/LcdPrintf()/... funtions.
+ *
+ * \param x Top left pixel X coordinate of the next character to be typed.
+ * \sa Ev3Printf(), Ev3Println(), Ev3Clear(), TermPrintf(), TermPrintln(), LcdPrintf()
+ * \sa LcdSetCursorY(), LcdGetCursorX(), LcdGetCursorY(), LcdResetCursor()
+ */
+void LcdSetCursorX(short x);
+
+/**
+ * \brief Set the Y coordinate of the text cursor.
+ *
+ * This will overwrite the Y (vertical) pixel coordinate of the top left corner
+ * of the next character to be typed via Ev3Printf()/LcdPrintf()/... funtions.
+ *
+ * \param y Top left pixel Y coordinate of the next character to be typed.
+ * \sa Ev3Printf(), Ev3Println(), Ev3Clear(), TermPrintf(), TermPrintln(), LcdPrintf()
+ * \sa LcdSetCursorX(), LcdGetCursorX(), LcdGetCursorY(), LcdResetCursor()
+ */
+void LcdSetCursorY(short y);
+
+/**
+ * \brief Get the X coordinate of the text cursor.
+ *
+ * This will acquire the X (horizontal) pixel coordinate of the top left corner
+ * of the next character to be typed via Ev3Printf()/LcdPrintf()/... funtions.
+ *
+ * \return Top left pixel X coordinate of the next character to be typed.
+ * \sa Ev3Printf(), Ev3Println(), Ev3Clear(), TermPrintf(), TermPrintln(), LcdPrintf()
+ * \sa LcdSetCursorX(), LcdSetCursorY(), LcdGetCursorY(), LcdResetCursor()
+ */
+short LcdGetCursorX(void);
+
+/**
+ * \brief Set the X coordinate of the text cursor.
+ *
+ * This will acquire the Y (vertical) pixel coordinate of the top left corner
+ * of the next character to be typed via Ev3Printf()/LcdPrintf()/... funtions.
+ *
+ * \return Top left pixel Y coordinate of the next character to be typed.
+ * \sa Ev3Printf(), Ev3Println(), Ev3Clear(), TermPrintf(), TermPrintln(), LcdPrintf()
+ * \sa LcdSetCursorX(), LcdSetCursorY(), LcdGetCursorX(), LcdResetCursor()
+ */
+short LcdGetCursorY(void);
+
+/**
+ * \brief Move the text cursor to the top left corner.
+ *
+ * This will set the cursor coordinates to (0, 0).
+ *
+ * \sa Ev3Printf(), Ev3Println(), Ev3Clear(), TermPrintf(), TermPrintln(), LcdPrintf()
+ * \sa LcdSetCursorX(), LcdSetCursorY(), LcdGetCursorX(), LcdGetCursorY()
+ */
+void LcdResetCursor(void);
+
+
 #endif // ev3_lcd_h
 
 #ifdef __cplusplus

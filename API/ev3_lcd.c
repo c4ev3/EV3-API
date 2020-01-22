@@ -1949,5 +1949,31 @@ int TermPrintln(const char *fmt, ...)
 void Ev3Clear()
 {
 	LcdClean();
-	LcdPrintf(1, "%s", "\f");
+	LcdResetCursor();
+}
+
+void LcdSetCursorX(short x)
+{
+	CURSOR_X = x;
+}
+
+void LcdSetCursorY(short y)
+{
+	CURSOR_Y = y;
+}
+
+short LcdGetCursorX(void)
+{
+	return CURSOR_X;
+}
+
+short LcdGetCursorY(void)
+{
+	return CURSOR_Y;
+}
+
+void LcdResetCursor(void)
+{
+	LcdSetCursorX(0);
+	LcdSetCursorY(0);
 }
