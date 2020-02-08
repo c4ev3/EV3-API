@@ -1,0 +1,10 @@
+prefix=@PREFIX@
+includedir=${prefix}/include/ev3api
+libdir=${prefix}/lib
+
+Name: EV3-API
+Description: EV3-API for Programming the LEGO Mindstorms EV3 in C
+URL: https://github.com/c4ev3/EV3-API
+Version: 1.0.0
+Cflags: -I${includedir}
+Libs: -L${libdir} -lev3api
