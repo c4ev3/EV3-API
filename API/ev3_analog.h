@@ -18,7 +18,7 @@
 #ifndef EV3_ANALOG_H_
 #define EV3_ANALOG_H_
 
-#include <ev3_typedata.h>
+#include "ev3_typedata.h"
 
 /*! \page NxtColorMemory
  *
