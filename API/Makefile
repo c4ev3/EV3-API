@@ -4,7 +4,6 @@ PREFIX ?= $(CROSS_COMPILE)
 DESTDIR ?= $(CURDIR)
 CC = $(PREFIX)gcc
 AR = $(PREFIX)ar
-RANLIB = $(PREFIX)ranlib
 SED = sed
 MKDIR = mkdir -p
 INSTALL = cp
@@ -17,7 +16,6 @@ CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
 .DEFAULT: libev3api.a
 libev3api.a: $(OBJS)
 	$(AR) rcs $@ $^
-	$(RANLIB) $@
 
 %.o: %.c
 	$(CC) -Os $(CFLAGS) -isystem. -c $<
