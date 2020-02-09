@@ -12,6 +12,7 @@ SRCS = $(wildcard API/*.c contrib/**/*.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
 CFLAGS += -fno-strict-aliasing -fwrapv
 CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
+CFLAGS += -D_GNU_SOURCE=1
 
 .DEFAULT: libev3api.a
 libev3api.a: $(OBJS)
