@@ -50,6 +50,7 @@ extern "C" {
 #include "ev3_button.h"
 #include "ev3_lcd.h"
 #include "ev3_sound.h"
+#include "ev3_bluetooth.h"
 
 // Priority of the InitEV3/FreeEV3 functions for automatic construction and destruction
 // see https://gcc.gnu.org/onlinedocs/gcc-4.3.3/gcc/Function-Attributes.html
