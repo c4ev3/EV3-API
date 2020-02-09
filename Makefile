@@ -8,7 +8,7 @@ SED = sed
 MKDIR = mkdir -p
 INSTALL = cp
 RM = rm -rf
-SRCS = $(wildcard API/*.c)
+SRCS = $(wildcard API/*.c contrib/**/*.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
 CFLAGS += -fno-strict-aliasing -fwrapv
 CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
@@ -41,4 +41,4 @@ example:
 
 .PHONY: clean install uninstall
 clean:
-	$(RM) API/*.o *.a *.d example
+	$(RM) API/*.o contrib/**/*.o *.a *.d example
