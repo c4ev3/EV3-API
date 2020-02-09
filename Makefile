@@ -8,7 +8,7 @@ SED = sed
 MKDIR = mkdir -p
 INSTALL = cp
 RM = rm -rf
-SRCS = $(wildcard *.c)
+SRCS = $(wildcard API/*.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
 CFLAGS += -fno-strict-aliasing -fwrapv
 CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
@@ -18,7 +18,7 @@ libev3api.a: $(OBJS)
 	$(AR) rcs $@ $^
 
 %.o: %.c
-	$(CC) -Os $(CFLAGS) -isystem. -c $<
+	$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@ 
 
 libev3api.pc: libev3api.pc.in
 	$(SED) -e "s+@PREFIX@+$(DESTDIR)+" $< > $@
@@ -41,4 +41,4 @@ example:
 
 .PHONY: clean install uninstall
 clean:
-	$(RM) *.o *.a *.d example
+	$(RM) API/*.o *.a *.d example
