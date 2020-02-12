@@ -10,9 +10,9 @@ INSTALL = cp
 RM = rm -rf
 SRCS = $(wildcard API/*.c contrib/**/*.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
-CFLAGS += -fno-strict-aliasing -fwrapv
-CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
-CFLAGS += -D_GNU_SOURCE=1
+override CFLAGS += -fno-strict-aliasing -fwrapv
+override CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
+override CFLAGS += -D_GNU_SOURCE=1
 
 .DEFAULT: libev3api.a
 libev3api.a: $(OBJS)
