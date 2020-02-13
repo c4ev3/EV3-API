@@ -39,9 +39,9 @@
 #include <unistd.h>
 #include <stdint.h>
 #include "ev3.h"
-#include "ev3_analog.h"
-#include "ev3_iic.h"
-#include "ev3_uart.h"
+#include "contrib/lms2012/ev3_analog.h"
+#include "contrib/lms2012/ev3_iic.h"
+#include "contrib/lms2012/ev3_uart.h"
 
 /***********************************/
 // define of Sensor setup
