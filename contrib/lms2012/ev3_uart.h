@@ -19,6 +19,11 @@
 #include "ev3_basictypes.h"
 #include "ev3_typedata.h"
 
+#define    UART_DATA_LENGTH     MAX_DEVICE_DATALENGTH
+#define    UART_BUFFER_SIZE     64
+#define    UART_PORT_CHANGED    0x01                    //!< Input port changed
+#define    UART_DATA_READY      0x08                    //!< Data is ready
+
 /*! \page UartModuleMemory
  *
  *  <b>     Shared Memory </b>
@@ -51,5 +56,13 @@ typedef   struct
 	DATA8   OutputLength[INPUTS];
 }
 UART;
+
+typedef   struct
+{
+    TYPES   TypeData;
+    DATA8   Port;
+    DATA8   Mode;
+}
+        UARTCTL;
 
 #endif //EV3_UART_H_

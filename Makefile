@@ -19,7 +19,7 @@ INCLUDEDIR ?= $(DESTDIR)/include
 LIBDIR     ?= $(DESTDIR)/lib
 
 # define files
-SRCS     = $(wildcard API/*.c contrib/**/*.c)
+SRCS     = $(wildcard API/*.c API/**/*.c contrib/**/*.c)
 OBJS     = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 DEPFILES = $(patsubst %.c,$(OBJDIR)/%.d,$(SRCS))
 
@@ -49,7 +49,7 @@ libev3api.a: $(OBJS)
 $(OBJDIR)/%.o: %.c $(OBJDIR)/%.d
 	@echo " [CC]  $<"
 	@$(MKDIR) $(@D)
-	$(Q)$(CC) -MMD -MP -Os $(CFLAGS) -isystem. -c $< -o $@
+	$(Q)$(CC) -isystem include -MMD -MP -Os $(CFLAGS) -isystem. -I API -c $< -o $@
 
 $(DEPFILES):
 	@$(MKDIR) $(@D)
@@ -85,7 +85,7 @@ uninstall:
 # sanity check helper
 
 example:
-	echo 'int main(void) { return EV3IsInitialized() == 1; }' | $(CC) -xc $(CFLAGS) - -L. -lev3api -IAPI -oexample -include ev3.h
+	echo 'int main(void) { return EV3IsInitialized() == 1; }' | $(CC) -xc $(CFLAGS) - -L. -lev3api -IAPI/include -oexample -include ev3.h
 
 # cleanup
 

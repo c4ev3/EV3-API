@@ -98,10 +98,10 @@ DEVCON;
 #define   UART_SET_CONN           _IOWR('u',0,DEVCON)
 //#define   UART_READ_MODE_INFO     _IOWR('u',1,UARTCTL)
 //#define   UART_NACK_MODE_INFO     _IOWR('u',2,UARTCTL)
-//#define   UART_CLEAR_CHANGED      _IOWR('u',3,UARTCTL)
+#define   UART_CLEAR_CHANGED      _IOWR('u',3,UARTCTL)
 #define   IIC_SET_CONN            _IOWR('i',2,DEVCON)
 //#define   IIC_READ_TYPE_INFO      _IOWR('i',3,IICCTL)
-//#define   IIC_SETUP               _IOWR('i',5,IICDAT)
+#define   IIC_SETUP               _IOWR('i',5,IICDAT)
 //#define   IIC_SET                 _IOWR('i',6,IICSTR)
 
 #endif //EV3_TYPEDATA_H_
