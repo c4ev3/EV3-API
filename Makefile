@@ -10,6 +10,7 @@ INSTALL = cp
 RM = rm -rf
 SRCS = $(wildcard API/*.c contrib/**/*.c)
 OBJS = $(patsubst %.c,%.o,$(SRCS))
+override CFLAGS += -std=c99
 override CFLAGS += -fno-strict-aliasing -fwrapv
 override CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
 override CFLAGS += -D_GNU_SOURCE=1
