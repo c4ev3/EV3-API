@@ -5,10 +5,14 @@
 
 #define HT_IR_V2_SENSOR_IIC_ADDRESS 0x08
 
-#define HT_IR_V2_SENSOR_DC_READING_MODE_REGISTER 0x42
-#define HT_IR_V2_SENSOR_AC_READING_MODE_REGISTER 0x49
+#define HT_IR_V2_SENSOR_DC_READING_MODE_REGISTER        0x42
+#define HT_IR_V2_SENSOR_AC_READING_MODE_REGISTER        0x49
+#define HT_IR_V2_SENSOR_DC_ALL_READING_MODE_REGISTER    0x43
+#define HT_IR_V2_SENSOR_AC_ALL_READING_MODE_REGISTER    0x4A
 
-SensorHandler * HTIrV2 = &(SensorHandler) {
+#define HT_IR_V2_CHANNELS 5
+
+SensorHandler *HTIrV2 = &(SensorHandler) {
         .Init = initHTIrV2Sensor,
         .Exit = exitHTIrV2Sensor,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
@@ -33,6 +37,13 @@ int getHTIrV2RegisterForReadingMode(HTIrV2ReadingMode mode) {
     return mode == Modulated ? HT_IR_V2_SENSOR_AC_READING_MODE_REGISTER : HT_IR_V2_SENSOR_DC_READING_MODE_REGISTER;
 }
 
+int ReadHTIrV2SensorAll(int port, HTIrV2ReadingMode mode, int8_t output[]) {
+    return readFromIIC(port, getHTIRV2FirstRegisterIndividualChannelsForReadingMode(mode), output, HT_IR_V2_CHANNELS);
+}
+
+int getHTIRV2FirstRegisterIndividualChannelsForReadingMode(HTIrV2ReadingMode mode) {
+    return mode == Modulated ? HT_IR_V2_SENSOR_AC_ALL_READING_MODE_REGISTER : HT_IR_V2_SENSOR_DC_ALL_READING_MODE_REGISTER;
+}
 
 void exitHTIrV2Sensor(int port) {
     /**

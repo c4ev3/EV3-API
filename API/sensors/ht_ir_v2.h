@@ -10,4 +10,6 @@ void exitHTIrV2Sensor(int port);
 
 int getHTIrV2RegisterForReadingMode(HTIrV2ReadingMode mode);
 
+int getHTIRV2FirstRegisterIndividualChannelsForReadingMode(HTIrV2ReadingMode mode);
+
 #endif

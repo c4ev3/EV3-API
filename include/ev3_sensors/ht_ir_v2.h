@@ -9,7 +9,7 @@ extern SensorHandler * HTIrV2;
 
 typedef enum HTIrV2ReadingMode {
     Modulated,
-    Unmodulated ///< Untested,
+    Unmodulated ///< Untested
 
 } HTIrV2ReadingMode;
 
@@ -21,5 +21,15 @@ typedef enum HTIrV2ReadingMode {
  * @return direction of the IR signal, -1 in case of error.
  */
 int ReadHTIrV2Sensor(int port, HTIrV2ReadingMode mode);
+
+/**
+ * Read all 5 individual channels of the sensor.
+ * @param port port to which the sensor is connected
+ * @param mode whether do read AC or DC IR signals
+ * @param output array to which the 5 individual channel values are written to.
+ *          This is used as an output variable, and the size must be at least 5
+ * @return -1 in case of error
+ */
+int ReadHTIrV2SensorAll(int port, HTIrV2ReadingMode mode, int8_t output[]);
 
 #endif //EV3_API_HT_IR_V2_H
