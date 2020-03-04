@@ -51,7 +51,6 @@ void initializeBackCompatibilityIfNeeded () {
     sensorModeHandlersByModeName[IR_PROX]       = EV3Ir;
     sensorModeHandlersByModeName[IR_SEEK]       = EV3Ir;
     sensorModeHandlersByModeName[IR_REMOTE]     = EV3Ir;
-    //sensorModeHandlersByModeName[NXT_IR_SEEKER] = HTIrV2; // TODO: This is not HTIrV2
     sensorModeHandlersByModeName[NXT_TEMP_C]    = NXTTemperature;
     sensorModeHandlersByModeName[NXT_TEMP_F]    = NXTTemperature;
     sensorModeHandlersByModeName[HT_DIR_DC]     = HTIrV2;
@@ -90,8 +89,6 @@ int ReadSensor(int port) {
             return readEV3IrSensorSeekForBackCompatibility(port);
         case IR_REMOTE:
             return ReadEV3IrSensorRemote(port, ev3IrSensorChannel[port]);
-        case NXT_IR_SEEKER:
-            return -1; // TODO: NXT ir not implemented yet
         case NXT_TEMP_C:
             return ReadNXTTemperatureSensor(port, NXT_TEMPERATURE_C);
         case NXT_TEMP_F:
@@ -100,8 +97,11 @@ int ReadSensor(int port) {
             return ReadHTIrV2Sensor(port, Modulated);
         case HT_DIR_AC:
             return ReadHTIrV2Sensor(port, Unmodulated);
-        case HT_DIR_DALL: // TODO: Not implemented yet
+        case HT_DIR_DALL:
         case HT_DIR_AALL:
+            // to implement HT_DIR_DALL and HT_DIR_AALL, we need to call ReadHTIrV2SensorAll
+            // and to encode the vector of 5 integers to a single integer.
+            // TODO: How do we need to encode the value to preserve back-compatibility?
             return -1;
         case HT_COMP:
             return ReadHTCompassSensor(port, HTCompassCompass);

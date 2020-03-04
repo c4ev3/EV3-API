@@ -33,11 +33,10 @@
 #define IR_REMOTE       12  // Remote Control
 
 // NXT
-#define NXT_IR_SEEKER   20  // Infrared Seeker
 #define NXT_TEMP_C      21  // Temperature in C
 #define NXT_TEMP_F      22  // Temperature in F
 
-// HiTechnic IR Sensor
+// HiTechnic IR Seeker V2 Sensor
 #define HT_DIR_DC       30
 #define HT_DIR_AC       31
 #define HT_DIR_DALL     32
