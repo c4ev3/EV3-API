@@ -43,59 +43,68 @@ bool initEV3UARTInput(ANALOG * analogSensors) {
 
 bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode) {
     /**
-     * Procedure to set UART mode copied from pxt: pxt-ev3/libs/core/input.ts
+     * Procedure to set UART mode inspired by pxt: pxt-ev3/libs/core/input.ts
      */
-    while (1) {
-        devCon.Connection[port] = CONN_INPUT_UART;
-        devCon.Type[port] = sensorType;
-        devCon.Mode[port] = sensorMode;
 
+    // update the persisted global state of connections
+    devCon.Connection[port] = CONN_INPUT_UART;
+    devCon.Type[port] = sensorType;
+    devCon.Mode[port] = sensorMode;
+
+    bool portChanged = true;
+    // note: The while loop is necessary for the case when this UART was
+    //       deinitialized. In that case, the kernel does not take
+    //       account of the mode to set the sensor in; it just powers
+    //       up the sensor and sets it to mode 0. Therefore, to also
+    //       set the correct mode, a second syscall round has to be made.
+    while (portChanged) {
+        // note: This write here is necessary even though the kernel does
+        //       the same operation to its shared memory. For some reason
+        //       the change does not take effect immediately but only
+        //       after some time. To prevent erroneous continuation,
+        //       the flag is removed here as well.
+        //     + a similar code can be found in the lms2012 VM.
+        //     + adding volatile to uartSensors didn't make a difference
+        //       (and lms2012 VM does not use it as well)
+        //     + using msync() also didn't seem to make a difference
+        uartSensors->Status[port] &= ~UART_DATA_READY;
+        // send the request to the kernel
         ioctl(uartFile, UART_SET_CONN, &devCon);
 
-        int status = waitNonZeroUARTStatusAndGet(port);
-
-        if (status & UART_PORT_CHANGED) {
-            clearUARTChanged(port);
-        } else {
-            break;
-        }
-        Wait(10);
+        // wait until the sensor is up (in whatever mode)
+        waitUartReady(port, &portChanged);
     }
+
     return true;
 }
 
-int waitNonZeroUARTStatusAndGet(int port) {
+void waitUartReady(int port, bool *portChanged) {
+    UARTCTL cmd = { .Port = port };
+
+    *portChanged = false;
     while (true) {
-        int status = getUARTStatus(port);
-        if (status != 0) {
-            return status;
-        }
-        Wait(25);
-        //usleep(25000);
-    }
-}
+        // read current port state
+        int status = uartSensors->Status[port];
 
+        // kernel has gone through sensor initialization sequance
+        if ((status & UART_PORT_CHANGED) != 0) {
 
-int getUARTStatus(int port) {
-    return uartSensors->Status[port];
-}
+            // signal that the device needs to be configured again
+            *portChanged = true;
 
-void clearUARTChanged (int port) {
-    while (1) {
-        int status = getUARTStatus(port);
+            // clear the flag in the kernel
+            ioctl(uartFile, UART_CLEAR_CHANGED, &cmd);
+            // and clear it in userspace as well
+            // note: the write here is necessary for the same reason
+            //       as the write above for UART_DATA_READY
+            uartSensors->Status[port] &= ~UART_PORT_CHANGED;
 
-        if ((status & UART_DATA_READY) != 0 && (status & UART_PORT_CHANGED) == 0) {
+        } else if ((status & UART_DATA_READY) != 0) {
+            // we're ready, the device has sent some data
             break;
         }
 
-        devCon.Connection[port] = CONN_INPUT_UART;
-        devCon.Type[port] = 0;
-        devCon.Mode[port] = 0;
-
-        ioctl(uartFile, UART_CLEAR_CHANGED, &devCon);
-
-        uartSensors->Status[port] = getUARTStatus(port) & 0xfffe;
-
+        // wait until the device is ready
         Wait(10);
     }
 }
