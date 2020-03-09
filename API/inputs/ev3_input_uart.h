@@ -17,6 +17,12 @@ bool initEV3UARTInput(ANALOG * analogSensors);
 bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode);
 
 /**
+ * Disable UART on this port.
+ * @param port On which port to disable the UART.
+ */
+void disableUART(int port);
+
+/**
  * Read data form UART sensor
  * @param port port to which the sensor is connected
  * @param buffer buffer to which bytes will be written. The size of this buffer

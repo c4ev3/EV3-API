@@ -109,6 +109,15 @@ void waitUartReady(int port, bool *portChanged) {
     }
 }
 
+void disableUART(int port) {
+    // update the persisted global state of connections
+    devCon.Connection[port] = CONN_NONE;
+    devCon.Type[port] = TYPE_NONE;
+    devCon.Mode[port] = MODE_KEEP;
+
+    // bye bye
+    ioctl(uartFile, UART_SET_CONN, &devCon);
+}
 
 int readFromUART(int sensorPort, DATA8 * buffer, int length) {
     if (!ev3UARTInputInitialized) {
