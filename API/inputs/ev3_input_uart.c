@@ -34,8 +34,8 @@ bool initEV3UARTInput(ANALOG * analogSensors) {
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
         devCon.Connection[i] = analogSensors->InConn[i];
-        devCon.Type[i] = 0;
-        devCon.Mode[i] = 0;
+        devCon.Type[i] = TYPE_KEEP;
+        devCon.Mode[i] = MODE_KEEP;
     }
     return true;
 }
