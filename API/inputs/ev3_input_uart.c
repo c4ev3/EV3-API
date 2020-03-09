@@ -130,6 +130,6 @@ void exitEV3UARTInput() {
     munmap(uartSensors, sizeof(UART));
     uartSensors = NULL;
     close(uartFile);
-    uartFile = 0;
+    uartFile = -1;
     ev3UARTInputInitialized = false;
 }
