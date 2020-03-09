@@ -116,7 +116,9 @@ int readFromUART(int sensorPort, DATA8 * buffer, int length) {
     }
     uint16_t slot = uartSensors->Actual[sensorPort];
     DATA8 * data = uartSensors->Raw[sensorPort][slot];
-    int toRead = length > 8 ? 8 : length;
+    int toRead = length > UART_DATA_LENGTH
+                        ? UART_DATA_LENGTH
+                        : length;
     memcpy(buffer, data, toRead);
     return toRead;
 }
