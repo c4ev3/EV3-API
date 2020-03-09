@@ -123,6 +123,27 @@ int readFromUART(int sensorPort, DATA8 * buffer, int length) {
     return toRead;
 }
 
+bool writeToUART(int port, DATA8 * buffer, int length) {
+    if (!ev3UARTInputInitialized) {
+        return -1;
+    }
+    int msgLen = length > UART_DATA_LENGTH
+                        ? UART_DATA_LENGTH
+                        : length;
+    int cmdLen = msgLen + 1;
+
+    // copy message and prepend it with port number
+    DATA8 cmd[UART_DATA_LENGTH + 1] = {0};
+    cmd[0] = port;
+    memcpy(cmd + 1, buffer, msgLen);
+
+    // copied from lms2012 VM: probably to force confirmation of new data
+    uartSensors->Status[port] &= ~UART_DATA_READY;
+    // send the request to kernel
+    int retval = write(uartFile, cmd, cmdLen);
+    return retval == cmdLen;
+}
+
 void exitEV3UARTInput() {
     if (!ev3UARTInputInitialized) {
         return;

@@ -26,6 +26,13 @@ bool setUARTSensorMode(int port, DATA8 sensorType, DATA8 sensorMode);
  */
 int readFromUART(int port, DATA8 * buffer, int length);
 
+/**
+ * Write a direct message to the UART device.
+ * @param port   Port to write the message to.
+ * @param buffer Message to write.
+ * @param length Message length (max UART_DATA_LENGTH).
+ */
+bool writeToUART(int port, DATA8 * buffer, int length);
 
 void exitEV3UARTInput(void);
 
