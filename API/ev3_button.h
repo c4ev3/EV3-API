@@ -3,6 +3,8 @@
  *
  * ev3_button.h contains declarations for the EV3 C API button and LED functions.
  *
+ * License:
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -25,13 +27,20 @@
  * \author John Hansen (bricxcc_at_comcast.net)
  * \date 2013-06-20
  * \version 1
- * 
+ *
  * ----------------------------------------------------------------------------
  *
  * \author Simón Rodriguez Perez(Hochschule Aschaffenburg)
  * \date 2016-04-19
  * \version 2
  * \note Correction of function name [void ButtonWaitForPressAndRelease(byte Button)]
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * \author Jakub Vanek (linuxtardis at gmail.com)
+ * \date 2020-01-22
+ * \version 3
+ * \note Add docs & implement NXC API
  */
 
 #ifdef __cplusplus
@@ -41,61 +50,41 @@ extern "C" {
 #ifndef ev3_button_h
 #define ev3_button_h
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/mman.h>
-#include <stdbool.h>
-#include <limits.h>
-
 #include "ev3_constants.h"
+#include "ev3_button.core.h"
+#include "ev3_button.led.h"
+#include "ev3_button.lejos.h"
+#include "ev3_button.nxc.h"
 
+/*!
+ * \brief Initialize the Button/LED EV3 module
+ * \return True if initialization succeeded, false otherwise.
+ */
 bool ButtonLedInit();
 
-bool ButtonLedOpen();
-
-bool ButtonLedClose();
-
+/*!
+ * \brief Deinitialize the Button/LED EV3 module
+ * \return True if deinitialization succeeded, false otherwise.
+ */
 bool ButtonLedExit();
 
+/*!
+ * \brief Check whether the Button/LED module is initialized.
+ * \return True if it is ready, false otherwise.
+ */
 bool ButtonLedInitialized();
 
+/*!
+ * \brief Query the brick hardware revision (float version).
+ * \return Hardware revision as a floating point number.
+ */
 float HardwareVersion();
 
-const char* HardwareVersionString();
-
-void SetLedWarning(bool Value);
-
-uint8_t LedWarning();
-
-void SetLedPattern(uint8_t Pattern);
-
-uint8_t LedPattern();
-
-uint16_t ButtonWaitForAnyEvent(unsigned int timeout);
-
-uint16_t ButtonWaitForAnyPress(unsigned int timeout);
-
-bool ButtonIsUp(uint8_t Button);
-
-bool ButtonIsDown(uint8_t Button);
-
-void ButtonWaitForPress(uint8_t Button);
-
-void ButtonWaitForPressAndRelease(uint8_t Button);
-
-// NXC-style API functions (no support for short press, long press,
-// short release, long release, or press counts
-bool ButtonPressedEx(uint8_t btn, bool resetCount);
-
-#define ButtonPressed(_btn) ButtonPressedEx((_btn), false)
-
-char ReadButtonEx(uint8_t btn, bool reset, bool* pressed, uint16_t* count);
-
-uint8_t ButtonState(uint8_t btn);
+/*!
+ * \brief Query the brick hardware revision (string version).
+ * \return Hardware revision in the form of a "0.00" string.
+ */
+const char *HardwareVersionString();
 
 #endif // ev3_button_h
 
