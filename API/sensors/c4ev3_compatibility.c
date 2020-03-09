@@ -94,9 +94,9 @@ int ReadSensor(int port) {
         case US_DIST_IN:
             return ReadEV3UltrasonicSensorDistance(port, EV3_ULTRASONIC_IN);
         case GYRO_ANG:
-            return ReadEV3GyroSensor(port, EV3GyroAngle);
+            return ReadEV3GyroSensorAngle(port, EV3GyroInterleavedAngle);
         case GYRO_RATE:
-            return ReadEV3GyroSensor(port, EV3GyroRate);
+            return ReadEV3GyroSensorRate(port,  EV3GyroInterleavedRate);
         case IR_PROX:
             return ReadEV3IrSensorProximity(port);
         case IR_SEEK:

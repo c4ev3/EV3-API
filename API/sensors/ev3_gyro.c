@@ -2,13 +2,31 @@
 #include "ev3_sensors.h"
 #include "contrib/lms2012/ev3_basictypes.h"
 #include "ev3_command.h"
-#include "ev3_gyro.h"
+#include "ev3_sensors/ev3_gyro.h"
 #include "utility.h"
+#include "limits.h"
 
-#define EV3_GYRO_SENSOR_TYPE                32
-#define EV3_GYRO_SENSOR_DEFAULT_MODE        EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE
+//
+// PRIVATE DECLARATIONS
+//
 
-int ev3GyroSoftwareResetOffset[] = {0, 0, 0, 0};
+static bool initEV3GyroSensor(int port);
+
+static void exitEV3GyroSensor(int port);
+
+static int universalRead(int port, int mode, int data_length, int index, int offset);
+
+static int parseS16(uint8_t *data, int valueNo);
+
+static int setEV3GyroSoftwareReset(int port);
+
+static void setEV3GyroSensorMode(int port, int mode);
+
+//
+// GLOBAL DATA
+//
+
+static int ev3GyroSoftwareResetOffset[4][EV3_GYRO_SENSOR_MODES] = {{0}, {0}, {0}, {0}};
 
 SensorHandler * EV3Gyro = &(SensorHandler){
     .Init = initEV3GyroSensor,
@@ -16,73 +34,184 @@ SensorHandler * EV3Gyro = &(SensorHandler){
     .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
+//
+// IMPLEMENTATION
+//
+
 bool initEV3GyroSensor (int port) {
+    memset(&ev3GyroSoftwareResetOffset[port], 0, EV3_GYRO_SENSOR_MODES * sizeof(int));
     setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_DEFAULT_MODE);
     return true;
 }
 
+int ReadEV3GyroSensorAngle(int port, EV3GyroAngleMode mode) {
+    int data_len;
+    int target_mode;
+    int value_index;
 
-int ReadEV3GyroSensor(int port, EV3GyroReadingMode mode) {
-    setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_DEFAULT_MODE);
+    switch (mode) {
+        case EV3GyroNormalAngle:
+            data_len = 2;
+            target_mode = EV3_GYRO_SENSOR_ANGLE_MODE;
+            value_index = 0;
+            break;
 
-    uint64_t angleAndRate;
-    readFromUART(port, (DATA8 *) &angleAndRate, 4);
+        case EV3GyroInterleavedAngle:
+            data_len = 4;
+            target_mode = EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE;
+            value_index = 0;
+            break;
 
-    if (mode == EV3GyroAngle) {
-        int angle = getAngleFromAngleAndRate(angleAndRate);
-        return angle - ev3GyroSoftwareResetOffset[port];
-    } else {
-        return getRateFromAngleAndRate(angleAndRate);
+        case EV3GyroTiltAngle:
+            data_len = 2;
+            target_mode = EV3_GYRO_SENSOR_TILT_ANGLE_MODE;
+            value_index = 0;
+            break;
+
+        default:
+            return INT_MIN;
+    }
+
+    int angle_offset = ev3GyroSoftwareResetOffset[port][target_mode];
+
+    return universalRead(port, target_mode, data_len, value_index, angle_offset);
+}
+
+int ReadEV3GyroSensorRate(int port, EV3GyroRateMode mode) {
+    int data_len;
+    int target_mode;
+    int value_index;
+
+    switch (mode) {
+        case EV3GyroNormalRate:
+            data_len = 2;
+            target_mode = EV3_GYRO_SENSOR_RATE_MODE;
+            value_index = 0;
+            break;
+
+        case EV3GyroFastRate:
+            data_len = 2;
+            target_mode = EV3_GYRO_SENSOR_RATE_FAST_MODE;
+            value_index = 0;
+            break;
+
+        case EV3GyroInterleavedRate:
+            data_len = 4;
+            target_mode = EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE;
+            value_index = 1;
+            break;
+
+        case EV3GyroTiltRate:
+            data_len = 2;
+            target_mode = EV3_GYRO_SENSOR_TILT_RATE_MODE;
+            value_index = 0;
+            break;
+
+        default:
+            return INT_MIN;
+    }
+
+    return universalRead(port, target_mode, data_len, value_index, 0);
+}
+
+int universalRead(int port, int mode, int data_length, int index, int offset) {
+    uint8_t data[4] = {0};
+
+    setEV3GyroSensorMode(port, mode);
+
+    int retval = readFromUART(port, (DATA8*) data, data_length);
+    if (retval != data_length)
+        return INT_MIN;
+
+    return parseS16(data, index) - offset;
+}
+
+int parseS16(uint8_t *data, int valueNo) {
+    uint16_t raw = (data[2*valueNo + 0] << 0u)
+                 | (data[2*valueNo + 1] << 8u);
+
+    /**
+     * Bit trick overview (sign-extension):
+     * - The if checks for the sign-bit.
+     * - The and-mask removes the sign bit - that gives us how much bigger is
+     *   the actual value compared to the most negative value.
+     * - The subtraction just moves the result so that it matches the
+     *   previous value.
+     */
+    if (raw & 0x8000) {
+        return (int) (raw & 0x7FFF) - 0x8000;
+    }
+    return (int) raw;
+}
+
+int ResetEV3GyroSensor(int port, EV3GyroResetStrategy mode) {
+
+    uint8_t resetCmd = 0;
+    int oldMode = EV3Gyro->currentSensorMode[port];
+
+    switch (mode) {
+        case EV3GyroHardwareZeroAngle: // fallthrough
+        case EV3GyroHardwareFullCalibration:
+
+            if (oldMode != EV3_GYRO_SENSOR_ANGLE_MODE)
+                setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_ANGLE_MODE);
+
+            resetCmd = mode == EV3GyroHardwareZeroAngle
+                         ? EV3_GYRO_ZERO_ANGLE_COMMAND
+                         : EV3_GYRO_CALIBRATE_COMMAND;
+            if (! writeToUART(port, (DATA8*) &resetCmd, sizeof(resetCmd)))
+                return INT_MIN;
+
+            if (oldMode != EV3_GYRO_SENSOR_ANGLE_MODE)
+                setEV3GyroSensorMode(port, oldMode);
+
+            return 0;
+
+        case EV3GyroHardwareReboot:
+            disableUART(port);
+            setEV3GyroSensorMode(port, EV3Gyro->currentSensorMode[port]);
+            return 0;
+
+        case EV3GyroSoftwareZeroAngle:
+            return setEV3GyroSoftwareReset(port);
+
+        default:
+            return INT_MIN;
     }
 }
 
-int getAngleFromAngleAndRate (uint64_t angleAndRate) {
-    int value = angleAndRate & 0xFFFF;
-    return handleEV3GyroNegativeValue(value);
-}
+int setEV3GyroSoftwareReset(int port) {
+    int currentMode = EV3Gyro->currentSensorMode[port];
 
-int getRateFromAngleAndRate (uint64_t angleAndRate) {
-    int value = (angleAndRate >> 16) & 0xFFFF;
-    return handleEV3GyroNegativeValue(value);
-}
+    ev3GyroSoftwareResetOffset[port][currentMode] = 0;
 
-int handleEV3GyroNegativeValue(int value) {
-    if(value & 0x8000) {
-        /**
-         * - the if checks for the sign-bit
-         * - the and-mask removes the sign bit - that gives us how much bigger is
-         *   the actual value compared to the most negative value
-         * - the subtraction just shifts the result so that it matches the
-         *   previous value. In this case, a +1 is also added, presumably to
-         *   prevent the confusing situation that the most negative value does
-         *   not have a positive counterpart.
-         *
-         * Explanation provided by @JakubVanek, see https://github.com/c4ev3/ev3-api/issues/9
-         */
-        value = ((value & 0x7FFF) - 0x7FFF);
+    int currentAngle = 0;
+    switch (currentMode) {
+        case EV3_GYRO_SENSOR_RATE_MODE: // fallthrough
+        case EV3_GYRO_SENSOR_RATE_FAST_MODE: // fallthrough
+        case EV3_GYRO_SENSOR_TILT_RATE_MODE: // fallthrough
+        default:
+            return -1;
+
+        case EV3_GYRO_SENSOR_ANGLE_MODE:
+            currentAngle = ReadEV3GyroSensorAngle(port, EV3GyroNormalAngle);
+            break;
+
+        case EV3_GYRO_SENSOR_ANGLE_AND_RATE_MODE:
+            currentAngle = ReadEV3GyroSensorAngle(port, EV3GyroInterleavedAngle);
+            break;
+
+        case EV3_GYRO_SENSOR_TILT_ANGLE_MODE:
+            currentAngle = ReadEV3GyroSensorAngle(port, EV3GyroTiltAngle);
+            break;
     }
-    return value;
-}
 
-void ResetEV3GyroSensor(int port) {
-#if EV3_GYRO_SENSOR_DEFAULT_MODE == EV3_GYRO_SENSOR_RATE_MODE
-    setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_ANGLE_MODE);
-#else
-    setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_RATE_MODE);
-#endif
-    Wait(200);
-    setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_DEFAULT_MODE);
-    Wait(500);
-    setEV3GyroSoftwareReset(port);
+    ev3GyroSoftwareResetOffset[port][currentMode] = currentAngle;
+    return 0;
 }
 
 void setEV3GyroSensorMode(int port, int mode) {
     setUARTSensorHandlerMode(EV3Gyro, port, EV3_GYRO_SENSOR_TYPE, mode);
-}
-
-void setEV3GyroSoftwareReset(int port) {
-    ev3GyroSoftwareResetOffset[port] = 0;
-    ev3GyroSoftwareResetOffset[port] = ReadEV3GyroSensor(port, EV3GyroAngle);
 }
 
 void exitEV3GyroSensor (int port) {
