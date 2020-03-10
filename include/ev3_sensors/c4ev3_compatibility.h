@@ -19,6 +19,10 @@
 #define COL_COLOR       4   // Color
 #define COL_COLOR_RGB  23   // "Raw" Color in RGB
 
+#define RGB_INT_GET_RED(x)   (((x) >> 16) & 0xFF)
+#define RGB_INT_GET_GREEN(x) (((x) >>  8) & 0xFF)
+#define RGB_INT_GET_BLUE(x)  (((x) >>  0) & 0xFF))
+
 // Ultrasonic
 #define US_DIST_CM      5   // Dist in cm
 #define US_DIST_MM      6   // Dist in mm

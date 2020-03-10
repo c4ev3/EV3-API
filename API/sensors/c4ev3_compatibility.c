@@ -75,7 +75,7 @@ int ReadSensor(int port) {
         case COL_COLOR:
             return ReadEV3ColorSensorColor(port);
         case COL_COLOR_RGB: {
-#define TO_8BIT(x) (((x) >> 2) & 0xFF)
+#define RGB_TO_8BIT(x) (((x) >> 2) & 0xFF)
 
             RGB colors = {0};
             int retval = ReadEV3ColorSensorColorRGB(port, &colors);
@@ -83,9 +83,9 @@ int ReadSensor(int port) {
             if (retval < 0)
                 return INT_MIN;
 
-            return (TO_8BIT(colors.red) << 16)
-                 | (TO_8BIT(colors.green) << 8)
-                 | (TO_8BIT(colors.blue));
+            return (RGB_TO_8BIT(colors.red)   << 16)
+                 | (RGB_TO_8BIT(colors.green) <<  8)
+                 | (RGB_TO_8BIT(colors.blue)  <<  0);
         }
         case US_DIST_CM:
             return ReadEV3UltrasonicSensorDistance(port, EV3_ULTRASONIC_CM);
