@@ -1,10 +1,23 @@
 #include "inputs/ev3_input_uart.h"
 #include "ev3_command.h"
-#include "ev3_color.h"
+#include "ev3_sensors/ev3_sensors.h"
 #include "utility.h"
 
-#define EV3_COLOR_SENSOR_TYPE           29
-#define EV3_COLOR_SENSOR_DEFAULT_MODE   EV3_COLOR_SENSOR_REFLECT_MODE
+//
+// PRIVATE DECLARATIONS
+//
+
+static bool initEV3ColorSensor(int port);
+
+static void exitEV3ColorSensor(int port);
+
+static int readByte(int port, int mode);
+
+static void setEV3ColorSensorMode(int port, int mode);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler * EV3Color = &(SensorHandler){
         .Init = initEV3ColorSensor,
@@ -12,61 +25,73 @@ SensorHandler * EV3Color = &(SensorHandler){
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
+//
+// IMPLEMENTATION
+//
+
 bool initEV3ColorSensor(int port) {
     setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_DEFAULT_MODE);
     return true;
 }
 
-int ReadEV3ColorSensorLight(int port, EV3ColorLightReadingMode lightMode) {
-    int sensorMode = getEV3ColorSensorModeFromReadingLightMode(lightMode);
-    return readEV3ColorSensorRawValue(port, sensorMode);
+int ReadEV3ColorSensorReflectedLight(int port) {
+    return readByte(port, EV3_COLOR_SENSOR_REFLECT_MODE);
 }
 
-int getEV3ColorSensorModeFromReadingLightMode(EV3ColorLightReadingMode readingLightMode) {
-    if (readingLightMode == ReflectedLight) {
-        return EV3_COLOR_SENSOR_REFLECT_MODE;
-    } else {
-        return EV3_COLOR_SENSOR_AMBIENT_MODE;
+int ReadEV3ColorSensorAmbientLight(int port) {
+    return readByte(port, EV3_COLOR_SENSOR_AMBIENT_MODE);
+}
+
+Color ReadEV3ColorSensorColor(int port) {
+    return readByte(port, EV3_COLOR_SENSOR_COLOR_MODE);
+}
+
+int ReadEV3ColorSensorColorRGB(int port, RGB* rgb) {
+    setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_RAW_COLOR_MODE);
+
+    uint8_t data[8] = {0};
+    int retval = readFromUART(port, (DATA8*) data, sizeof(data));
+    if (retval < 0) {
+        return INT_MIN;
     }
+
+    rgb->red        = data[0] + (data[1] << 8u);
+    rgb->green      = data[2] + (data[3] << 8u);
+    rgb->blue       = data[4] + (data[5] << 8u);
+    rgb->background = data[6] + (data[7] << 8u);
+    return 0;
 }
 
-Color ReadEV3ColorSensor(int port) {
-    return readEV3ColorSensorRawValue(port, EV3_COLOR_SENSOR_COLOR_MODE);
+int ReadEV3ColorSensorRawReflectedLight(int port, RawReflect *refraw) {
+    setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_RAW_REFLECT_MODE);
+
+    uint8_t data[4] = {0};
+    int retval = readFromUART(port, (DATA8*) data, sizeof(data));
+    if (retval < 0) {
+        return INT_MIN;
+    }
+
+    int led_on  = data[0] + (data[1] << 8u);
+    int led_off = data[2] + (data[3] << 8u);
+
+    refraw->reflection = led_off - led_on; // make this similar to COL-REFLECT and RGB-RAW
+    refraw->background = led_off;          // pass this unchanged
+    return 0;
 }
 
-int readEV3ColorSensorRawValue(int port, int mode) {
+int readByte(int port, int mode) {
     setEV3ColorSensorMode(port, mode);
 
-    DATA8 data;
-    int readResult = readFromUART(port, &data, 1);
-    if (readResult < 0) {
-        return -1;
+    DATA8 data = 0;
+    int retval = readFromUART(port, &data, sizeof(data));
+    if (retval < 0) {
+        return INT_MIN;
     }
     return data;
 }
 
 void setEV3ColorSensorMode(int port, int mode) {
     setUARTSensorHandlerMode(EV3Color, port, EV3_COLOR_SENSOR_TYPE, mode);
-}
-
-
-int ReadEV3ColorSensorRGB(int port, RGB* rgb) {
-    setEV3ColorSensorMode(port, EV3_COLOR_SENSOR_RGB_MODE);
-    EV3Color->currentSensorMode[port] = EV3_COLOR_SENSOR_RGB_MODE;
-
-    /**
-    * The first 6 bytes in data are the colors: 2 byte for each color.
-    * The range of each color value is from 0 to 1023.
-    */
-    uint8_t data[6];
-    int res = readFromUART(port, (DATA8*) data, sizeof(data) / sizeof(uint8_t));
-    if (res < 0) {
-        return -1;
-    }
-    rgb->red    = data[0] + (data[1] << 8u);
-    rgb->green  = data[2] + (data[3] << 8u);
-    rgb->blue   = data[4] + (data[5] << 8u);
-    return 0;
 }
 
 void exitEV3ColorSensor(int port) {

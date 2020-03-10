@@ -17,6 +17,7 @@
 #define COL_REFLECT     2   // Reflect
 #define COL_AMBIENT     3   // Ambient
 #define COL_COLOR       4   // Color
+#define COL_COLOR_RGB  23   // "Raw" Color in RGB
 
 // Ultrasonic
 #define US_DIST_CM      5   // Dist in cm

@@ -43,6 +43,7 @@ void initializeBackCompatibilityIfNeeded () {
     sensorModeHandlersByModeName[COL_REFLECT]   = EV3Color;
     sensorModeHandlersByModeName[COL_AMBIENT]   = EV3Color;
     sensorModeHandlersByModeName[COL_COLOR]     = EV3Color;
+    sensorModeHandlersByModeName[COL_COLOR_RGB] = EV3Color;
     sensorModeHandlersByModeName[US_DIST_CM]    = EV3Ultrasonic;
     sensorModeHandlersByModeName[US_DIST_MM]    = EV3Ultrasonic;
     sensorModeHandlersByModeName[US_DIST_IN]    = EV3Ultrasonic;
@@ -68,11 +69,24 @@ int ReadSensor(int port) {
         case TOUCH_PRESS:
             return ReadEV3TouchSensor(port);
         case COL_REFLECT:
-            return ReadEV3ColorSensorLight(port, ReflectedLight);
+            return ReadEV3ColorSensorReflectedLight(port);
         case COL_AMBIENT:
-            return ReadEV3ColorSensorLight(port, AmbientLight);
+            return ReadEV3ColorSensorAmbientLight(port);
         case COL_COLOR:
-            return ReadEV3ColorSensor(port);
+            return ReadEV3ColorSensorColor(port);
+        case COL_COLOR_RGB: {
+#define TO_8BIT(x) (((x) >> 2) & 0xFF)
+
+            RGB colors = {0};
+            int retval = ReadEV3ColorSensorColorRGB(port, &colors);
+
+            if (retval < 0)
+                return INT_MIN;
+
+            return (TO_8BIT(colors.red) << 16)
+                 | (TO_8BIT(colors.green) << 8)
+                 | (TO_8BIT(colors.blue));
+        }
         case US_DIST_CM:
             return ReadEV3UltrasonicSensorDistance(port, EV3_ULTRASONIC_CM);
         case US_DIST_MM:
