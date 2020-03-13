@@ -29,7 +29,7 @@ override CFLAGS += -D_GNU_SOURCE=1
 
 # library building
 
-.DEFAULT: libev3api.a
+all: libev3api.a
 
 libev3api.a: $(OBJS)
 	$(AR) rcs $@ $^
@@ -67,4 +67,4 @@ example:
 clean:
 	$(RM) $(OBJDIR) *.a *.d *.pc example
 
-.PHONY: clean install uninstall
+.PHONY: all clean install uninstall
