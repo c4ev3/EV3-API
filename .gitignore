@@ -1,6 +1,7 @@
 Thumbs.db
 .DS_Store
 .objs
+.deps
 *.a
 *.pc
 installed

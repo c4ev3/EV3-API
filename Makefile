@@ -19,9 +19,11 @@ INCLUDEDIR ?= $(DESTDIR)/include
 LIBDIR     ?= $(DESTDIR)/lib
 
 # define files
-SRCS = $(wildcard API/*.c contrib/**/*.c)
-OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
+SRCS     = $(wildcard API/*.c contrib/**/*.c)
+OBJS     = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
+DEPFILES = $(patsubst %.c,$(OBJDIR)/%.d,$(SRCS))
 
+# define flags
 override CFLAGS += -std=c99
 override CFLAGS += -fno-strict-aliasing -fwrapv
 override CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
@@ -43,10 +45,15 @@ libev3api.a: $(OBJS)
 	@echo " [AR]  $@"
 	$(Q)$(AR) rcs $@ $^
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.o: %.c $(OBJDIR)/%.d
 	@echo " [CC]  $<"
 	@$(MKDIR) $(@D)
-	$(Q)$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@
+	$(Q)$(CC) -MMD -MP -Os $(CFLAGS) -isystem. -c $< -o $@
+
+$(DEPFILES):
+	@$(MKDIR) $(@D)
+
+-include $(DEPFILES)
 
 # pkgconfig processing & installation
 
@@ -82,6 +89,6 @@ example:
 # cleanup
 
 clean:
-	$(RM) $(OBJDIR) *.a *.d *.pc example
+	$(RM) $(OBJDIR) *.a *.pc example
 
 .PHONY: all clean install uninstall
