@@ -5,8 +5,6 @@
 
 bool initEV3IrSensor (int port);
 
-void exitEV3IrSensor (int port);
-
 void setEV3IrSensorMode(int port, int mode);
 
 

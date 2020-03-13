@@ -10,7 +10,7 @@
 
 SensorHandler * PixyCam = &(SensorHandler){
         .Init = initPixyCamSensor,
-        .Exit = exitPixyCamSensor,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -40,6 +40,3 @@ int ReadPixyCamSensorBiggestBlobRectangle(int port, PixyRectangle* result) {
     return 0;
 }
 
-void exitPixyCamSensor(int port) {
-
-}

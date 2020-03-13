@@ -1,4 +1,3 @@
-#include <stddef.h>
 #include "ev3_sensors.h"
 #include "c4ev3_compatibility.h"
 

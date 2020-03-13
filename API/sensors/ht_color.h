@@ -5,8 +5,6 @@
 
 bool initHTColorSensorV2(int port);
 
-void exitHTColorSensorV2(int port);
-
 int getHTColorSensorV2ModeFromReadingMode(HTColorV2ReadingMode readingMode);
 
 int getHTColorSensorV2ModeForMainsFrequency(HTColorV2PowerMainsFrequency frequency);

@@ -5,7 +5,7 @@
 
 SensorHandler * EV3Touch = &(SensorHandler){
         .Init = initEV3Touch,
-        .Exit = exitEV3Touch,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -21,6 +21,3 @@ bool ReadEV3TouchSensor(int sensorPort) {
     return temp != 0;
 }
 
-void exitEV3Touch(int port) {
-    // analog sensor doesn't need any de-initialization
-}

@@ -45,7 +45,7 @@ void SensorsExit () {
     int i;
     for (i = 0; i < NUM_INPUTS; i++) {
         SensorHandler * sensor = currentSensorHandlers[i];
-        if (sensor != NULL) {
+        if (sensor != NULL && sensor->Exit != NULL) {
             sensor->Exit(i);
             currentSensorHandlers[i] = NULL;
         }

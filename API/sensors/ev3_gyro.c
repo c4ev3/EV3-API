@@ -12,8 +12,6 @@
 
 static bool initEV3GyroSensor(int port);
 
-static void exitEV3GyroSensor(int port);
-
 static int universalRead(int port, int mode, int data_length, int index, int offset);
 
 static int parseS16(uint8_t *data, int valueNo);
@@ -30,7 +28,7 @@ static int ev3GyroSoftwareResetOffset[4][EV3_GYRO_SENSOR_MODES] = {{0}, {0}, {0}
 
 SensorHandler * EV3Gyro = &(SensorHandler){
     .Init = initEV3GyroSensor,
-    .Exit = exitEV3GyroSensor,
+    .Exit = NULL,
     .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -212,8 +210,4 @@ int setEV3GyroSoftwareReset(int port) {
 
 void setEV3GyroSensorMode(int port, int mode) {
     setUARTSensorHandlerMode(EV3Gyro, port, EV3_GYRO_SENSOR_TYPE, mode);
-}
-
-void exitEV3GyroSensor (int port) {
-
 }

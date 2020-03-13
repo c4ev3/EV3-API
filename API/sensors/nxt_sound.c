@@ -10,7 +10,7 @@
 
 SensorHandler * NXTSound = &(SensorHandler){
         .Init = initNXTSoundSensor,
-        .Exit = exitNXTSoundSensor,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -24,9 +24,4 @@ int ReadNXTSoundSensor(int port, NXTSoundReadingMode mode) {
     DATA16 data = readOldDumbSensor(port);
     int temp = data;
     return (int)((1.0 - (temp/4095.0)) * 100.0); // ADC_RES = 4095
-}
-
-
-void exitNXTSoundSensor (int port) {
-
 }

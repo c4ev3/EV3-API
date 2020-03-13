@@ -5,6 +5,4 @@
 
 bool initNXTSoundSensor (int port);
 
-void exitNXTSoundSensor(int port);
-
 #endif

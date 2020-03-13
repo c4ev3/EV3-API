@@ -5,7 +5,7 @@
 
 SensorHandler * NXTTemperature = &(SensorHandler) {
     .Init = initNXTTemperatureSensor,
-    .Exit = exitNXTTemperatureSensor,
+    .Exit = NULL,
     .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -34,7 +34,3 @@ int ReadNXTTemperatureSensor(int port, NXTTemperatureUnit unit) {
     }
 }
 
-
-void exitNXTTemperatureSensor (int port) {
-
-}

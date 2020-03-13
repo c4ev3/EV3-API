@@ -2,6 +2,7 @@
 #define EV3_API_EV3_SENSORS_PRIVATE_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include "ev3_constants.h"
 #include <ev3_sensors/ev3_sensors.h>
 #include "c4ev3_compatibility.h"

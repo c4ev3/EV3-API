@@ -9,8 +9,6 @@
 
 static bool initEV3ColorSensor(int port);
 
-static void exitEV3ColorSensor(int port);
-
 static int readByte(int port, int mode);
 
 static void setEV3ColorSensorMode(int port, int mode);
@@ -21,7 +19,7 @@ static void setEV3ColorSensorMode(int port, int mode);
 
 SensorHandler * EV3Color = &(SensorHandler){
         .Init = initEV3ColorSensor,
-        .Exit = exitEV3ColorSensor,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -92,8 +90,4 @@ int readByte(int port, int mode) {
 
 void setEV3ColorSensorMode(int port, int mode) {
     setUARTSensorHandlerMode(EV3Color, port, EV3_COLOR_SENSOR_TYPE, mode);
-}
-
-void exitEV3ColorSensor(int port) {
-
 }

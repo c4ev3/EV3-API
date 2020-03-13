@@ -11,7 +11,7 @@
 
 SensorHandler * EV3Ir = &(SensorHandler){
         .Init = initEV3IrSensor,
-        .Exit = exitEV3IrSensor,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -65,9 +65,3 @@ EV3IrRemoteButton ReadEV3IrSensorRemote (int port, int channel) {
     readFromUART(port, data, EV3_IR_CHANNELS);
     return data[channel];
 }
-
-void exitEV3IrSensor (int port) {
-
-}
-
-

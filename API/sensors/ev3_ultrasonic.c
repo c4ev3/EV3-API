@@ -10,8 +10,6 @@
 
 static bool initEV3UltrasonicSensor (int port);
 
-static void exitEV3UltrasonicSensor (int port);
-
 static void setEV3UltrasonicSensorMode(int port, int mode);
 
 static int distanceRead(int port, int mode, int divisor);
@@ -22,7 +20,7 @@ static int distanceRead(int port, int mode, int divisor);
 
 SensorHandler * EV3Ultrasonic = &(SensorHandler){
         .Init = initEV3UltrasonicSensor,
-        .Exit = exitEV3UltrasonicSensor,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -111,8 +109,3 @@ int FireEV3UltrasonicSensor(int port) {
 void setEV3UltrasonicSensorMode(int port, int mode) {
     setUARTSensorHandlerMode(EV3Ultrasonic, port, EV3_ULTRASONIC_SENSOR_TYPE, mode);
 }
-
-void exitEV3UltrasonicSensor (int port) {
-
-}
-

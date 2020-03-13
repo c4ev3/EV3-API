@@ -6,8 +6,6 @@
 
 bool initEV3Touch(int port);
 
-void exitEV3Touch(int port);
-
 void setEV3UltrasonicSensorMode(int port, int mode);
 
 #endif

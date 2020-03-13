@@ -9,6 +9,4 @@ extern SensorHandler * PixyCam;
 
 bool initPixyCamSensor(int port);
 
-void exitPixyCamSensor(int port);
-
 #endif //EV3_API_PIXY_CAM_H

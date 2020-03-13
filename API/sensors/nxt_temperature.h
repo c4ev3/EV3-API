@@ -5,6 +5,4 @@
 
 bool initNXTTemperatureSensor(int port);
 
-void exitNXTTemperatureSensor(int port);
-
 #endif

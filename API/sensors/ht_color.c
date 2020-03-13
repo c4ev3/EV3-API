@@ -17,7 +17,7 @@
 
 SensorHandler * HTColorV2 = &(SensorHandler){
         .Init = initHTColorSensorV2,
-        .Exit = exitHTColorSensorV2,
+        .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
@@ -97,7 +97,3 @@ void writeToHTColorV2ModeRegister(int port, int value) {
     writeToIIC(port, request, 2, 1, 0, 0);
 }
 
-
-void exitHTColorSensorV2(int port) {
-
-}
