@@ -77,7 +77,7 @@ uninstall:
 # sanity check helper
 
 example:
-	echo 'int main(void) { return EV3IsInitialized() == 1; }' | $(CC) -xc $(CFLAGS) - -L. -lev3api -I. -oexample -include ev3.h
+	echo 'int main(void) { return EV3IsInitialized() == 1; }' | $(CC) -xc $(CFLAGS) - -L. -lev3api -IAPI -oexample -include ev3.h
 
 # cleanup
 
