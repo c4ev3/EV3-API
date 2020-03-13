@@ -30,54 +30,99 @@ extern SensorHandler *EV3Gyro;
  * @brief Gyro sensor reset strategy
  *
  * These constants specify the reset algorithm to be used.
+ *
+ * There are multiple types of resets:
+ *
+ *  - "Angle offset reset" will only reset the accumulated angle to zero.
+ *    The rate of rotation will remain unchanged. The gyro sensor does
+ *    not need to stay idle during this operation.
+ *
+ *  - "Recalibration" will perform bias elimination on the rate of rotation.
+ *    The angle will be reset as well. During this operation, the gyro
+ *    sensor must remain stationary, otherwise the rotational rate will
+ *    have a constant error and the accumulated angle will be increasingly wrong.
+ *
+ *  - "Reboot" is just a recalibration. In this context reboot means
+ *    the sensor will timeout and it will be re-detected by the brick.
+ *
+ * For more details, see https://github.com/ev3dev/ev3dev/issues/1387
  */
 typedef enum EV3GyroResetStrategy {
     /**
-     * @brief Set current angle to zero by sending a direct command to the sensor.
-     * - this will:
-     *   - switch the sensor to GYRO-ANG (if needed)
-     *   - send the command 0x11 (GyroNoAutoZero) to the sensor
-     *   - switch the sensor back (if needed)
-     * - generally it should be quite fast
-     *   - except on N2/N3 from GYRO-G&A where it will take around 3 seconds
-     * - on N2/N3 sensors this will behave identically to
-     *   EV3GyroHardwareFullCalibration - it will recalibrate the sensor as well
+     * @brief Send a 0x11 direct command to the sensor.
+     * This will switch the sensor to GYRO-ANG, send the command and switch the mode back.
+     *
+     * What this will really do depends on the sensor revision and current mode:
+     *  - on xxN2/xxN3 sensors
+     *    - for GYRO-ANG this will only reset the angle offset (possibly fastest)
+     *    - for GYRO-G&A this will reboot the sensor (slow - 3 seconds)
+     *    - for other modes it will recalibrate the sensor (fast)
+     *  - on xxN4 and newer sensors
+     *    - this will only reset the offset (fast), it will not recalibrate the sensor
      */
-    EV3GyroHardwareZeroAngle,
+    EV3GyroHardwareCommand0x11,
 
     /**
-     * @brief Recalibrate the sensor by sending a direct command to the sensor.
-     * - this will:
-     *   - switch the sensor to GYRO-ANG (if needed)
-     *   - send the command 0x11 (GyroNoAutoZero) to the sensor
-     *   - switch the sensor back (if needed)
-     * - generally it should be quite fast
-     *   - except on N2/N3 from GYRO-G&A where it will take around 3 seconds
+     * @brief Send a 0x88 direct command to the sensor.
+     * This will switch the sensor to GYRO-ANG, send the command and switch the mode back.
+     *
+     * What this will really do depends on the sensor revision and current mode:
+     *  - on xxN2/xxN3 sensors
+     *     - for GYRO-ANG this will perform recalibration (possibly fastest)
+     *     - for GYRO-G&A this will reboot the sensor (slow - 3 seconds)
+     *     - for other modes it will recalibrate the sensor (fast)
+     *  - on xxN4 and newer sensors
+     *    - this will only reset the offset (fast), it will not recalibrate the sensor
+     *
+     * @remark On xxN4 and newer sensors, please prefer the 0x11 command.
+     *         That one is used by the EV3-G environment. This command
+     *         was found only accidentally in a debugging program
+     *         in the firmware source code.
      */
-    EV3GyroHardwareFullCalibration,
+    EV3GyroHardwareCommand0x88,
 
     /**
      * @brief Recalibrate the sensor by forcefully restarting it.
-     * - it should work for all sensor versions
-     * - however it is quite slow (~2.5 secs)
-     *   - it is the fastest method for the N2/N3 GYRO-G&A mode though
+     *
+     * This strategy should work equally across all sensor revisions.
+     * It is quite slow (2.5 seconds), but it is the fastest option
+     * for xxN2/xxN3 GYRO-G&A mode. It is also possibly the only way
+     * to recalibrate xxN4 and newer sensors.
+     *
+     * The reboot through this strategy should be the fastest known
+     * (apart from physically unplugging the sensor and plugging it back).
+     * This strategy resets the UART comm stack on the given port. This
+     * stops the brick from sending keep-alives to the sensor and that
+     * will make the sensor reset on its own (it will be forced to by its
+     * watchdog).
      */
     EV3GyroHardwareReboot,
 
     /**
      * @brief Set current angle to zero by a software correction.
-     * - the current angle measured by the sensor will be captured
-     * - this angle will then be subtracted from all future measurements
-     * - it should be very fast
-     * - the offset will be specific to the current sensor mode
+     *
+     * This will not poke the hardware in an intrusive way. It will just
+     * read the current uncorrected measured angle and it will store it
+     * as the true "zero" angle. The correction is then performed
+     * automatically in the ReadEV3GyroSensorAngle() function.
+     *
+     * The correction offset is specific for each mode and each port.
+     *
+     * If the sensor is already initialized and giving measurements,
+     * expect this strategy to be very fast.
+     *
+     * @remark The correction will be used only for the mode that the
+     *         sensor currently is in.
+     * @remark If the sensor is not in an angle-giving mode, this
+     *         strategy will fail.
      * @remark If you combine this strategy with other stategies,
      *         this one has to be the last so that the stored offset
      *         is correct.
      * @remark Also beware when using multiple sensor modes.
-     *         On N2/N3 sensors, changing modes will trigger a hardware
+     *         On N2/N3 sensors, changing sensor modes will trigger a hardware
      *         recalibration, which will interfere with the software correction.
      */
-    EV3GyroSoftwareZeroAngle,
+    EV3GyroSoftwareOffset,
 } EV3GyroResetStrategy;
 
 /**

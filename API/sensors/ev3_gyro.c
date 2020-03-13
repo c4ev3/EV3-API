@@ -148,13 +148,13 @@ int ResetEV3GyroSensor(int port, EV3GyroResetStrategy mode) {
     int oldMode = EV3Gyro->currentSensorMode[port];
 
     switch (mode) {
-        case EV3GyroHardwareZeroAngle: // fallthrough
-        case EV3GyroHardwareFullCalibration:
+        case EV3GyroHardwareCommand0x11: // fallthrough
+        case EV3GyroHardwareCommand0x88:
 
             if (oldMode != EV3_GYRO_SENSOR_ANGLE_MODE)
                 setEV3GyroSensorMode(port, EV3_GYRO_SENSOR_ANGLE_MODE);
 
-            resetCmd = mode == EV3GyroHardwareZeroAngle
+            resetCmd = mode == EV3GyroHardwareCommand0x11
                          ? EV3_GYRO_ZERO_ANGLE_COMMAND
                          : EV3_GYRO_CALIBRATE_COMMAND;
             if (! writeToUART(port, (DATA8*) &resetCmd, sizeof(resetCmd)))
@@ -170,7 +170,7 @@ int ResetEV3GyroSensor(int port, EV3GyroResetStrategy mode) {
             setEV3GyroSensorMode(port, EV3Gyro->currentSensorMode[port]);
             return 0;
 
-        case EV3GyroSoftwareZeroAngle:
+        case EV3GyroSoftwareOffset:
             return setEV3GyroSoftwareReset(port);
 
         default:
