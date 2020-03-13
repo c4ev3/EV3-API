@@ -1,10 +1,19 @@
 #include "inputs/ev3_input_iic.h"
 #include "ev3_sensors.h"
 #include "ev3_constants.h"
-#include "ht_compass.h"
+#include "ev3_sensors/ht_compass.h"
 
+//
+// PRIVATE DECLARATIONS
+//
 
-#define HT_COMPASS_SENSOR_IIC_ADDRESS 0x01
+static bool initHTCompassSensor(int port);
+
+static void exitHTCompassSensor(int port);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler * HTCompass = &(SensorHandler){
     .Init = initHTCompassSensor,
@@ -14,6 +23,9 @@ SensorHandler * HTCompass = &(SensorHandler){
 
 static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
 
+//
+// IMPLEMENTATION
+//
 
 bool initHTCompassSensor(int port) {
     initIICPort(port, HT_COMPASS_SENSOR_IIC_ADDRESS);

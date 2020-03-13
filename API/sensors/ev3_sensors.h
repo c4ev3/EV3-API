@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include "ev3_constants.h"
 #include <ev3_sensors/ev3_sensors.h>
-#include "c4ev3_compatibility.h"
+#include "ev3_sensors/c4ev3_compatibility.h"
 
 struct SensorHandler {
 

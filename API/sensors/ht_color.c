@@ -1,25 +1,39 @@
 #include "inputs/ev3_input_iic.h"
 #include "ev3_sensors.h"
-#include "ht_color.h"
+#include "ev3_sensors/ht_color.h"
 
-#define HT_COLOR_SENSOR_V2_IIC_ADDRESS         0x01
 
-#define HT_COLOR_SENSOR_V2_50HZ_MODE           0x35
-#define HT_COLOR_SENSOR_V2_60HZ_MODE           0x36
+//
+// PRIVATE DECLARATIONS
+//
 
-#define HT_COLOR_SENSOR_V2_MODE_REGISTER       0x41
-#define HT_COLOR_SENSOR_V2_COLOR_REGISTER      0x42
-#define HT_COLOR_SENSOR_V2_R_1BYTE_REGISTER    0x43
-#define HT_COLOR_SENSOR_V2_G_1BYTE_REGISTER    0x44
-#define HT_COLOR_SENSOR_V2_B_1BYTE_REGISTER    0x45
-#define HT_COLOR_SENSOR_V2_W_1BYTE_REGISTER    0x46
+static bool initHTColorSensorV2(int port);
 
+static int getHTColorSensorV2ModeFromReadingMode(HTColorV2ReadingMode readingMode);
+
+static int getHTColorSensorV2ModeForMainsFrequency(HTColorV2PowerMainsFrequency frequency);
+
+static void setHTColorSensorV2Mode(int port, int sensorMode);
+
+static void writeToHTColorV2ModeRegister(int port, int value);
+
+static int readHTColorV2RGBA1ByteColor(int port, RGBA* result);
+
+static int readHTColorV2RGBA2ByteColor(int port, RGBA* result);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler * HTColorV2 = &(SensorHandler){
         .Init = initHTColorSensorV2,
         .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
+
+//
+// IMPLEMENTATION
+//
 
 bool initHTColorSensorV2(int port) {
     initIICPort(port, HT_COLOR_SENSOR_V2_IIC_ADDRESS);

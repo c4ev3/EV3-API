@@ -1,12 +1,16 @@
 #include "inputs/ev3_input_iic.h"
-#include "pixy_cam.h"
+#include "ev3_sensors/pixy_cam.h"
+#include "ev3_sensors.h"
 
-#define PIXY_CAM_SENSOR_IIC_ADDRESS 0x01 // TODO: Not tested yet
+//
+// PRIVATE DECLARATIONS
+//
 
-#define PIXY_CAM_BIGGEST_BLOB_RECTANGLE_REGISTER 0x50
-#define PIXY_CAM_BIGGEST_BLOB_ANGLE_REGISTER 0x60
+static bool initPixyCamSensor(int port);
 
-#define PIXY_CAM_ANGLE_CONSTANT 1.40625
+//
+// GLOBAL DATA
+//
 
 SensorHandler * PixyCam = &(SensorHandler){
         .Init = initPixyCamSensor,
@@ -14,8 +18,11 @@ SensorHandler * PixyCam = &(SensorHandler){
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
+//
+// IMPLEMENTATION
+//
 
-bool initPixyCamSensor(int port) {
+static bool initPixyCamSensor(int port) {
     initIICPort(port, PIXY_CAM_SENSOR_IIC_ADDRESS);
     return true;
 }

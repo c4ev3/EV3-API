@@ -1,18 +1,26 @@
 #include "inputs/ev3_input_analog.h"
 #include "ev3_sensors.h"
-#include "nxt_sound.h"
+#include "ev3_sensors/nxt_sound.h"
 
-#define NXT_SOUND_SENSOR_TYPE       3
-#define NXT_SOUND_SENSOR_DB_MODE    0
-#define NXT_SOUND_SENSOR_DBA_MODE   1
+//
+// PRIVATE DECLARATIONS
+//
 
-#define NXT_SOUND_SENSOR_DEFAULT_MODE NXT_SOUND_SENSOR_DB_MODE
+static bool initNXTSoundSensor (int port);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler * NXTSound = &(SensorHandler){
         .Init = initNXTSoundSensor,
         .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
+
+//
+// IMPLEMENTATION
+//
 
 bool initNXTSoundSensor (int port) {
     NXTSound->currentSensorMode[port] = NXT_SOUND_SENSOR_DEFAULT_MODE;

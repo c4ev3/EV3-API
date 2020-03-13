@@ -1,13 +1,26 @@
 #include "inputs/ev3_input_iic.h"
 #include "ev3_sensors.h"
-#include "nxt_temperature.h"
+#include "ev3_sensors/nxt_temperature.h"
 
+//
+// PRIVATE DECLARATIONS
+//
+
+static bool initNXTTemperatureSensor(int port);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler * NXTTemperature = &(SensorHandler) {
     .Init = initNXTTemperatureSensor,
     .Exit = NULL,
     .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
+
+//
+// IMPLEMENTATION
+//
 
 bool initNXTTemperatureSensor (int port) {
     NXTSound->currentSensorMode[port] = NXT_TEMPERATURE_SENSOR_DEFAULT_MODE;

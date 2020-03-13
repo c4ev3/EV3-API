@@ -1,22 +1,34 @@
 #include "inputs/ev3_input_iic.h"
 #include "ev3_sensors.h"
 #include "ev3_command.h"
-#include "ht_ir_v2.h"
+#include "ev3_sensors/ht_ir_v2.h"
 
-#define HT_IR_V2_SENSOR_IIC_ADDRESS 0x08
 
-#define HT_IR_V2_SENSOR_DC_READING_MODE_REGISTER        0x42
-#define HT_IR_V2_SENSOR_AC_READING_MODE_REGISTER        0x49
-#define HT_IR_V2_SENSOR_DC_ALL_READING_MODE_REGISTER    0x43
-#define HT_IR_V2_SENSOR_AC_ALL_READING_MODE_REGISTER    0x4A
+//
+// PRIVATE DECLARATIONS
+//
 
-#define HT_IR_V2_CHANNELS 5
+static bool initHTIrV2Sensor(int port);
+
+static void exitHTIrV2Sensor(int port);
+
+static int getHTIrV2RegisterForReadingMode(HTIrV2ReadingMode mode);
+
+static int getHTIRV2FirstRegisterIndividualChannelsForReadingMode(HTIrV2ReadingMode mode);
+
+//
+// GLOBAL DATA
+//
 
 SensorHandler *HTIrV2 = &(SensorHandler) {
         .Init = initHTIrV2Sensor,
         .Exit = exitHTIrV2Sensor,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
+
+//
+// IMPLEMENTATION
+//
 
 bool initHTIrV2Sensor(int port) {
     initIICPort(port, HT_IR_V2_SENSOR_IIC_ADDRESS);

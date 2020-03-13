@@ -1,19 +1,29 @@
 #include "inputs/ev3_input_uart.h"
 #include "ev3_command.h"
-#include "ev3_ir.h"
+#include "ev3_sensors/ev3_ir.h"
 #include "utility.h"
 
+//
+// PRIVATE DECLARATIONS
+//
 
-#define EV3_IR_SENSOR_TYPE              33
+static  bool initEV3IrSensor (int port);
 
-#define EV3_IR_SENSOR_DEFAULT_MODE EV3_IR_SENSOR_PROXIMITY_MODE
+static void setEV3IrSensorMode(int port, int mode);
 
+//
+// GLOBAL DATA
+//
 
 SensorHandler * EV3Ir = &(SensorHandler){
         .Init = initEV3IrSensor,
         .Exit = NULL,
         .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
+
+//
+// IMPLEMENTATION
+//
 
 bool initEV3IrSensor (int port) {
     setEV3IrSensorMode(port, EV3_IR_SENSOR_DEFAULT_MODE);

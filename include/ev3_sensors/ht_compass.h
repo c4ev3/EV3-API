@@ -3,6 +3,8 @@
 
 #include "ev3_sensors.h"
 
+#define HT_COMPASS_SENSOR_IIC_ADDRESS 0x01
+
 #define HT_COMPASS_SENSOR_DEFAULT_MODE 0
 
 extern SensorHandler * HTCompass;

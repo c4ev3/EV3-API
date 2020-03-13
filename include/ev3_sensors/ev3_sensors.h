@@ -54,6 +54,6 @@ bool SetAllSensors (SensorHandler * port1, SensorHandler * port2, SensorHandler 
 #include "ht_compass.h"
 #include "ht_color.h"
 #include "pixy_cam.h"
-#include "c4ev3_compatibility.h"
+#include "ev3_sensors/c4ev3_compatibility.h"
 
 #endif //EV3_API_EV3_SENSORS_H
