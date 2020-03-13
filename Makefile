@@ -27,29 +27,46 @@ override CFLAGS += -fno-strict-aliasing -fwrapv
 override CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
 override CFLAGS += -D_GNU_SOURCE=1
 
+# logging control
+ifeq ($(VERBOSE)$(V),)
+  Q = @@
+else
+  Q =
+endif
+
+
 # library building
 
 all: libev3api.a
 
 libev3api.a: $(OBJS)
-	$(AR) rcs $@ $^
+	@echo " [AR]  $@"
+	$(Q)$(AR) rcs $@ $^
 
 $(OBJDIR)/%.o: %.c
+	@echo " [CC]  $<"
 	@$(MKDIR) $(@D)
-	$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@
+	$(Q)$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@
 
 # pkgconfig processing & installation
 
 install: libev3api.a API/libev3api.pc.in
 	@# this cannot be a target because it depends on the variable value
-	$(SED) -e "s+@PREFIX@+$(DESTDIR)+" \
-	       -e "s+@INCDIR@+$(INCLUDEDIR)+" \
-	       -e "s+@LIBDIR@+$(LIBDIR)+" \
-	       API/libev3api.pc.in > libev3api.pc
-	$(MKDIR) $(LIBDIR)/pkgconfig $(INCLUDEDIR)/ev3api
-	$(INSTALL) libev3api.a  $(LIBDIR)/
-	$(INSTALL) libev3api.pc $(LIBDIR)/pkgconfig/
-	$(INSTALL) API/*.h      $(INCLUDEDIR)/ev3api/
+	@echo " [SED]  libev3api.pc"
+	$(Q)$(SED) -e "s+@PREFIX@+$(DESTDIR)+" \
+	           -e "s+@INCDIR@+$(INCLUDEDIR)+" \
+	           -e "s+@LIBDIR@+$(LIBDIR)+" \
+	           API/libev3api.pc.in > libev3api.pc
+
+	@echo " [INSTALL]  libev3api.a"
+	$(Q)$(MKDIR) $(LIBDIR)/pkgconfig $(INCLUDEDIR)/ev3api
+	$(Q)$(INSTALL) libev3api.a  $(LIBDIR)/
+
+	@echo " [INSTALL]  libev3api.pc"
+	$(Q)$(INSTALL) libev3api.pc $(LIBDIR)/pkgconfig/
+
+	@echo " [INSTALL]  API/*.h"
+	$(Q)$(INSTALL) API/*.h      $(INCLUDEDIR)/ev3api/
 
 uninstall:
 	$(RM) $(LIBDIR)/libev3api.a            \
