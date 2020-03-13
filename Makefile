@@ -11,9 +11,12 @@ MKDIR = mkdir -p
 INSTALL = cp
 RM = rm -rf
 
+# define directories
+OBJDIR := .objs
+
 # define files
 SRCS = $(wildcard API/*.c contrib/**/*.c)
-OBJS = $(patsubst %.c,%.o,$(SRCS))
+OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 
 override CFLAGS += -std=c99
 override CFLAGS += -fno-strict-aliasing -fwrapv
@@ -27,8 +30,9 @@ override CFLAGS += -D_GNU_SOURCE=1
 libev3api.a: $(OBJS)
 	$(AR) rcs $@ $^
 
-%.o: %.c
-	$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@ 
+$(OBJDIR)/%.o: %.c
+	@$(MKDIR) $(@D)
+	$(CC) -Os $(CFLAGS) -isystem. -c $< -o $@
 
 # pkgconfig processing & installation
 
@@ -52,6 +56,6 @@ example:
 # cleanup
 
 clean:
-	$(RM) API/*.o contrib/**/*.o *.a *.d example
+	$(RM) $(OBJDIR) *.a *.d example
 
 .PHONY: clean install uninstall

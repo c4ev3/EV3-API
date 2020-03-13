@@ -1,5 +1,5 @@
 Thumbs.db
 .DS_Store
-*.o
+.objs
 *.a
 *.pc
