@@ -24,7 +24,7 @@ static void setEV3GyroSensorMode(int port, int mode);
 // GLOBAL DATA
 //
 
-static int ev3GyroSoftwareResetOffset[4][EV3_GYRO_SENSOR_MODES] = {{0}, {0}, {0}, {0}};
+static int ev3GyroSoftwareResetOffset[4][EV3_GYRO_SENSOR_MODES];
 
 SensorHandler * EV3Gyro = &(SensorHandler){
     .Init = initEV3GyroSensor,

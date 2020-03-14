@@ -16,7 +16,7 @@ static int readEV3IrSensorSeekForBackCompatibility(int port);
 //
 
 static int sensorModeNames[NUM_INPUTS] = {NO_SEN};
-static int ev3IrSensorChannel[NUM_INPUTS] = {0};
+static int ev3IrSensorChannel[NUM_INPUTS];
 static SensorHandler * sensorModeHandlersByModeName[100];
 
 //

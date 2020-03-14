@@ -13,9 +13,9 @@
 #include "ev3_constants.h"
 #include "ev3_input_uart.h"
 
-static bool ev3UARTInputInitialized = false;
-static int uartFile = 0;
-static UART * uartSensors = NULL;
+static bool ev3UARTInputInitialized;
+static int uartFile;
+static UART * uartSensors;
 
 extern DEVCON devCon;
 

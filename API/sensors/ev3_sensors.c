@@ -3,7 +3,7 @@
 #include "ev3_sensors.h"
 
 
-static SensorHandler *currentSensorHandlers[NUM_INPUTS] = {NULL, NULL, NULL, NULL};
+static SensorHandler *currentSensorHandlers[NUM_INPUTS];
 
 bool SensorsInit() {
     return true;

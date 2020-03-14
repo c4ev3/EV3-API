@@ -16,9 +16,9 @@
 #define IIC_SENSOR_TYPE 100
 #define IIC_SENSOR_BYTE_MODE 0
 
-static bool ev3IICInputInitialized = false;
-static int iicFile = 0;
-static IIC* iicSensors = 0;
+static bool ev3IICInputInitialized;
+static int iicFile;
+static IIC* iicSensors;
 static int ev3IICDeviceAddresses[NUM_INPUTS];
 
 extern DEVCON devCon;

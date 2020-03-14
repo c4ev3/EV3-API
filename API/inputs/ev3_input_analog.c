@@ -9,9 +9,9 @@
 #include "ev3_input_analog.h"
 
 
-static int analogFile = 0;
-static ANALOG * analogSensors = NULL;
-static bool ev3AnalogInputInitialized = false;
+static int analogFile;
+static ANALOG * analogSensors;
+static bool ev3AnalogInputInitialized;
 
 ANALOG * initEV3AnalogInput(){
     if (ev3AnalogInputInitialized) {

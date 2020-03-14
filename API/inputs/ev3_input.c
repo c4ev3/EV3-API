@@ -8,7 +8,7 @@
 
 DEVCON devCon;
 
-static bool ev3SensorsInitialized = false;
+static bool ev3SensorsInitialized;
 
 bool InputInit() {
     if (ev3SensorsInitialized) {

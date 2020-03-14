@@ -21,7 +21,7 @@ SensorHandler * HTCompass = &(SensorHandler){
     .currentSensorMode = {NONE_MODE, NONE_MODE, NONE_MODE, NONE_MODE}
 };
 
-static bool htCompassIsCalibrating[NUM_INPUTS] = {false, false, false, false};
+static bool htCompassIsCalibrating[NUM_INPUTS];
 
 //
 // IMPLEMENTATION
