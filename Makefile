@@ -36,6 +36,7 @@ else
   Q =
 endif
 
+-include api-config.mk
 
 # library building
 
