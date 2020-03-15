@@ -27,6 +27,7 @@ DBG     = $(ELF).dbg
 REMDIR  = /home/root/lms2012/prjs/$(APPNAME)
 REMFILE = $(REMDIR)/$(ELF)
 REMRBF  = $(REMDIR)/$(RBF)
+REMLOG  = $(patsubst %.elf,%.rtf,$(REMFILE))
 
 # define file lists
 SRCS     = $(wildcard *.c)
@@ -99,7 +100,7 @@ $(APIDIR)/libev3api.a:
 # create rbf
 $(RBF): $(ELF)
 	@echo " [RBF]  $(@F)"
-	$(Q)$(EV3DUDER) mkrbf "$(REMFILE)" "$@"
+	$(Q)$(EV3DUDER) mkrbf "$(REMFILE) >$(REMLOG) 2>&1" "$@"
 
 # user-facing targets
 
