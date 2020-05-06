@@ -1,6 +1,6 @@
 prefix=@PREFIX@
-includedir=${prefix}/include/ev3api
-libdir=${prefix}/lib
+includedir=@INCDIR@
+libdir=@LIBDIR@
 
 Name: EV3-API
 Description: EV3-API for Programming the LEGO Mindstorms EV3 in C

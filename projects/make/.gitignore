@@ -1,0 +1,5 @@
+.deps
+.objs
+*.elf
+*.elf.dbg
+*.rbf

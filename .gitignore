@@ -1,5 +1,8 @@
 Thumbs.db
 .DS_Store
-*.o
+/.objs
+/.deps
+/installed
+/api-config.mk
 *.a
 *.pc
