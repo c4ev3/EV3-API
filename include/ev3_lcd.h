@@ -67,6 +67,9 @@ extern "C" {
 #define LCD_BYTE_WIDTH ((LCD_WIDTH + 7) / 8)
 #define LCD_BUFFER_SIZE (LCD_BYTE_WIDTH * LCD_HEIGHT)
 
+#define LCD_COLOR_BLACK 1
+#define LCD_COLOR_WHITE 0
+
 typedef uint8_t  IMGDATA;    //!< Image base type
 typedef IMGDATA* IP;         //!< Instruction pointer type
 
@@ -86,9 +89,6 @@ typedef enum {
 	ifBMP,
 	ifPNG
 } ImageFormat;
-
-#define LCD_COLOR_BLACK 1
-#define LCD_COLOR_WHITE 0
 
 /*
 #define SCREEN_WIDTH 178
@@ -318,17 +318,6 @@ void LcdSetCursorX(short x);
 void LcdSetCursorY(short y);
 
 /**
- * \brief Get Y coordinate that corresponds to the specified row.
- *
- * Returns the y coordinate corresponding to the specified row, according to
- * the character height of the current font.
- *
- * @param row
- * @return y coordinate corresponding to the row
- */
-short LcdRowToY(int row);
-
-/**
  * \brief Get the X coordinate of the text cursor.
  *
  * This will acquire the X (horizontal) pixel coordinate of the top left corner
@@ -361,6 +350,17 @@ short LcdGetCursorY(void);
  * \sa LcdSetCursorX(), LcdSetCursorY(), LcdGetCursorX(), LcdGetCursorY()
  */
 void LcdResetCursor(void);
+
+/**
+ * \brief Returns the y coordinate corresponding to the specified row
+ *
+ * Return the y coordinate corresponding to the specified row, according to the
+ * character height of the current font.
+ *
+ * \param row
+ * \return Y coordinate of the specified height
+ */
+short LcdRowToY(int row);
 
 
 #endif // ev3_lcd_h
