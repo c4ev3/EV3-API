@@ -12,8 +12,10 @@ bool isCenterButtonPressed() {
  * Example program that uses the EV3 gyro sensor.
  * The program reads the angle and the rotation rate and shows them on the
  * screen every 100ms.
+ *
  * Press the center button to reset the angle (please, keep the robot still
  * while resetting, to avoid the common drifting problem).
+ *
  * Stop the program by pressing the back/exit button of the robot.
  */
 int main () {

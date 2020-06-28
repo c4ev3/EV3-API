@@ -17,14 +17,14 @@ int main () {
     SetAllSensors(HTIrV2, NULL, NULL, NULL);
 
     while (!isExitButtonPressed()) {
-        LcdClean();
 
         /**
          * Read the direction of a beacon transmitting modulated ir signal (AC)
          */
         int direction = ReadHTIrV2Sensor(IN_1, Modulated);
-        LcdTextf(LCD_COLOR_BLACK, 0, LcdRowToY(1), "Direction: %d", direction);
 
+        LcdClean();
+        LcdTextf(LCD_COLOR_BLACK, 0, LcdRowToY(1), "Direction: %d", direction);
         Wait(100);
     }
 
