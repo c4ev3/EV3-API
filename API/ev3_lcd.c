@@ -1059,6 +1059,10 @@ int DisplayLineHeight()
 	return dLcdGetFontHeight(LCDInstance.currentFont);
 }
 
+short LcdRowToY(int row) {
+    return DisplayLineHeight() * row;
+}
+
 void DisplayEraseLine(uint8_t Line)
 {
 	int cnt = DisplayLineHeight()*LCD_BYTE_WIDTH;

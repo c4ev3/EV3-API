@@ -67,6 +67,9 @@ extern "C" {
 #define LCD_BYTE_WIDTH ((LCD_WIDTH + 7) / 8)
 #define LCD_BUFFER_SIZE (LCD_BYTE_WIDTH * LCD_HEIGHT)
 
+#define LCD_COLOR_BLACK 1
+#define LCD_COLOR_WHITE 0
+
 typedef uint8_t  IMGDATA;    //!< Image base type
 typedef IMGDATA* IP;         //!< Instruction pointer type
 
@@ -260,6 +263,7 @@ int asprintf(char **, const char *, ...);
 int vasprintf(char **, const char *, va_list)
 #endif
 
+
 /**
  * Print formatted text on the display. Works like the normal printf.
  * 
@@ -346,6 +350,17 @@ short LcdGetCursorY(void);
  * \sa LcdSetCursorX(), LcdSetCursorY(), LcdGetCursorX(), LcdGetCursorY()
  */
 void LcdResetCursor(void);
+
+/**
+ * \brief Returns the y coordinate corresponding to the specified row
+ *
+ * Return the y coordinate corresponding to the specified row, according to the
+ * character height of the current font.
+ *
+ * \param row
+ * \return Y coordinate of the specified height
+ */
+short LcdRowToY(int row);
 
 
 #endif // ev3_lcd_h

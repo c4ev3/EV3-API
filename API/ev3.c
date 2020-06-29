@@ -18,6 +18,8 @@
  *
  */
 
+#include "inputs/ev3_input.h"
+#include "sensors/ev3_sensors.h"
 #include "ev3.h"
 
 static bool initialized;
@@ -27,6 +29,7 @@ int __attribute__((constructor(EV3_CONSTRUCTOR_PRIORITY))) InitEV3 (void)
 	    return 1;
 
 	OutputInit();
+	InputInit();
 	SensorsInit();
 	ButtonLedInit();
 	TimerInit();
@@ -44,10 +47,11 @@ int __attribute__((destructor(EV3_DESTRUCTOR_PRIORITY))) FreeEV3()
 
 {
 	OutputExit();
-	SensorsExit();
+	InputExit();
 	ButtonLedExit();
 	TimerExit();
 	LcdExit();
+	SensorsExit();
 	SoundExit();
 	BluetoothExit();
 	initialized = false;

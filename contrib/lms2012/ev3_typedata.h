@@ -55,6 +55,58 @@ typedef   struct // if data type changes - remember to change "cInputTypeDataIni
 }
 TYPES;
 
+/*! \page types
+
+<hr size="1"/>
+
+TYPE VALUES FOR BYTE CODES:
+\n
+    \verbatim */
+
+typedef   enum
+{
+  MODE_KEEP                     =  -1,  //!< Mode value that won't change mode in byte codes (convenient place to define)
+  TYPE_KEEP                     =   0,  //!< Type value that won't change type in byte codes
+
+  // Types defined in "typedata.rcf"
+  TYPE_NXT_TOUCH                =   1,  //!< Device is NXT touch sensor
+  TYPE_NXT_LIGHT                =   2,  //!< Device is NXT light sensor
+  TYPE_NXT_SOUND                =   3,  //!< Device is NXT sound sensor
+  TYPE_NXT_COLOR                =   4,  //!< Device is NXT color sensor
+  TYPE_NXT_ULTRASONIC           =   5,  //!< Device is NXT ultra sonic sensor
+  TYPE_NXT_TEMPERATURE          =   6,  //!< Device is NXT temperature sensor
+  TYPE_TACHO                    =   7,  //!< Device is EV3/NXT tacho motor
+  TYPE_MINITACHO                =   8,  //!< Device is EV3 mini tacho motor
+  TYPE_NEWTACHO                 =   9,  //!< Device is EV3 new tacho motor
+
+  TYPE_TOUCH                    =  16,  //!< Device is EV3 touch sensor
+
+  // Types defined in known EV3 digital devices
+  TYPE_COLOR                    =  29,  //!< Device is EV3 color sensor
+  TYPE_ULTRASONIC               =  30,  //!< Device is EV3 ultra sonic sensor
+  TYPE_GYRO                     =  32,  //!< Device is EV3 gyro sensor
+  TYPE_IR                       =  33,  //!< Device is EV3 IR sensor
+
+  // Type range reserved for third party devices
+  TYPE_THIRD_PARTY_START        =  50,
+  TYPE_THIRD_PARTY_END          =  98,
+
+  // Special types
+  TYPE_ENERGYMETER              =  99,  //!< Device is energy meter
+  TYPE_IIC_UNKNOWN              = 100,  //!< Device type is not known yet
+  TYPE_NXT_TEST                 = 101,  //!< Device is a NXT ADC test sensor
+
+  TYPE_NXT_IIC                  = 123,  //!< Device is NXT IIC sensor
+  TYPE_TERMINAL                 = 124,  //!< Port is connected to a terminal
+  TYPE_UNKNOWN                  = 125,  //!< Port not empty but type has not been determined
+  TYPE_NONE                     = 126,  //!< Port empty or not available
+  TYPE_ERROR                    = 127,  //!< Port not empty and type is invalid
+}
+TYPE;
+
+/*  \endverbatim */
+
+
 /*! \page connections Connections
  *
  *  \anchor connectiontypes
@@ -98,10 +150,10 @@ DEVCON;
 #define   UART_SET_CONN           _IOWR('u',0,DEVCON)
 //#define   UART_READ_MODE_INFO     _IOWR('u',1,UARTCTL)
 //#define   UART_NACK_MODE_INFO     _IOWR('u',2,UARTCTL)
-//#define   UART_CLEAR_CHANGED      _IOWR('u',3,UARTCTL)
+#define   UART_CLEAR_CHANGED      _IOWR('u',3,UARTCTL)
 #define   IIC_SET_CONN            _IOWR('i',2,DEVCON)
 //#define   IIC_READ_TYPE_INFO      _IOWR('i',3,IICCTL)
-//#define   IIC_SETUP               _IOWR('i',5,IICDAT)
+#define   IIC_SETUP               _IOWR('i',5,IICDAT)
 //#define   IIC_SET                 _IOWR('i',6,IICSTR)
 
 #endif //EV3_TYPEDATA_H_
