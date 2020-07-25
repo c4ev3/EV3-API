@@ -322,7 +322,28 @@ void _playRMDFile(char* pFileName, uint8_t volume, bool loop)
 	}
 }
 
-void _playSoundSamplesFromStream(int fileHandle)
+#define RIFF_HDR_SIZE   44
+#define RIFF_RIFF_SIG   0x52494646
+#define RIFF_WAVE_SIG   0x57415645
+#define RIFF_FMT_SIG    0x666d7420
+#define RIFF_FMT_PCM    0x0100
+#define RIFF_FMT_1CHAN  0x0100
+#define RIFF_FMT_8BITS  0x0800
+#define RIFF_FMT_16BITS 0x1000
+#define RIFF_DATA_SIG   0x64617461
+
+int changeBitDepthFrom16To8 (uint8_t buffer[], int length) {
+	int i, j = 0;
+	for (i = 0; i < length; i += 2) {
+		uint8_t b1 = buffer[i];
+		uint8_t b2 = buffer[i + 1];
+		short tmp = b1 | (b2 << 8);
+		buffer[j++] = ((tmp + 32767) >> 8) & 0xff;
+	}
+	return j;
+}
+
+void _playSoundSamplesFromStream(int fileHandle, short bitDepth)
 {
 	uint8_t AdPcmData[SOUND_ADPCM_CHUNK];
 	unsigned short BytesToRead, BytesRead, BytesWritten, Delta;
@@ -360,6 +381,10 @@ void _playSoundSamplesFromStream(int fileHandle)
 			// Valid file
 			BytesRead = read(fileHandle, &(SoundInstance.SoundData[1]), BytesToRead);
 			SoundInstance.BytesToWrite = BytesRead + 1;
+
+			if (bitDepth == RIFF_FMT_16BITS) {
+			    SoundInstance.BytesToWrite = changeBitDepthFrom16To8(&SoundInstance.SoundData[1], BytesRead);
+			}
 		}
 
 		BytesWritten = 0;
@@ -426,15 +451,6 @@ short _readShort(int fileHandle, bool lsb)
 	return val;
 }
 
-#define RIFF_HDR_SIZE  44
-#define RIFF_RIFF_SIG  0x52494646
-#define RIFF_WAVE_SIG  0x57415645
-#define RIFF_FMT_SIG   0x666d7420
-#define RIFF_FMT_PCM   0x0100
-#define RIFF_FMT_1CHAN 0x0100
-#define RIFF_FMT_8BITS 0x0800
-#define RIFF_DATA_SIG  0x64617461
-
 void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 {
 	SoundInstance.SoundState = SOUND_STATE_IDLE;  // Yes but only shortly
@@ -475,7 +491,8 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 
 		_readInt(SoundInstance.hSoundFile, true);
 		_readShort(SoundInstance.hSoundFile, true);
-		if (_readShort(SoundInstance.hSoundFile, false) != RIFF_FMT_8BITS)
+		short bitDepth = _readShort(SoundInstance.hSoundFile, false);
+		if (bitDepth != RIFF_FMT_8BITS && bitDepth != RIFF_FMT_16BITS)
 			return;
 		// Skip any data in this chunk after the 16 bytes above
 		sz -= 16;
@@ -512,7 +529,7 @@ void _playWAVFile(char* pFileName, uint8_t volume, bool loop)
 		else
 			SoundInstance.SoundState = SOUND_STATE_FILE;
 
-		_playSoundSamplesFromStream(SoundInstance.hSoundFile);
+		_playSoundSamplesFromStream(SoundInstance.hSoundFile, bitDepth);
 	}
 }
 
@@ -564,7 +581,7 @@ void _playRSOFile(char* pFileName, uint8_t volume, bool loop)
 		else
 			SoundInstance.SoundState = SOUND_STATE_FILE;
 
-		_playSoundSamplesFromStream(SoundInstance.hSoundFile);
+		_playSoundSamplesFromStream(SoundInstance.hSoundFile, RIFF_FMT_8BITS);
 	}
 }
 
