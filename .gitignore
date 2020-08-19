@@ -6,3 +6,7 @@ Thumbs.db
 /api-config.mk
 *.a
 *.pc
+/.metadata
+/.vscode
+*.code-workspace
+.project
