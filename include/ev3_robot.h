@@ -80,12 +80,10 @@ void RobotInit(int ColorLeft, int ColorRight, uint8_t MotorLeft, uint8_t MotorRi
 void SetKPID(short Kp, short Ki,short Kd);
 
 /**
- * @brief Move the robot in mmm.
- * Default values set to (2,0,0) that's it's only proportional control.
- * @param Distance 
- * @param Angle 
- * @param Power 
- * @return distance traveled in degrees.
+ * @brief Convert mm into degrees.
+ * Uses Kfriction, if it was calculated otherwise Kfriction must be equal to 1.0
+ * @param Distance Distance to travel in mm 
+ * @return distance to travel in degrees.
  */
 int Travelcm(int Distance, uint8_t angle, int power);
 

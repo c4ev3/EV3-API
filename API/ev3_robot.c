@@ -79,7 +79,7 @@ void RobotInit(int ColorLeft, int ColorRight, uint8_t MotorLeft, uint8_t MotorRi
 	MyRobot.MotorRight = MotorRight;
 	MyRobot.MotorDual = MotorLeft + MotorRight;
 	MyRobot.Gyro = Gyro;
-	MyRobot.Kfriction = 1;
+	MyRobot.Kfriction = 1.0;
 	
 	int reflectedLightLeft = ReadEV3ColorSensorReflectedLight(MyRobot.ColorLeft);
 	int reflectedLightRight = ReadEV3ColorSensorReflectedLight(MyRobot.ColorRight);
