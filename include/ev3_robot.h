@@ -43,6 +43,8 @@ extern "C" {
 #include "sensors/ev3_sensors.h"
 #include "ev3.h"
 #include "math.h"
+#include "my_robot.h"
+
 #ifndef M_PI
     #define M_PI		3.14159265358979323846	/* pi */
 #endif
@@ -57,21 +59,15 @@ void PoseInit();
 
 /**
  * @brief Initialize all robot variables, set POSE to (0,0,0),  * reset gyrosensor and reset tacho counters.
- * @param port Port to which the sensor is connected
- * @param mode How to measure the rate
- * @param ColorLeft Port to which the left color sensor is connected 
- * @param ColorRight Port to which the right color sensor is connected
- * @param MotorLeft Port to wich the traction Left motor is connected
- * @param MotorRight Port to wich the traction  right motor is connected
- * @param Gyro Port to which the gyro sensor is connected 
+ * Use robot definition file my_robot.h
  * @param Debug If True print on the LCD screen the result of initialiation
  * @return N/A.
  */
 void RobotInit(int ColorLeft, int ColorRight, uint8_t MotorLeft, uint8_t MotorRight, int Gyro, bool Debug);
 
 /**
- * @brief Initialize PID for navigation with girosensor.
- * Default values set to (2,0,0) that's it's only proportional control.
+ * @brief Change PID constants for navigation with girosensor.
+ * Default values are set in my_robot.h file.
  * @param Kp Proportional part constant, default value 2
  * @param Ki Integral part constant, default value 0
  * @param Kd Derivative part constant, default value 0 
@@ -80,12 +76,26 @@ void RobotInit(int ColorLeft, int ColorRight, uint8_t MotorLeft, uint8_t MotorRi
 void SetKPID(short Kp, short Ki,short Kd);
 
 /**
+ * @brief Initialize PID constants for navigation with girosensor with values stored in my_robot.h file.
+ * @return N/A.
+ */
+void InitKPID();
+
+/**
  * @brief Convert mm into degrees.
  * Uses Kfriction, if it was calculated otherwise Kfriction must be equal to 1.0
  * @param Distance Distance to travel in mm 
  * @return distance to travel in degrees.
  */
 int Travelcm(int Distance, uint8_t angle, int power);
+
+/**
+ * @brief Navigate a distance in degrees
+ * 
+ * @param distDegree Distance to travel in mm 
+ * @return distance traveled in degrees.
+ */
+int StraightGyroDegrees(int distDegree, int angle, int speed, bool brake){
 
 
 #endif // ev3_robot_h

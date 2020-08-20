@@ -18,7 +18,7 @@
  *
  */
 #include "ev3_robot.h"
-
+#include "my_robot.h"  /* Definition file for robot structure */
 
 typedef struct {
 	uint8_t Pos_x;
@@ -58,28 +58,32 @@ void PoseInit(){
 
 void SetKPID(float Kp, float Ki, float Kd){
 
-	StraightPid.Kp = 2.0;
-	StraightPid.Ki = 0.0;
-	StraightPid.Kd = 0.0;
-	if (Kp != 0) StraightPid.Kp = Kp;	
-	if (Ki != 0) StraightPid.Ki = Ki;
-	if (Kd != 0) StraightPid.Kd = Kd;
+	StraightPid.Kp = Kp;	
+	StraightPid.Ki = Ki;
+	StraightPid.Kd = Kd;
 
 }
 
-void RobotInit(int ColorLeft, int ColorRight, uint8_t MotorLeft, uint8_t MotorRight, int Gyro, bool Debug){
+void InitKPID(){
+
+	StraightPid.Kp = MOVE_GYRO_KP;
+	StraightPid.Ki = MOVE_GYRO_KI;
+	StraightPid.Kd = MOVE_GYRO_KD;
+}
+void RobotInit(bool Debug){
 	
 	PoseInit();
-	SetKPID(0,0,0);
+	InitKPID();
 
-	MyRobot.WheelCircunference = MyRobot.WheelDiameter * M_PI;
-	MyRobot.ColorLeft = ColorLeft;
-	MyRobot.ColorRight = ColorRight;
-	MyRobot.MotorLeft = MotorLeft;
-	MyRobot.MotorRight = MotorRight;
-	MyRobot.MotorDual = MotorLeft + MotorRight;
-	MyRobot.Gyro = Gyro;
-	MyRobot.Kfriction = 1.0;
+	MyRobot.WheelDiameter = ROBOT_WHEEL_DIAMETER;
+	MyRobot.WheelCircunference = ROBOT_WHEEL_DIAMETER * M_PI;
+	MyRobot.ColorLeft = ROBOT_COLORLEFT;
+	MyRobot.ColorRight = ROBOT_COLORRIGHT;
+	MyRobot.MotorLeft = ROBOT_MOVE_MOTORLEFT;
+	MyRobot.MotorRight = ROBOT_MOVE_MOTORRIGHT;
+	MyRobot.MotorDual = ROBOT_MOVE_MOTORLEFT + ROBOT_MOVE_MOTORRIGHT;
+	MyRobot.Gyro = ROBOT_GYRO;
+	MyRobot.Kfriction = ROBOT_KFRICTION;
 	
 	int reflectedLightLeft = ReadEV3ColorSensorReflectedLight(MyRobot.ColorLeft);
 	int reflectedLightRight = ReadEV3ColorSensorReflectedLight(MyRobot.ColorRight);
@@ -113,7 +117,7 @@ int Travelcm(int distance){
 
 }
 
-int StraightGyroDegrees(int distDegre, int angle, int speed, bool brake){
+int StraightGyroDegrees(int distDegree, int angle, int speed, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(MyRobot.MotorLeft);
@@ -156,8 +160,8 @@ do{
 
 	rotationsLeft = MotorRotationCount(MyRobot.MotorLeft);
 	rotationsRight = MotorRotationCount(MyRobot.MotorRight);
-	traveled = (rotationsLeft + rotationsRight) / 2; 	
+	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
-}while (distDegre <= traveled);
+}while (distDegree <= traveled);
 
 }
