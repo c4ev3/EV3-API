@@ -18,7 +18,7 @@
  *
  */
 #include "ev3_robot.h"
-#include "my_robot.h"  /* Definition file for robot structure */
+// #include "my_robot.h"  Deprecated /*  Definition file for robot structure */
 
 typedef struct {
 	uint8_t Pos_x;
@@ -30,17 +30,23 @@ typedef struct {
 	ROBOT_POSE Pose;
 	int Width;
 	float WheelDiameter;
-	float WheelCircunference;
+	float WheelCircumference;
 	int ColorLeft;
 	int ColorRight;
+	int ColorCenter;
+    int ColorAux;
 	uint8_t MotorLeft;
 	uint8_t MotorRight;
 	uint8_t MotorDual;
+    uint8_t ArmA;
+    uint8_t ArmB;
 	int Gyro;
+	int GyroAux;
 	float Kfriction; // friction factor if robot glide in the competition table surface
 } RobotGlobals;
 
-RobotGlobals MyRobot;
+
+RobotGlobals Robot;
 
 typedef struct {
 	float Kp;
@@ -51,78 +57,109 @@ typedef struct {
 KPID StraightPid;
 
 void PoseInit(){
-	MyRobot.Pose.Pos_x = 0;
-	MyRobot.Pose.Pos_y = 0;
-	MyRobot.Pose.Head = 0;
+
+	Robot.Pose.Pos_x = 0;
+	Robot.Pose.Pos_y = 0;
+	Robot.Pose.Head = 0;
 }
 
-void SetKPID(float Kp, float Ki, float Kd){
+void SetStraightPID(float Kp, float Ki, float Kd){
 
 	StraightPid.Kp = Kp;	
 	StraightPid.Ki = Ki;
 	StraightPid.Kd = Kd;
-
 }
 
-void InitKPID(){
 
-	StraightPid.Kp = MOVE_GYRO_KP;
-	StraightPid.Ki = MOVE_GYRO_KI;
-	StraightPid.Kd = MOVE_GYRO_KD;
+int ResetGyroSensor(int port){
+
+	ResetEV3GyroSensor(port, EV3GyroHardwareCommand0x88); // check Gyro Veersion //
+	ResetEV3GyroSensor(port, EV3GyroHardwareReboot); // 2.5s, valid for all versions
+	ResetEV3GyroSensor(port, EV3GyroSoftwareOffset); /* check for proper reset */
+	return (ReadEV3GyroSensorAngle(port, EV3GyroNormalAngle));	
 }
-void RobotInit(bool Debug){
-	
+
+void RobotInit(ROBOT_PARAMS *params, bool Debug){
+
+	int angle = 0;
+	int angleaux = 0;
+
 	PoseInit();
-	InitKPID();
-
-	MyRobot.WheelDiameter = ROBOT_WHEEL_DIAMETER;
-	MyRobot.WheelCircunference = ROBOT_WHEEL_DIAMETER * M_PI;
-	MyRobot.ColorLeft = ROBOT_COLORLEFT;
-	MyRobot.ColorRight = ROBOT_COLORRIGHT;
-	MyRobot.MotorLeft = ROBOT_MOVE_MOTORLEFT;
-	MyRobot.MotorRight = ROBOT_MOVE_MOTORRIGHT;
-	MyRobot.MotorDual = ROBOT_MOVE_MOTORLEFT + ROBOT_MOVE_MOTORRIGHT;
-	MyRobot.Gyro = ROBOT_GYRO;
-	MyRobot.Kfriction = ROBOT_KFRICTION;
 	
-	int reflectedLightLeft = ReadEV3ColorSensorReflectedLight(MyRobot.ColorLeft);
-	int reflectedLightRight = ReadEV3ColorSensorReflectedLight(MyRobot.ColorRight);
+	SetStraightPID(2.0f, 0.0f, 0.0f); //Initialization of Straight PID constants in only proportional mode, it can be override anytime after RobotInit
+
+	Robot.Width = params->Width;
 	
-	ResetEV3GyroSensor(MyRobot.Gyro, EV3GyroHardwareCommand0x88); // chack Gyro Veersion //
-	ResetEV3GyroSensor(MyRobot.Gyro, EV3GyroHardwareReboot); // 2.5s, valid for all versions
-	ResetEV3GyroSensor(MyRobot.Gyro, EV3GyroSoftwareOffset); /* chack for proper reset */
-	wait(100);
-	int angle = ReadEV3GyroSensorAngle(MyRobot.Gyro, EV3GyroNormalAngle);	
+	Robot.WheelDiameter = params->WheelDiameter;
+	Robot.WheelCircumference = params->WheelDiameter * M_PI;
 
-	ResetRotationCount(MyRobot.MotorDual);
+	Robot.ColorLeft = params->ColorLeftPort;
+	Robot.ColorLeft = params->ColorRightPort;	
+	Robot.ColorCenter = params->ColorCenterPort;	
+	Robot.ColorAux = params->ColorAuxPort;
 
-	int rotationsLeft = MotorRotationCount(MyRobot.MotorLeft);
-	int rotationsRight = MotorRotationCount(MyRobot.MotorRight);
+	Robot.MotorLeft = params->LeftMotorPort;
+	Robot.MotorRight = params->RightMotorPort;
+	Robot.MotorDual = params->LeftMotorPort + params->RightMotorPort;
+	
+	Robot.Gyro = params->GyroPort;
+	Robot.GyroAux = params->GyroAuxPort;
+	
+	Robot.Kfriction = params->Kfriction;
+	
+	if (Robot.Gyro > NA){ 
+	angle = ResetGyroSensor(Robot.Gyro);	
+	}
+	if (Robot.GyroAux > NA){ 
+	angleaux = ResetGyroSensor(Robot.GyroAux);	
+	}
+
+
+	ResetRotationCount(Robot.MotorDual);
+
+	int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	int rotationsRight = MotorRotationCount(Robot.MotorRight);
 
 	if (Debug){
  		LcdClean();
-        LcdTextf(1, 0, LcdRowToY(1), "Color Left: %d", reflectedLightLeft);
-		LcdTextf(1, 0, LcdRowToY(2), "Color Right: %d", reflectedLightRight);
-        LcdTextf(1, 0, LcdRowToY(3), "Angle: %d", angle);
-        LcdTextf(1, 0, LcdRowToY(4), "Rotations Left: %d", rotationsLeft);
-        LcdTextf(1, 0, LcdRowToY(5), "Rotations Right: %d", rotationsRight);
-        Wait(100);
+		if (Robot.ColorLeft > NA){ 
+			int reflectedLightLeft = ReadEV3ColorSensorReflectedLight(Robot.ColorLeft);	
+        	LcdTextf(1, 0, LcdRowToY(1), "Color Left: %d", reflectedLightLeft);
+		}
+		if (Robot.ColorRight > NA){ 
+			int reflectedLightRight = ReadEV3ColorSensorReflectedLight(Robot.ColorRight);
+			LcdTextf(1, 0, LcdRowToY(2), "Color Right: %d", reflectedLightRight);
+		}
+		if (Robot.ColorCenter > NA){ 
+			int reflectedLightCenter = ReadEV3ColorSensorReflectedLight(Robot.ColorCenter);
+			LcdTextf(1, 0, LcdRowToY(3), "Color Center: %d", reflectedLightCenter);
+		}
+		if (Robot.Gyro > NA){ 
+        	LcdTextf(1, 0, LcdRowToY(4), "Angle: %d", angle);
+		}
+		if (Robot.GyroAux > NA){ 
+			LcdTextf(1, 0, LcdRowToY(4), "Angle Aux: %d", angleaux);
+		}
+        LcdTextf(1, 0, LcdRowToY(6), "Rotations Left: %d", rotationsLeft);
+        LcdTextf(1, 0, LcdRowToY(7), "Rotations Right: %d", rotationsRight);
+    
 	}
 	
 }
 
-int Travelcm(int distance){
 
-	return (int)(distance * MyRobot.Kfriction / MyRobot.WheelCircunference);
+int CalculateTravelDegrees(int mm){
+
+	return (int)(mm * Robot.Kfriction / Robot.WheelCircumference);
 
 }
 
 int StraightGyroDegrees(int distDegree, int angle, int speed, bool brake){
 
 int traveled = 0;
-int rotationsLeft = MotorRotationCount(MyRobot.MotorLeft);
-int rotationsRight = MotorRotationCount(MyRobot.MotorRight);
-int angleNow = ReadEV3GyroSensorAngle(MyRobot.Gyro, EV3GyroNormalAngle);
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
 int error;
 int errorD = 0; // error compensation for derivative part
 int oldErrorD= 0;
@@ -130,10 +167,12 @@ int errorI = 0; //accumalated errors for integral part
 
 int uOut; // control for motors
 
-OnFwdSync(MyRobot.MotorDual, speed);
+/* OnFwdSync(Robot.MotorDual, speed);*/
+OnFwdReg(Robot.MotorLeft, speed);
+OnFwdReg(Robot.MotorRight, speed);
 do{
 	//desviation measurement
-	angleNow = ReadEV3GyroSensorAngle(MyRobot.Gyro, EV3GyroNormalAngle);
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
 	
 	error = angle - angleNow; // For Proportional part
 	errorD = error - oldErrorD; // For Darivative part
@@ -154,14 +193,23 @@ do{
 
 	// new power to motors
 	// need to cheek max/min speed?
-	OnFwdReg(MyRobot.MotorLeft, speed + uOut);
-	OnFwdReg(MyRobot.MotorRight, speed - uOut);
+	// To DO : Check limits on DI
+	OnFwdReg(Robot.MotorLeft, speed + uOut);
+	OnFwdReg(Robot.MotorRight, speed - uOut);
 
-
-	rotationsLeft = MotorRotationCount(MyRobot.MotorLeft);
-	rotationsRight = MotorRotationCount(MyRobot.MotorRight);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
 }while (distDegree <= traveled);
+
+if (brake) {
+	Off(Robot.MotorLeft);
+	Off(Robot.MotorRight);
+}
+// To DO Use ramp function
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
 
 }
