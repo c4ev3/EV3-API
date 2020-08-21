@@ -6,8 +6,8 @@
 ROBOT_PARAMS my_robot = {
 	.Width = 114.0f, //mm
 	.WheelDiameter = 62.4f, //mm
-	.ColorLeftPort = IN_2,
-	.ColorRightPort = IN_3,
+	.ColorLeftPort = NA, //Only testing Straightbygyro
+	.ColorRightPort = NA,
 	.ColorCenterPort = NA,  //Not used
 	.ColorAuxPort = NA,	//Not used
 	.LeftMotorPort	= OUT_B,
@@ -39,14 +39,14 @@ int main () {
      */
     LcdClean();
     InitEV3();
-    SetAllSensors(EV3GYRO, EV3COLOR, EV3COLOR, NULL);
+    SetAllSensors(EV3Gyro, NULL, NULL, NULL);
     RobotInit(&my_robot, true);
 
     while (!isCenterButtonPressed()) {
 //do nothing
     }
     int travelDegrees = CalculateTravelDegrees(1000);
-    int travel =  StraightbyGyroDegrees(travelDegrees, 0, 60, true)  // move traveldegrees (1meter), in head direction, at 60 spped and stop at end
+    int travel =  StraightbyGyroDegrees(travelDegrees, 0, 60, true);  // move traveldegrees (1meter), in head direction, at 60 spped and stop at end
 
     FreeEV3();
     return 0;

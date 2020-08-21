@@ -1,5 +1,5 @@
 /** \file ev3_robot.h
- * \brief Naviugation funtions for a diffrential robot with the EV3 brick  for FLL Robots (POSE, Go , Gyro)
+ * \brief Naviugation funtions for a differential robot with the EV3 brick  for FLL Robots (POSE, Go , Gyro)
  *
  * ev3_robot.h contains declarations for the Robots movement functions.
  *

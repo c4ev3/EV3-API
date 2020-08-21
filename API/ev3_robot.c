@@ -12,13 +12,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/
  *
- * The Initial Developer of this code is Simón Rodriguez Perez.
- * Portions created by Simón Rodriguez Perez are Copyright (C) 2014-2015 Simón Rodriguez Perez.
+ * The Initial Developer of this code is Red Team FL.
+ * Portions created by Red Team FLL are Copyright (C) Red Team FLL.
  * All Rights Reserved.
  *
  */
 #include "ev3_robot.h"
-// #include "my_robot.h"  Deprecated /*  Definition file for robot structure */
 
 typedef struct {
 	uint8_t Pos_x;
@@ -31,6 +30,7 @@ typedef struct {
 	int Width;
 	float WheelDiameter;
 	float WheelCircumference;
+	float MmDegree;
 	int ColorLeft;
 	int ColorRight;
 	int ColorCenter;
@@ -92,9 +92,10 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	
 	Robot.WheelDiameter = params->WheelDiameter;
 	Robot.WheelCircumference = params->WheelDiameter * M_PI;
+	Robot.MmDegree = Robot.WheelCircumference / 360;
 
 	Robot.ColorLeft = params->ColorLeftPort;
-	Robot.ColorLeft = params->ColorRightPort;	
+	Robot.ColorRight = params->ColorRightPort;	
 	Robot.ColorCenter = params->ColorCenterPort;	
 	Robot.ColorAux = params->ColorAuxPort;
 
@@ -150,11 +151,11 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 
 int CalculateTravelDegrees(int mm){
 
-	return (int)(mm * Robot.Kfriction / Robot.WheelCircumference);
+	return (int)(mm * Robot.Kfriction / Robot.MmDegree);
 
 }
 
-int StraightGyroDegrees(int distDegree, int angle, int speed, bool brake){
+int StraighbyGyroDegrees(int distDegree, int angle, int speed, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -194,8 +195,8 @@ do{
 	// new power to motors
 	// need to cheek max/min speed?
 	// To DO : Check limits on DI
-	OnFwdReg(Robot.MotorLeft, speed + uOut);
-	OnFwdReg(Robot.MotorRight, speed - uOut);
+	OnFwdReg(Robot.MotorLeft, speed - uOut);
+	OnFwdReg(Robot.MotorRight, speed + uOut);
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
