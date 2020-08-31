@@ -27,8 +27,8 @@
  * ----------------------------------------------------------------------------
  *
  * \author Red Team FLL (redteamfll_at_gmail.com)
- * \date 2020-08-15
- * \version 0.0.2
+ * \date 2020-08-31
+ * \version 0.1.0
  */
 
 
@@ -50,6 +50,14 @@ extern "C" {
 #endif
 
 #define NA  -1 /*!< used when a param is not applicable */
+
+#define SPIN_RIGHT	  200	 /*!< Turn Value to spin the robot to the right -> left wheel forward right wheel backwards */
+#define SPIN_LEFT	 -200	 /*!< Turn Value to spin the robot to the left -> left wheel backwards right wheel forward */
+#define PIVOT_RIGHT	  100	 /*!< Turn Value to pivot the robot over the right wheel -> right wheel stopped */
+#define PIVOT_LEFT	 -100	 /*!< Turn Value to pivot the robot over the right wheel -> right wheel stopped */
+
+#define MIN_SPEED_SPIN	  6	 /*!< Minimun velocity for spin turn under 30º */
+#define MIN_SPEED_PIVOT  10  /*!< Minimun velocity for pivot turn under 30º */
 
 /**
  * @brief Struct which contains information about mechanical design of robot.
@@ -73,10 +81,122 @@ typedef struct {
 } ROBOT_PARAMS;
 
 /**
- * @brief Initialize pose at postion (x,y) (0,0) and angle (0).
+ * @brief Returns x position of POSE register.
+ * @return Pos_x Value
+ *
+ *  */
+short GetPoseX();
+
+/**
+ * @brief Returns y position of POSE register.
+ * @return Pos_y Value
+ *
+ *  */
+short GetPoseY();
+
+/**
+ * @brief Returns head position of POSE register.
+ * @return Head Value
+ *
+ *  */
+int GetPoseHead();
+
+/**
+ * @brief Set x value of POSE register.
+ * @param newX New value of Pos_x
+ *
+ *  */
+void SetPoseX(short newX);
+
+/**
+ * @brief Set y value of POSE register.
+ * @param newY New value of Pos_y
+ *
+ *  */
+void SetPoseY(short newY);
+
+/**
+ * @brief Normalize value of any angle to range [-180, 180] degrees
+ *
+ *  */
+int NormalizeHead(int Head);
+
+/**
+ * @brief Set Head value of POSE register.
+ * @param newHead New value of Head
+ *
+ *  */
+void SetPoseHead(int newHead);
+
+/**
+ * @brief Set Head value of POSE register reading the value of the Gyro Sensor.
+ *
+ *  */
+void NewHeadPose();
+
+/**
+ * @brief Initialize pose at position (x,y) (0,0) and angle (0).
  *
  *  */
 void PoseInit();
+
+/**
+ * @brief Rotate the robot on the central axis to the right (more degrees than current)
+ * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_SPIN
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @return last angle measured
+ *
+ *  */
+int TurnGyroRightAbs(int angle, int speed);
+
+/**
+ * @brief Rotate the robot on the central axis to the left (lest degrees than current)
+ * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_SPIN
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @return last angle measured
+ *
+ *  */
+int TurnGyroLeftAbs(int angle, int speed);
+
+/**
+ * @brief Pivot the robot on the right wheel
+ * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_PIVOT
+ * @param angle Target angle (can be positive (forward) or negative (backward)
+ * @param speed  Max turning speed ( in %)
+ * @return last angle measured
+ *
+ *  */
+int PivotGyroRightWheelAbs(int angle, int speed);
+
+/**
+ * @brief Pivot the robot on the left wheel
+ * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_PIVOT
+ * @param angle Target angle (can be positive (forward) or negative (backward)
+ * @param speed  Max turning speed ( in %)
+ * @return last angle measured
+ *
+ *  */
+int PivotGyroLeftWheelAbs(int angle, int speed);
+
+/**
+ * @brief Set the constant values for PID using GyroSensor
+ * @param Kp Proportional constant
+ * @param Ki Integral constant
+ * @param Kd Derivative constant
+ *
+ *  */
+void SetStraightPID(float Kp, float Ki, float Kd);
+
+/**
+ * @brief Set the constant values for PID used for LineFollover
+ * @param Kp Proportional constant
+ * @param Ki Integral constant
+ * @param Kd Derivative constant
+ *
+ *  */
+void SetLightPID(float Kp, float Ki, float Kd);
 
 /**
  * @brief Reset the Gyro Sensor Hw & Sw, please remember that the robot must not move during the restart.
@@ -97,18 +217,6 @@ int ResetGyroSensor(int port);
 void RobotInit(ROBOT_PARAMS *params, bool Debug);
 
 /**
- * @brief Change PID constants for navigation with girosensor.
- * Default values are set in my_robot.h file.
- * @param Kp Proportional part constant, default value 2
- * @param Ki Integral part constant, default value 0
- * @param Kd Derivative part constant, default value 0 
- * @return N/A.
- */
-void SetStraightPID(float Kp, float Ki, float Kd);
-
-
-
-/**
  * @brief Convert mm into degrees.
  * Uses Kfriction, if it was calculated otherwise Kfriction must be equal to 1.0
  * @param mm Distance to travel in mm 
@@ -127,6 +235,32 @@ int CalculateTravelDegrees(int mm);
  */
 int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool brake);
 
+/**
+ * @brief Navigate a distance in degrees following a line border
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param lightsensor Light Sensor Port used
+ * @param light light threshold for border detection
+ * @param speed Speed of the robot 0 - 100
+ * @param inOutSide Which border of the line is followed
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, bool inOutSide, bool brake);
+
+/**
+ * @brief Navigate a distance in degrees with gyro and line follower, the gyro PID is tuned with line follower for more precision
+ * Initial Development in EV3-G by Brickwolves Waring FLL Team
+ * @param distDegree Distance to travel in degrees
+ * @param lightsensor Light Sensor Port used
+ * @param light light threshold for border detection
+ * @param angle Head of the robot to go straight
+ * @param speed Speed of the robot 0 - 100
+ * @param inOutSide Which border of the line is followed
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraighLAGDegrees(int distDegree, int lightsensor, int light, int angle, int speed, bool inOutSide, bool brake);
 
 #endif // ev3_robot_h
 

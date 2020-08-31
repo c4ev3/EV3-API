@@ -10,3 +10,7 @@ Thumbs.db
 /.vscode
 *.code-workspace
 .project
+/Ev3_menu
+/projects
+.gitignore
+commands.pdf

@@ -1,4 +1,4 @@
-/*
+/**
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -16,13 +16,16 @@
  * Portions created by Red Team FLL are Copyright (C) Red Team FLL.
  * All Rights Reserved.
  *
+ * \author Red Team FLL (redteamfll_at_gmail.com)
+ * \date 2020-08-31
+ * \version 0.1.0
  */
 #include "ev3_robot.h"
 
 typedef struct {
-	uint8_t Pos_x;
-	uint8_t Pos_y;
-	short Head;
+	short Pos_x;
+	short Pos_y;
+	int Head;
 } ROBOT_POSE;
 
 typedef struct {
@@ -55,6 +58,44 @@ typedef struct {
 } KPID;
 
 KPID StraightPid;
+KPID LightPid;
+
+short GetPoseX(){
+	return Robot.Pose.Pos_x;
+}
+
+short GetPoseY(){
+	return Robot.Pose.Pos_y;
+}
+
+int GetPoseHead(){
+	return Robot.Pose.Head;
+}
+
+void SetPoseX(short newX){
+	Robot.Pose.Pos_x = newX;
+}
+
+void SetPoseY(short newY){
+	Robot.Pose.Pos_y = newY;
+}
+
+int NormalizeHead(int Head){
+	Head = Head % 360;
+	if (Head > 180) Head -= 360;
+	if (Head < -180) Head += 360;
+	return Head;
+}
+
+void SetPoseHead(int newHead){
+	if ((newHead > 180) || (newHead < -180)) newHead = Normalize(newHead);
+	Robot.Pose.Head = newHead;
+}
+
+void NewHeadPose(){
+
+	SetPoseHead(ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE));	
+}
 
 void PoseInit(){
 
@@ -63,6 +104,142 @@ void PoseInit(){
 	Robot.Pose.Head = 0;
 }
 
+int TurnGyroRightAbs(int angle, int speed){
+	
+	int angleNow;
+	int distance;
+		
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angle - angleNow;
+	if (distance != 0 ) OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT, 0);
+
+	while (true){
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+	
+		if (distance == 0) {
+			Off(Robot.MotorDual);
+			return angleNow;
+		}
+		else if (distance < 0) {	
+			OutputTimeSync(Robot.MotorDual, MIN_SPEED_SPIN, SPIN_LEFT, 0);
+		}
+		else if (distance < 30) {
+			OutputTimeSync(Robot.MotorDual, MIN_SPEED_SPIN, SPIN_RIGHT, 0);
+		}
+
+	}
+	return angleNow;
+} // To do protection by time
+
+int TurnGyroLeftAbs(int angle, int speed){
+	
+	int angleNow;
+	int distance;
+
+	short try = 0;
+	
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angleNow - angle;
+	if (distance != 0 ) OutputTimeSync(Robot.MotorDual, speed, SPIN_LEFT, 0);
+
+	while (true){
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angleNow - angle;
+	
+		if (distance == 0) {
+			Off(Robot.MotorDual);
+			return angleNow;
+		}
+		else if (distance < 0) {	
+			OutputTimeSync(Robot.MotorDual, MIN_SPEED_SPIN, SPIN_RIGHT, 0);
+		}
+		else if (distance < 30) {
+			OutputTimeSync(Robot.MotorDual, MIN_SPEED_SPIN, SPIN_LEFT, 0);
+		}
+
+	}
+	return angleNow;
+}  //To do protection by time
+
+int PivotGyroRightWheelAbs(int angle, int speed){
+	
+	int angleNow;
+	int distance;
+	bool backAndForward;
+	short try = 0;
+	int minSpeed = MIN_SPEED_PIVOT;
+	
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angle - angleNow;
+	backAndForward = (distance >= 0);
+	if (!backAndForward) {
+	speed = -speed;
+	minSpeed = -minSpeed; // if the movement is backwards then the motors must be reversed
+	}
+	
+	if (distance != 0 ) OutputTimeSync(Robot.MotorDual, speed, PIVOT_RIGHT, 0);
+
+	while (true){
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+	
+		if (distance == 0) {
+			Off(Robot.MotorDual);
+			return angleNow;
+		}
+		else if (abs(distance) < 0) {	
+			OutputTimeSync(Robot.MotorDual, -minSpeed, PIVOT_RIGHT, 0);
+		}
+		else if (abs(distance) < 30) {
+			OutputTimeSync(Robot.MotorDual, minSpeed, PIVOT_RIGHT, 0);
+		}
+
+	}
+	return angleNow;
+}
+
+int PivotGyroLeftWheelAbs(int angle, int speed){
+	
+	int angleNow;
+	int distance;
+	bool backAndForward;
+	short try = 0;
+	int minSpeed = MIN_SPEED_PIVOT;
+	
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angleNow - angle;
+	backAndForward = (distance >= 0);
+	if (!backAndForward) {
+	speed = -speed;
+	minSpeed = -minSpeed;
+	}
+	
+	if (distance != 0 ) OutputTimeSync(Robot.MotorDual, speed, PIVOT_LEFT, 0);
+
+	while (true){
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angleNow - angle;
+	
+		if (distance == 0) {
+			Off(Robot.MotorDual);
+			return angleNow;
+		}
+		else if (abs(distance) < 0) {	
+			OutputTimeSync(Robot.MotorDual, -minSpeed, PIVOT_LEFT, 0);
+			++try;
+		}
+		else if (abs(distance) < 30) {
+			OutputTimeSync(Robot.MotorDual, minSpeed, PIVOT_LEFT, 0);
+		}
+
+	}
+	return angleNow;
+}
+
+
+
+
 void SetStraightPID(float Kp, float Ki, float Kd){
 
 	StraightPid.Kp = Kp;	
@@ -70,6 +247,12 @@ void SetStraightPID(float Kp, float Ki, float Kd){
 	StraightPid.Kd = Kd;
 }
 
+void SetLightPID(float Kp, float Ki, float Kd){
+
+	LightPid.Kp = Kp;	
+	LightPid.Ki = Ki;
+	LightPid.Kd = Kd;
+}
 
 int ResetGyroSensor(int port){
 
@@ -87,6 +270,7 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	PoseInit();
 	
 	SetStraightPID(2.0f, 0.0f, 0.0f); //Initialization of Straight PID constants in only proportional mode, it can be override anytime after RobotInit
+	SetLightPID(0.3f, 0.0f, 0.0f); //Initialization of Light PID constants in only proportional mode, it can be override anytime after RobotInit
 
 	Robot.Width = params->Width;
 	
@@ -166,11 +350,12 @@ int errorD = 0; // error compensation for derivative part
 int oldErrorD= 0;
 int errorI = 0; //accumalated errors for integral part
 
-int uOut; // control for motors
+int uOut = 0; // control for motors
 
-/* OnFwdSync(Robot.MotorDual, speed);*/
-OnFwdReg(Robot.MotorLeft, speed);
-OnFwdReg(Robot.MotorRight, speed);
+
+// OnFwdReg(Robot.MotorLeft, speed);
+// OnFwdReg(Robot.MotorRight, speed);
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 do{
 	//desviation measurement
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
@@ -192,11 +377,8 @@ do{
 	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
 	 */
 
-	// new power to motors
-	// need to cheek max/min speed?
-	// To DO : Check limits on DI
-	OnFwdReg(Robot.MotorLeft, speed - uOut);
-	OnFwdReg(Robot.MotorRight, speed + uOut);
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
@@ -205,12 +387,125 @@ do{
 }while (distDegree <= traveled);
 
 if (brake) {
-	Off(Robot.MotorLeft);
-	Off(Robot.MotorRight);
+	Off(Robot.MotorDual);
 }
 // To DO Use ramp function
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
 
+}
+
+int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, bool inOutSide, bool brake){
+
+int traveled = 0;
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+
+
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do{
+	//desviation measurement
+	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+
+	
+	error = light - lightNow; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  LightPid.Kp) + (errorI * LightPid.Ki) + (errorD * LightPid.Kd ));
+	oldErrorD = error;
+	
+	/* 
+	 * Proportional part
+	 * (error ^  LightPid.Kp)
+	 * Integral part
+	 * (errorI * LightPid.Ki
+	 * Derivative part
+	 * (errorD * LightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+
+	// To DO : Check limits on DI
+	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}while (distDegree <= traveled);
+
+if (brake) {
+	Off(Robot.MotorDual);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}
+// To DO Use ramp function
+return traveled;	 	
+
+}
+
+
+int StraighLAGDegrees(int distDegree, int lightsensor, int light, int angle, int speed, bool inOutSide, bool brake){
+/*!< Based on LAGS Line Assisted Gyro Steering idea from Brickwolves Waring FLL Team*/
+
+int traveled = 0;
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int errorLight;
+int errorGyro;
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+
+
+// OnFwdReg(Robot.MotorLeft, speed);
+// OnFwdReg(Robot.MotorRight, speed);
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do{
+	//desviation measurement
+	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+	
+	errorLight = light - lightNow;
+	if (inOutSide) errorLight = - errorLight; // For Proportional part due to light
+	errorGyro = angle - angleNow;//
+	error = errorGyro + (errorLight * LightPid.Kp); // angle compensation due linefollower
+	uOut = (int)(error *  StraightPid.Kp);	
+	/* 
+	 * Only Proportional part
+	 * 
+	 */
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}while (distDegree <= traveled);
+
+if (brake) {
+	Off(Robot.MotorDual);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+}
+	// To DO Use ramp function
+return traveled;
 }
