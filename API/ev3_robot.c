@@ -88,7 +88,7 @@ int NormalizeHead(int Head){
 }
 
 void SetPoseHead(int newHead){
-	if ((newHead > 180) || (newHead < -180)) newHead = Normalize(newHead);
+	if ((newHead > 180) || (newHead < -180)) newHead = NormalizeHead(newHead);
 	Robot.Pose.Head = newHead;
 }
 
@@ -137,7 +137,6 @@ int TurnGyroLeftAbs(int angle, int speed){
 	int angleNow;
 	int distance;
 
-	short try = 0;
 	
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
 	distance = angleNow - angle;
@@ -167,7 +166,6 @@ int PivotGyroRightWheelAbs(int angle, int speed){
 	int angleNow;
 	int distance;
 	bool backAndForward;
-	short try = 0;
 	int minSpeed = MIN_SPEED_PIVOT;
 	
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
@@ -204,7 +202,6 @@ int PivotGyroLeftWheelAbs(int angle, int speed){
 	int angleNow;
 	int distance;
 	bool backAndForward;
-	short try = 0;
 	int minSpeed = MIN_SPEED_PIVOT;
 	
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
@@ -227,7 +224,6 @@ int PivotGyroLeftWheelAbs(int angle, int speed){
 		}
 		else if (abs(distance) < 0) {	
 			OutputTimeSync(Robot.MotorDual, -minSpeed, PIVOT_LEFT, 0);
-			++try;
 		}
 		else if (abs(distance) < 30) {
 			OutputTimeSync(Robot.MotorDual, minSpeed, PIVOT_LEFT, 0);
@@ -468,10 +464,6 @@ int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
 int errorLight;
 int errorGyro;
 int error;
-int errorD = 0; // error compensation for derivative part
-int oldErrorD= 0;
-int errorI = 0; //accumalated errors for integral part
-
 int uOut = 0; // control for motors
 
 
