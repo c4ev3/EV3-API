@@ -60,6 +60,15 @@ typedef struct {
 KPID StraightPid;
 KPID LightPid;
 
+
+typedef struct {
+	char *name;
+	int (*function)();
+} MenuEntry;
+
+MenuEntry MenuButton[MAXLEVEL][NUMBUTTONS];
+
+
 short GetPoseX(){
 	return Robot.Pose.Pos_x;
 }
@@ -500,4 +509,196 @@ if (brake) {
 }
 	// To DO Use ramp function
 return traveled;
+}
+
+int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake){
+/*!< Straigh move controlled by gyro and finished on line detection*/
+
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+int state = 0; // state for line transition detection, white = 1, black and previous white = 2, other 0
+
+int lightNow = NO_LINE_DETECTED; //input from light sensor in light reflected mode
+
+
+// OnFwdReg(Robot.MotorLeft, speed);
+// OnFwdReg(Robot.MotorRight, speed);
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do {
+	//desviation measurement
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+	error = angle - angleNow; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	oldErrorD = error;
+	
+	/* 
+	 * Proportional part
+	 * (error ^  StraightPid.Kp)
+	 * Integral part
+	 * (errorI * StraightPid.Ki
+	 * Derivative part
+	 * (errorD * StraightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+
+	if (lightNow >= WHITE_DETECTED) {
+		state = LINE_WHITE_DETECTED;
+	} else { 
+		state = NO_LINE_DETECTED; 
+	  }
+
+} while ((lightNow <= BLACK_DETECTED) && (state == LINE_WHITE_DETECTED));
+
+if (brake) {
+	Off(Robot.MotorDual);
+}
+// To DO Use ramp function
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}
+
+int StraighbyDegreesToLine(int lightSensor, int speed, bool brake){
+/*!< Straigh move controlled by rotations sensors and finished on line detection*/
+
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+//int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+int state = 0; // state for line transition detection, white = 1, black and previous white = 2, other 0
+
+int lightNow = NO_LINE_DETECTED; //input from light sensor in light reflected mode
+
+
+// OnFwdReg(Robot.MotorLeft, speed);
+// OnFwdReg(Robot.MotorRight, speed);
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do {
+	//desviation measurement
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+    rotationsRight = MotorRotationCount(Robot.MotorRight);
+	//angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+	error = rotationsRight - rotationsLeft; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	oldErrorD = error;
+	
+	/* 
+	 * Proportional part
+	 * (error ^  StraightPid.Kp)
+	 * Integral part
+	 * (errorI * StraightPid.Ki
+	 * Derivative part
+	 * (errorD * StraightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+
+	/*rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight); */
+	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+
+	if (lightNow >= WHITE_DETECTED) {
+		state = LINE_WHITE_DETECTED;
+	} else { 
+		state = NO_LINE_DETECTED; 
+	  }
+
+} while ((lightNow <= BLACK_DETECTED) && (state == LINE_WHITE_DETECTED));
+
+if (brake) {
+	Off(Robot.MotorDual);
+}
+// To DO Use ramp function
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}
+
+
+void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (left)(), char  *upText,char  *rightText,char  *downText,char  *leftText){
+
+MenuButton[level][MENU_UP].name = upText;
+MenuButton[level][MENU_UP].function = up;
+MenuButton[level][MENU_RIGHT].name = rightText;
+MenuButton[level][MENU_RIGHT].function = right;
+MenuButton[level][MENU_DOWN].name = downText;
+MenuButton[level][MENU_DOWN].function = down;
+MenuButton[level][MENU_LEFT].name = leftText;
+MenuButton[level][MENU_LEFT].function = left;
+
+}
+
+void DoNothing(void){
+
+}
+
+void DrawMenu( int level){
+	LcdClean();
+	LcdTextf(1, 0, LcdRowToY(2), "UP    : %s", MenuButton[level][MENU_UP].name);
+	LcdTextf(1, 0, LcdRowToY(4), "RIGHT : %s", MenuButton[level][MENU_RIGHT].name);
+	LcdTextf(1, 0, LcdRowToY(6), "DOWN  : %s", MenuButton[level][MENU_DOWN].name);
+	LcdTextf(1, 0, LcdRowToY(8), "LEFT  : %s", MenuButton[level][MENU_LEFT].name);
+	LcdTextf(1, 0, LcdRowToY(10), "Press CENTER for NEXT Menu");
+}
+
+void MenuButtons (){
+	int level = 0;
+	bool exitButtonPressed = false;
+
+	unsigned int buttonPressed = 0; 
+	
+
+	while (!exitButtonPressed){
+		DrawMenu(level);
+		buttonPressed = ButtonWaitForAnyPress(0);
+        buttonPressed &= 0x3F;
+		switch(buttonPressed) {
+			case 1 :  MenuButton[level][MENU_UP].function();     //UP
+					  break;
+			case 2 : ++level;	  //ENTER
+			        if (level >= MAXLEVEL) {
+						level = 0;
+					}
+					break;
+			case 4 : MenuButton[level][MENU_DOWN].function(); 	  //DOWN
+					break;
+			case 8 : MenuButton[level][MENU_RIGHT].function(); // RIGHT
+			    	break;
+			case 16 : MenuButton[level][MENU_LEFT].function(); 		//DOWN
+					break;
+			case 10 : exitButtonPressed = true;     //CENTER + Right
+					break;		//ESC
+			//default :
+		}
+		
+	}
 }

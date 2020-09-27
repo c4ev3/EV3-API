@@ -59,6 +59,20 @@ extern "C" {
 #define MIN_SPEED_SPIN	  6	 /*!< Minimun velocity for spin turn under 30º */
 #define MIN_SPEED_PIVOT  10  /*!< Minimun velocity for pivot turn under 30º */
 
+#define BLACK_DETECTED		12   /*!< Threshold for Black < BLACK_DETECTED line color */
+#define WHITE_DETECTED		80   /*!< Threshold for White > WHITE_DETECTED line color */
+
+#define NO_LINE_DETECTED		0   /*!< No line  found */
+#define LINE_WHITE_DETECTED		1   /*!< White detected, maybe a line */
+#define LINE_DETECTED			2   /*!< If Black is detected and previous state is LINE_WHITE_DETECTED */
+
+#define MAXLEVEL				2	/*!< Two levels of menu, one for runs, other for utils or more runs if necessary */
+#define NUMBUTTONS				4	/*!< Four buttons are used in botton menu, up, down right and left */
+#define MENU_UP					0   /*!< index for button up in Button Style Menu */
+#define MENU_RIGHT				1   /*!< index for button right in Button Style Menu */
+#define MENU_DOWN				2   /*!< index for button down in Button Style Menu */
+#define MENU_LEFT				3   /*!< index for button left in Button Style Menu */
+
 /**
  * @brief Struct which contains information about mechanical design of robot.
  * @typedef This struct must be used to define and initialize the robot
@@ -239,14 +253,14 @@ int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool brake);
  * @brief Navigate a distance in degrees following a line border
  * 
  * @param distDegree Distance to travel in degrees
- * @param lightsensor Light Sensor Port used
+ * @param lightSensor Light Sensor Port used
  * @param light light threshold for border detection
  * @param speed Speed of the robot 0 - 100
  * @param inOutSide Which border of the line is followed
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, bool inOutSide, bool brake);
+int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake);
 
 /**
  * @brief Navigate a distance in degrees with gyro and line follower, the gyro PID is tuned with line follower for more precision
@@ -260,8 +274,64 @@ int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, boo
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighLAGDegrees(int distDegree, int lightsensor, int light, int angle, int speed, bool inOutSide, bool brake);
+int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, bool inOutSide, bool brake);
 
+/**
+ * @brief Navigate straigh with gyro until a line is found, typical lines in FLL are a sandwich white-black-line
+ * The robot stop at the white to black border detection
+ * 
+ * @param lightSensor Light Sensor Port used
+ * @param angle Head of the robot to go straight
+ * @param speed Speed of the robot 0 - 100
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake);
+
+/**
+ * @brief Navigate straigh with rotations control until a line is found, typical lines in FLL are a sandwich white-black-line
+ * The robot stop at the white to black border detection
+ * 
+ * @param lightSensor Light Sensor Port used
+ * @param speed Speed of the robot 0 - 100
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
+
+
+/**
+ * @brief Assign keys, text and functions for use in a button style menu for launching in FLL competition. Each run must be defined in a function
+ * and assigned to a key, up, right, down or left. The center key switchs menus.
+ * The menu by default has two levels, 0 and 1, because mostly common use is four runs, the other four runs can be used for tools or test purposes
+ * Each level must be initilzated properly
+ * 
+ * @param level Level of menu to be initializated
+ * @param up pointer to the function that is called by pressing the UP key
+ * @param right pointer to the function that is called by pressing the RIGHT key
+ * @param down pointer to the function that is called by pressing the DOWN key
+ * @param left pointer to the function that is called by pressing the LEFT key
+ * @param upText Text displayed in the menu for the key UP
+ * @param rightText Text displayed in the menu for the key RIGHT
+ * @param downText Text displayed in the menu for the key DOWN
+ * @param leftText Text displayed in the menu for the key LEFT
+ * @return N/A
+ */
+void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (left)(), char  *upText,char  *rightText,char  *downText,char  *leftText);
+
+/**
+ * @brief Launch the buttons style menu. Each direction key must be assigned to a run or other utility function. The CENTER key switchs between the levels of the menu.
+ 	each function must return an int value
+ * Example of use:
+ *   CreateMenuKeys(0, Run1, Run2, Run3, Run4, "Run1","Run2","Run3","Run4");
+ *   CreateMenuKeys(1, TestLight, ResetGyro, InitRobot, Calibrate, "Test_lights","Reset_Gyro","Init","Calibrate");
+ *   MenuButtons();
+ * 
+ * @param N/A
+ * @return N/A
+ */
+void MenuButtons ();
+ 
 #endif // ev3_robot_h
 
 #ifdef __cplusplus
