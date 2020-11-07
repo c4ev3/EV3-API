@@ -73,6 +73,10 @@ extern "C" {
 #define MENU_DOWN				2   /*!< index for button down in Button Style Menu */
 #define MENU_LEFT				3   /*!< index for button left in Button Style Menu */
 
+#define NORMAL 					1   /*!< Define normal rotation of drive motors */
+#define REVERSE 			   -1   /*!< Define reverse rotation of drive motors */
+
+
 /**
  * @brief Struct which contains information about mechanical design of robot.
  * @typedef This struct must be used to define and initialize the robot
@@ -92,6 +96,9 @@ typedef struct {
 	int GyroPort;               /*!< Port used by Gyro Sensor, for drive straigth with gyro, if nout used must be initializated to NA (-1) */
 	int GyroAuxPort;            /*!< Port used by auxiliary Gyro Sensor, for backup, tilt measurement.. if not used must be initializated to NA (-1) */
 	float Kfriction;        /*!< friction factor if robot glide in the competition table surface, if not used must be initializated to 1.0f */
+	int GearMotor;			/*!< If used number of gear teeth attached to the drive motors, if not must be set to 1  */
+	int GearWheel;			/*!< If used number of gear teeth attached to the drive wheels, if not must be set to 1 */
+	int Direction;			/*!< Drive motor rotation: NORMAL or REVERSE */
 } ROBOT_PARAMS;
 
 /**

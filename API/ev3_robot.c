@@ -46,6 +46,9 @@ typedef struct {
 	int Gyro;
 	int GyroAux;
 	float Kfriction; // friction factor if robot glide in the competition table surface
+	float GearMotor;
+	float GearWheel;
+	int Direction;
 } RobotGlobals;
 
 
@@ -304,6 +307,19 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	angleaux = ResetGyroSensor(Robot.GyroAux);	
 	}
 
+	if (params->GearMotor > 1)
+	Robot.GearMotor = params->GearMotor;
+	else Robot.GearMotor = 1;
+
+	if (params->GearWheel > 1)
+	Robot.GearWheel = params->GearWheel;
+	else Robot.GearWheel = 1;
+
+	if (params->Direction = REVERSE)
+	Robot.Direction = REVERSE;
+	else  Robot.Direction = NORMAL;
+
+	Robot.MmDegree = (Robot.WheelCircumference * (Robot.GearMotor / Robot.GearWheel)) / 360 ;
 
 	ResetRotationCount(Robot.MotorDual);
 
