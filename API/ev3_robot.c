@@ -284,7 +284,7 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	
 	Robot.WheelDiameter = params->WheelDiameter;
 	Robot.WheelCircumference = params->WheelDiameter * M_PI;
-	Robot.MmDegree = Robot.WheelCircumference / 360;
+	//Robot.MmDegree = Robot.WheelCircumference / 360;
 
 	Robot.ColorLeft = params->ColorLeftPort;
 	Robot.ColorRight = params->ColorRightPort;	
@@ -709,7 +709,7 @@ void MenuButtons (){
 					break;
 			case 8 : MenuButton[level][MENU_RIGHT].function(); // RIGHT
 			    	break;
-			case 16 : MenuButton[level][MENU_LEFT].function(); 		//DOWN
+			case 16 : MenuButton[level][MENU_LEFT].function(); 		//LEFT
 					break;
 			case 10 : exitButtonPressed = true;     //CENTER + Right
 					break;		//ESC
