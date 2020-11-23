@@ -59,8 +59,8 @@ extern "C" {
 #define MIN_SPEED_SPIN	  6	 /*!< Minimun velocity for spin turn under 30º */
 #define MIN_SPEED_PIVOT  10  /*!< Minimun velocity for pivot turn under 30º */
 
-#define BLACK_DETECTED		12   /*!< Threshold for Black < BLACK_DETECTED line color */
-#define WHITE_DETECTED		80   /*!< Threshold for White > WHITE_DETECTED line color */
+#define BLACK_DETECTED		15   /*!< Threshold for Black < BLACK_DETECTED line color */
+#define WHITE_DETECTED		75   /*!< Threshold for White > WHITE_DETECTED line color */
 
 #define NO_LINE_DETECTED		0   /*!< No line  found */
 #define LINE_WHITE_DETECTED		1   /*!< White detected, maybe a line */
@@ -75,7 +75,10 @@ extern "C" {
 
 #define NORMAL 					1   /*!< Define normal rotation of drive motors */
 #define REVERSE 			   -1   /*!< Define reverse rotation of drive motors */
+#define RAMP_UP					45  /*!< Rotation degrees to accelarate*/
+#define RAMP_DOWN				45  /*!< Rotation degrees to deaccelarate*/
 
+#define FLLLINE					22  /*!< Width of FLL white&black stripes*/
 
 /**
  * @brief Struct which contains information about mechanical design of robot.
@@ -246,15 +249,51 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug);
 int CalculateTravelDegrees(int mm);
 
 /**
+ * @brief Convert widht of a FLL strip into degrees.
+ * Uses Kfriction, if it was calculated otherwise Kfriction must be equal to 1.0
+ * @param N/A
+ * @return widht of a strip line in degrees.
+ */
+int CalculateStripDegrees();
+
+/**
  * @brief Navigate a distance in degrees
  * 
  * @param distDegree Distance to travel in degrees
  * @param angle Head of the robot to go straight
  * @param speed Speed of the robot 0 - 100
+ * @param resetCounters if true the step ounters at the drive motors wiil be reset to 0
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool brake);
+int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool resetCounters, bool brake);
+
+/**
+ * @brief Navigate a distance in degrees with starting acceleration
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param angle Head of the robot to go straight
+ * @param speedTravel Speed of the robot 0 - 100
+ * @param speedInit Initial Speed of the robot 0 - 100, must be less than speedTravel
+ * @param resetCounters if true the step counters at the drive motors wiil be reset to 0
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraightbyGyroDegreesWithAccel(int distDegree, int angle, int speedTravel, int speedInit, bool resetCounters, bool brake);
+
+/**
+ * @brief Navigate a distance in degrees with accelation and deacceleration ramps
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param angle Head of the robot to go straight
+ * @param speedTravel Speed of the robot 0 - 100
+ * @param speedInit Initial Speed of the robot 0 - 100, must be less than speedTravel
+ * @param speedEnd Fial Speed of the robot 0 - 100, must be less than speedTravel
+ * @param resetCounters if true the step counters at the drive motors wiil be reset to 0
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraightbyGyroDegreesWithRamps(int distDegree, int angle, int speedTravel, int speedInit, int speedEnd, bool resetCounters, bool brake);
 
 /**
  * @brief Navigate a distance in degrees following a line border
@@ -324,7 +363,7 @@ int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
  * @param leftText Text displayed in the menu for the key LEFT
  * @return N/A
  */
-void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (left)(), char  *upText,char  *rightText,char  *downText,char  *leftText);
+void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (*left)(), char  *upText,char  *rightText,char  *downText,char  *leftText);
 
 /**
  * @brief Launch the buttons style menu. Each direction key must be assigned to a run or other utility function. The CENTER key switchs between the levels of the menu.
