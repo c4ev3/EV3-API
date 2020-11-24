@@ -27,8 +27,8 @@
  * ----------------------------------------------------------------------------
  *
  * \author Red Team FLL (redteamfll_at_gmail.com)
- * \date 2020-08-31
- * \version 0.1.0
+ * \date 2020-11-24
+ * \version 1.0.0
  */
 
 
@@ -43,6 +43,7 @@ extern "C" {
 #include "sensors/ev3_sensors.h"
 #include "ev3.h"
 #include "math.h"
+#include "stdlib.h"
 // #include "my_robot.h" deprecated use of configuration file use ROBOT_PARAMS instead
 
 #ifndef M_PI
@@ -164,6 +165,20 @@ void NewHeadPose();
  *  */
 void PoseInit();
 
+	
+	
+	
+/**
+ * @brief Rotate the robot on the central axis 
+ * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @param threshold  distance to angle objective to reduce speed
+ * @return last angle measured
+ *
+ *  */
+int TurnGyro(int angle, int speed, int threshold);
+
 /**
  * @brief Rotate the robot on the central axis to the right (more degrees than current)
  * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_SPIN
@@ -230,6 +245,12 @@ void SetLightPID(float Kp, float Ki, float Kd);
  */
 int ResetGyroSensor(int port);
 
+/**
+ * @brief Reset the counters of the power motors
+ * @param N/A
+ * @return N/A.
+ */
+void ResetPowerCounters();
 
 /**
  * @brief Initialize all robot variables, set POSE to (0,0,0),  * reset gyrosensor and reset tacho counters.
@@ -296,6 +317,20 @@ int StraightbyGyroDegreesWithAccel(int distDegree, int angle, int speedTravel, i
 int StraightbyGyroDegreesWithRamps(int distDegree, int angle, int speedTravel, int speedInit, int speedEnd, bool resetCounters, bool brake);
 
 /**
+ * @brief Navigate a distance in degrees with accelation and deacceleration ramps
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param angle Head of the robot to go straight
+ * @param speedTravel Speed of the robot 0 - 100
+ * @param speedEnd Fial Speed of the robot 0 - 100, must be less than speedTravel
+ * @param resetCounters if true the step counters at the drive motors wiil be reset to 0
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraightbyGyroDegreesWithBrake(int distDegree, int angle, int speedTravel, int speedEnd, bool resetCounters, bool brake);
+
+
+/**
  * @brief Navigate a distance in degrees following a line border
  * 
  * @param distDegree Distance to travel in degrees
@@ -344,6 +379,20 @@ int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake
  * @return distance traveled in degrees.
  */
 int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
+
+/**
+ * @brief Navigate  following a line border to a cross line
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param lightSensor Light Sensor Port used
+ * @param light light threshold for border detection
+ * @param speed Speed of the robot 0 - 100
+ * @param inOutSide Which border of the line is followed
+ * @param lineSensor Light Sensor Port used to find crossing line
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int FollowLineDegreesToLine(int distDegree, int lightsensor, int light, int speed, bool inOutSide, int lineSensor, bool brake);
 
 
 /**

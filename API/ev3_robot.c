@@ -17,8 +17,8 @@
  * All Rights Reserved.
  *
  * \author Red Team FLL (redteamfll_at_gmail.com)
- * \date 2020-08-31
- * \version 0.1.0
+ * \date 2020-11-24
+ * \version 1.0.0
  */
 #include "ev3_robot.h"
 
@@ -117,6 +117,37 @@ void PoseInit(){
 	Robot.Pose.Pos_y = 0;
 	Robot.Pose.Head = 0;
 }
+
+
+int TurnGyro(int angle, int speed, int threshold){
+	
+	int direction = 1; /* default case turn to the right */
+	int distance;
+	int angleNow;
+	
+	while (true){
+
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+		
+		if (distance > 0) direction = 1;
+		else direction = -1;
+		
+		if (distance == 0) {
+			Off(Robot.MotorDual);
+			break;
+		}
+		else if (abs(distance) <= threshold) {
+			OutputTimeSync(Robot.MotorDual, MIN_SPEED_SPIN, SPIN_RIGHT*direction, 0);
+		}
+		else  {
+			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		}
+	}
+	NewHeadPose();
+	return(angleNow);
+}
+
 
 int TurnGyroRightAbs(int angle, int speed){
 	
@@ -269,7 +300,13 @@ int ResetGyroSensor(int port){
 	ResetEV3GyroSensor(port, EV3GyroHardwareCommand0x88); // check Gyro Veersion //
 	ResetEV3GyroSensor(port, EV3GyroHardwareReboot); // 2.5s, valid for all versions
 	ResetEV3GyroSensor(port, EV3GyroSoftwareOffset); /* check for proper reset */
+	SetPoseHead(0);
 	return (ReadEV3GyroSensorAngle(port, EV3GyroNormalAngle));	
+}
+ 
+void ResetPowerCounters(){ 
+	
+	ResetCount(Robot.MotorDual,RESET_ALL);
 }
 
 void RobotInit(ROBOT_PARAMS *params, bool Debug){
@@ -359,9 +396,7 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 
 
 int CalculateTravelDegrees(int mm){
-
 	return (int)(mm * Robot.Kfriction / Robot.MmDegree);
-
 }
 
 int CalculateStripDegrees(){
@@ -369,67 +404,7 @@ return (int)(FLLLINE * 1.5 * Robot.Kfriction / Robot.MmDegree);
 }
 
 
-int testStraightbyGyroDegrees(int distDegree, int angle, int speed, bool brake){
 
-int traveled = 0;
-int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-int rotationsRight = MotorRotationCount(Robot.MotorRight);
-int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
-int error;
-int errorD = 0; // error compensation for derivative part
-int oldErrorD= 0;
-int errorI = 0; //accumalated errors for integral part
-
-int uOut = 0; // control for motors
-
-
-// OnFwdReg(Robot.MotorLeft, speed);
-// OnFwdReg(Robot.MotorRight, speed);
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 
-OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
-LcdTextf(1, 0, LcdRowToY(3), "hasta...%d desde %d",distDegree, traveled);
-//Wait(2000);
-do{
-	//desviation measurement
-	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
-	
-	error = angle - angleNow; // For Proportional part
-	errorD = error - oldErrorD; // For Darivative part
-	errorI = errorI + error; //For Integral part
-	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
-	oldErrorD = error;
-	
-	/* 
-	 * Proportional part
-	 * (error ^  StraightPid.Kp)
-	 * Integral part
-	 * (errorI * StraightPid.Ki
-	 * Derivative part
-	 * (errorD * StraightPid.Kd )
-	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
-	 */
-
-
-	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
-
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
-LcdTextf(1, 0, LcdRowToY(5), "llevo...%d", traveled);
-}while (distDegree >= traveled);
-
-//if (brake) {
-//	Off(Robot.MotorDual);
-//}
-// To DO Use ramp function
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	return (int)((rotationsLeft + rotationsRight) / 2); 	
-
-}
 
 int StraightbyGyroDegreesWithRamps(int distDegree, int angle, int speedTravel, int speedInit, int speedEnd, bool resetCounters, bool brake){
 
@@ -498,11 +473,10 @@ do{
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
-}while (traveled <= distDegree);
+}while (traveled < distDegree);
 
-if (brake) {
-	Off(Robot.MotorDual);
-}
+if (brake) Off(Robot.MotorDual);
+
 // To DO Use ramp function
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
@@ -561,7 +535,6 @@ do{
 	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
 	 */
 
-
 	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -570,14 +543,12 @@ do{
 
 }while (traveled <= distDegree);
 
-if (brake) {
-	Off(Robot.MotorDual);
-}
+if (brake) Off(Robot.MotorDual);
+
 // To DO Use ramp function
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
-
 }
 
 int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool resetCounters, bool brake){
@@ -595,7 +566,7 @@ int uOut = 0; // control for motors
 
 
 if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
-//RotateMotorRampNoWait()
+
 do{
 	//desviation measurement
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
@@ -624,7 +595,79 @@ do{
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
-}while (traveled <= distDegree);
+}while (traveled < distDegree);
+
+if (brake) Off(Robot.MotorDual);
+// To DO Use ramp function
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}
+
+int StraightbyGyroDegreesWithBrake(int distDegree, int angle, int speedTravel, int speedEnd, bool resetCounters, bool brake){
+
+int traveled ; //= 0;
+int rotationsLeft ;//= MotorRotationCount(Robot.MotorLeft);
+int rotationsRight ;//= MotorRotationCount(Robot.MotorRight);
+int angleNow ; //= ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+int speed = speedTravel;
+int uOut = 0; // control for motors
+
+float kDaccel;
+int initTravel; //Degrees traveled in accelaration ramp state
+
+int remainTravel;
+
+
+
+kDaccel = (int)((speedTravel - speedEnd) / RAMP_DOWN);
+
+if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
+rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+rotationsRight = MotorRotationCount(Robot.MotorRight);
+initTravel = (int)((rotationsLeft + rotationsRight) / 2); 
+traveled = initTravel;
+
+
+//RotateMotorRampNoWait()
+do{
+	//desviation measurement
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+	
+	error = angle - angleNow; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	oldErrorD = error;
+
+	remainTravel = distDegree - traveled;
+
+    if (remainTravel <= RAMP_DOWN) speed = speedEnd + (int)(remainTravel*kDaccel);
+	else speed = speedTravel;
+	/* 
+	 * Proportional part
+	 * (error ^  StraightPid.Kp)
+	 * Integral part
+	 * (errorI * StraightPid.Ki
+	 * Derivative part
+	 * (errorD * StraightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}while (traveled < distDegree);
 
 if (brake) {
 	Off(Robot.MotorDual);
@@ -633,7 +676,6 @@ if (brake) {
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
-
 }
 
 int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, bool inOutSide, bool brake){
@@ -655,8 +697,7 @@ do{
 	//desviation measurement
 	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
 
-	
-	error = light - lightNow; // For Proportional part
+		error = light - lightNow; // For Proportional part
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
@@ -710,9 +751,6 @@ int errorGyro;
 int error;
 int uOut = 0; // control for motors
 
-
-// OnFwdReg(Robot.MotorLeft, speed);
-// OnFwdReg(Robot.MotorRight, speed);
 OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 do{
 	//desviation measurement
@@ -722,7 +760,7 @@ do{
 	errorLight = light - lightNow;
 	if (inOutSide) errorLight = - errorLight; // For Proportional part due to light
 	errorGyro = angle - angleNow;//
-	error = errorGyro + (errorLight * LightPid.Kp); // angle compensation due linefollower
+	error = errorGyro + (errorLight * LightPid.Kp); // angle compensation due linefollower (errorLight * LightPid.Kp);
 	uOut = (int)(error *  StraightPid.Kp);	
 	/* 
 	 * Only Proportional part
@@ -742,8 +780,9 @@ if (brake) {
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
 }
-	// To DO Use ramp function
-return traveled;
+// To DO Use ramp function
+return traveled;	
+
 }
 
 int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake){
@@ -763,7 +802,7 @@ int state = NO_LINE_DETECTED; // state for line transition detection, white = 1,
 int lightNow ; //input from light sensor in light reflected mode
 
 int stripBorder=0; //distance from white detected
-
+int traveled;
 
 
 do {
@@ -775,8 +814,7 @@ do {
 	//PID control
 	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
 	oldErrorD = error;
-	
-	/* 
+		/* 
 	 * Proportional part
 	 * (error ^  StraightPid.Kp)
 	 * Integral part
@@ -785,115 +823,115 @@ do {
 	 * (errorD * StraightPid.Kd )
 	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
 	 */
-
-
 	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2);
+
 	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
 
-/*	LcdClean();
-	LcdTextf(1, 0, LcdRowToY(2), "Luz...%d",lightNow);
-	LcdTextf(1, 0, LcdRowToY(4), "Estado...%d %d",state, rotationsRight);
-	LcdTextf(1, 0, LcdRowToY(5), "stri...%d %d",stripe,DegreesStrip);		
-**/
 	switch (state){
 
-		case LINE_WHITE_DETECTED: if (lightNow <= BLACK_DETECTED) {
-									//Off(Robot.MotorDual);
-									state = LINE_DETECTED;
-									} else if ((rotationsRight-stripBorder) > degreesStrip) {
-											state = NO_LINE_DETECTED;
-											}
+		case LINE_WHITE_DETECTED: if (lightNow <= BLACK_DETECTED) state = LINE_DETECTED;
+								 else if ((traveled - stripBorder) > degreesStrip) state = NO_LINE_DETECTED;
 							break;
 		
 		case NO_LINE_DETECTED: if (lightNow >= WHITE_DETECTED) {
-									stripBorder = rotationsRight;
+									stripBorder = traveled;
 									state = LINE_WHITE_DETECTED;
 									} 
 							break;
 	}
-
-
-//if (state==2) LcdTextf(1, 0, LcdRowToY(6), "Encontrada...");
-} while (state!=2);
+} while (state!=LINE_DETECTED);
 
 if (brake) {
 	Off(Robot.MotorDual);
-}
-// To DO Use ramp function
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
-
+}
+// To DO Use ramp function
+return traveled;		
 }
 
-int StraighbyDegreesToLine(int lightSensor, int speed, bool brake){
-/*!< Straigh move controlled by rotations sensors and finished on line detection*/
 
+/* to line */
+int FollowLineDegreesToLine(int distDegree, int lightsensor, int light, int speed, bool inOutSide, int lineSensor, bool brake){
+
+int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 int rotationsRight = MotorRotationCount(Robot.MotorRight);
-//int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
 int error;
 int errorD = 0; // error compensation for derivative part
 int oldErrorD= 0;
 int errorI = 0; //accumalated errors for integral part
 
 int uOut = 0; // control for motors
-int state = 0; // state for line transition detection, white = 1, black and previous white = 2, other 0
 
-int lightNow = NO_LINE_DETECTED; //input from light sensor in light reflected mode
+int state = NO_LINE_DETECTED; // state for line transition detection, white = 1, black and previous white = 2, other 0
+int lightlineNow ; //input from light sensor in light reflected mode
+int stripBorder=0; //distance from white detected
 
 
-// OnFwdReg(Robot.MotorLeft, speed);
-// OnFwdReg(Robot.MotorRight, speed);
 OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
-do {
+do{
 	//desviation measurement
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-    rotationsRight = MotorRotationCount(Robot.MotorRight);
-	//angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
-	error = rotationsRight - rotationsLeft; // For Proportional part
+	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+
+	
+	error = light - lightNow; // For Proportional part
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	uOut = (int)((error *  LightPid.Kp) + (errorI * LightPid.Ki) + (errorD * LightPid.Kd ));
 	oldErrorD = error;
 	
 	/* 
 	 * Proportional part
-	 * (error ^  StraightPid.Kp)
+	 * (error ^  LightPid.Kp)
 	 * Integral part
-	 * (errorI * StraightPid.Ki
+	 * (errorI * LightPid.Ki
 	 * Derivative part
-	 * (errorD * StraightPid.Kd )
+	 * (errorD * LightPid.Kd )
 	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
 	 */
 
+	// To DO : Check limits on DI
+	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
 
 	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+    traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
-	/*rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight); */
-	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightlineNow = ReadEV3ColorSensorReflectedLight(lineSensor);
 
-	if (lightNow >= WHITE_DETECTED) {
-		state = LINE_WHITE_DETECTED;
-	} else { 
-		state = NO_LINE_DETECTED; 
-	  }
+	switch (state){
 
-} while ((lightNow <= BLACK_DETECTED) && (state == LINE_WHITE_DETECTED));
+		case LINE_WHITE_DETECTED: if (lightlineNow <= BLACK_DETECTED) state = LINE_DETECTED;
+								  else if ((traveled-stripBorder) > degreesStrip) state = NO_LINE_DETECTED;
+							break;
+		
+		case NO_LINE_DETECTED: if (lightlineNow >= WHITE_DETECTED) {
+									stripBorder = traveled;
+									state = LINE_WHITE_DETECTED;
+									} 
+							break;
+	}
+
+}while (state!=LINE_DETECTED);
 
 if (brake) {
 	Off(Robot.MotorDual);
-}
-// To DO Use ramp function
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
-
+}
+// To DO Use ramp function
+return traveled;	
+// To DO Use ramp or 
 }
 
 
@@ -921,6 +959,7 @@ void DrawMenu( int level){
 	LcdTextf(1, 0, LcdRowToY(6), "DOWN  : %s", MenuButton[level][MENU_DOWN].name);
 	LcdTextf(1, 0, LcdRowToY(8), "LEFT  : %s", MenuButton[level][MENU_LEFT].name);
 	LcdTextf(1, 0, LcdRowToY(10), "Press CENTER for NEXT Menu");
+	LcdTextf(1,0,LcdRowToY(12), "X: %d, Y: %d, H:%d",GetPoseX(),GetPoseY(),GetPoseHead());
 }
 
 void MenuButtons (){
