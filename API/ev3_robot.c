@@ -343,6 +343,12 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	Robot.minColorRight = params->minColorRight;
 	Robot.maxColorRight = params->maxColorLeft;
 	}
+	
+	LcdTextf(1, 0, LcdRowToY(4), "Min izq ... %d", Robot.minColorLeft);
+	LcdTextf(1, 0, LcdRowToY(5), "Max izq ... %d", Robot.maxColorLeft);
+	LcdTextf(1, 0, LcdRowToY(6), "Min der ... %d", Robot.minColorRight);
+	LcdTextf(1, 0, LcdRowToY(7), "Max der ... %d", Robot.maxColorRight);
+	
 	Robot.lightLeftScale = (Robot.maxColorLeft - Robot.minColorLeft) / 100;
 	Robot.lightRightScale = (Robot.maxColorRight - Robot.minColorRight) / 100;
 
@@ -1170,14 +1176,13 @@ void MenuButtons (){
 bool ReadCalibration() {
 	FILE *myFile;
 
-myFile = fopen(nomFileCalibration, "r");
+myFile = fopen(nomFileCalibration, "rb");
 	if (myFile != NULL){
-		fscanf(myFile,"%d",&Robot.minColorLeft);
-		fscanf(myFile,"%d",&Robot.maxColorLeft);
-		fscanf(myFile,"%d",&Robot.minColorRight);
-		fscanf(myFile,"%d",&Robot.maxColorRight);
+		fread(&Robot.minColorLeft, sizeof(int), 1, myFile);
+		fread(&Robot.maxColorLeft, sizeof(int), 1, myFile);
+		fread(&Robot.minColorRight, sizeof(int), 1, myFile);
+		fread(&Robot.maxColorRight, sizeof(int), 1, myFile);
 		fclose(myFile);
-		PlayTone(TONE_C2,1000);
 		return(true);
 	}
 	return (false);	
@@ -1233,12 +1238,12 @@ void  CalibrateLight() {
 	LcdTextf(1, 0, LcdRowToY(6), "Min der Raw... %d", minLightRight);
 	LcdTextf(1, 0, LcdRowToY(7), "Max der Raw... %d", maxLightRight);
 	
-	myFile = fopen(nomFileCalibration, "w");
+	myFile = fopen(nomFileCalibration, "wb");
 	if (myFile != NULL){
-		fprintf(myFile,"%d",minLightLeft);
-		fprintf(myFile,"%d",maxLightLeft);
-		fprintf(myFile,"%d",minLightRight);
-		fprintf(myFile,"%d",maxLightRight);
+		fwrite(&minLightLeft, sizeof(int), 1, myFile);
+		fwrite(&maxLightLeft, sizeof(int), 1, myFile);
+		fwrite(&minLightRight, sizeof(int), 1, myFile);
+		fwrite(&maxLightRight, sizeof(int), 1, myFile);
 		fclose(myFile);
 	}
 
