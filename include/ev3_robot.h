@@ -44,6 +44,7 @@ extern "C" {
 #include "ev3.h"
 #include "math.h"
 #include "stdlib.h"
+#include "stdio.h"
 // #include "my_robot.h" deprecated use of configuration file use ROBOT_PARAMS instead
 
 #ifndef M_PI
@@ -61,7 +62,7 @@ extern "C" {
 #define MIN_SPEED_PIVOT  10  /*!< Minimun velocity for pivot turn under 30º */
 
 #define BLACK_DETECTED		15   /*!< Threshold for Black < BLACK_DETECTED line color */
-#define WHITE_DETECTED		75   /*!< Threshold for White > WHITE_DETECTED line color */
+#define WHITE_DETECTED		85   /*!< Threshold for White > WHITE_DETECTED line color */
 
 #define NO_LINE_DETECTED		0   /*!< No line  found */
 #define LINE_WHITE_DETECTED		1   /*!< White detected, maybe a line */
@@ -80,6 +81,13 @@ extern "C" {
 #define RAMP_DOWN				45  /*!< Rotation degrees to deaccelarate*/
 
 #define FLLLINE					22  /*!< Width of FLL white&black stripes*/
+
+#define TO_RIGHT				1 /*!< Turn to right indicator*/
+#define TO_LEFT				-1 /*!< Turn to left indicator*/
+
+#define EDGERIGHT				1  /*!< Indicates the right border line of a stripe*/
+#define EDGELEFT				-1  /*!< Indicates the left border line of a stripe*/
+
 
 /**
  * @brief Struct which contains information about mechanical design of robot.
@@ -103,6 +111,10 @@ typedef struct {
 	int GearMotor;			/*!< If used number of gear teeth attached to the drive motors, if not must be set to 1  */
 	int GearWheel;			/*!< If used number of gear teeth attached to the drive wheels, if not must be set to 1 */
 	int Direction;			/*!< Drive motor rotation: NORMAL or REVERSE */
+	int minColorLeft;
+	int maxColorLeft;
+	int minColorRight;
+	int maxColorRight;
 } ROBOT_PARAMS;
 
 /**
@@ -280,9 +292,9 @@ int CalculateStripDegrees();
 /**
  * @brief Navigate a distance in degrees
  * 
- * @param distDegree Distance to travel in degrees
+ * @param distDegree Distance to travel in degrees positive go forward, negative go backward
  * @param angle Head of the robot to go straight
- * @param speed Speed of the robot 0 - 100
+ * @param speed Speed of the robot  0 - 100
  * @param resetCounters if true the step ounters at the drive motors wiil be reset to 0
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
@@ -304,7 +316,6 @@ int StraightbyGyroDegreesWithAccel(int distDegree, int angle, int speedTravel, i
 
 /**
  * @brief Navigate a distance in degrees with accelation and deacceleration ramps
- * 
  * @param distDegree Distance to travel in degrees
  * @param angle Head of the robot to go straight
  * @param speedTravel Speed of the robot 0 - 100
@@ -347,15 +358,15 @@ int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, boo
  * @brief Navigate a distance in degrees with gyro and line follower, the gyro PID is tuned with line follower for more precision
  * Initial Development in EV3-G by Brickwolves Waring FLL Team
  * @param distDegree Distance to travel in degrees
- * @param lightsensor Light Sensor Port used
+ * @param lightSensor Light Sensor Port used
  * @param light light threshold for border detection
  * @param angle Head of the robot to go straight
  * @param speed Speed of the robot 0 - 100
- * @param inOutSide Which border of the line is followed
+ * @param edgeLine Which border of the line is followed EDGERIGHT || EDGELEFT
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, bool inOutSide, bool brake);
+int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake);
 
 /**
  * @brief Navigate straigh with gyro until a line is found, typical lines in FLL are a sandwich white-black-line
@@ -368,6 +379,37 @@ int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int
  * @return distance traveled in degrees.
  */
 int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake);
+
+
+/**
+ * @brief Navigate straigh with gyro until a line is found, typical lines in FLL are a sandwich white-black-line
+ * The robot stop at the white to black border detection
+ * 
+ * @param lightSensor Light Sensor Port used
+ * @param angle Head of the robot to go straight
+ * @param speed Speed of the robot 0 - 100
+ * @param umbral Threshold to detect white or black line, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraighbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake);
+
+/**
+ * @brief Navigate straigh line follower gyro until a line border is found, typical lines in FLL are a sandwich white-black-line
+ * The robot stop at the white to black border detection
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param followlightSensor Light Sensor Port used
+ * @param light threshold for border line detection in follower
+ * @param speed Speed of the robot 0 - 100
+ * @param stopLightSensor Light Sensor port used for stop
+ * @param umbral Threshold to detect white or black line, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
+ * @param inOutSide Which border of the line is followed
+ * @param resetCounters Id true the counter of power motors will be reset
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int FollowLineDegreesToUmbral(int distDegree, int followLightSensor, int light, int speed, int stopLightSensor, int umbral, bool inOutSide, bool resetCounters, bool brake);
 
 /**
  * @brief Navigate straigh with rotations control until a line is found, typical lines in FLL are a sandwich white-black-line
@@ -392,8 +434,32 @@ int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int FollowLineDegreesToLine(int distDegree, int lightsensor, int light, int speed, bool inOutSide, int lineSensor, bool brake);
+int FollowLineDegreesToLine(int distDegree, int lightSensor, int light, int speed, bool inOutSide, int lineSensor, bool brake);
 
+/**
+ * @brief Navigate straigh with rotations control until a line is found, typical lines in FLL are a sandwich white-black-line
+ * The robot stop at the white to black border detection
+ * 
+ * @param lightSensor Light Sensor Port used
+ * @param speed Speed of the robot 0 - 100
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
+
+/**
+ * @brief Navigate  following a line border to a cross line
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param lightSensor Light Sensor Port used
+ * @param light light threshold for border detection
+ * @param speed Speed of the robot 0 - 100
+ * @param inOutSide Which border of the line is followed
+ * @param lineSensor Light Sensor Port used to find crossing line
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int FollowLineDegreesToWhite(int distDegree, int lightSensor, int light, int speed, bool inOutSide, int lineSensor, bool brake);
 
 /**
  * @brief Assign keys, text and functions for use in a button style menu for launching in FLL competition. Each run must be defined in a function
@@ -426,7 +492,27 @@ void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (
  * @return N/A
  */
 void MenuButtons ();
+
+/**
+ * @brief  Calibrate the Left & right color Sensors and calculates constant for interpolation for ReadLight function;
+ * @param N/A
+ * @return N/A
+ */
+void CalibrateLight();
  
+/**
+ * @brief  Returns the light reflected by the colorsensor selected, in percentage, over calibnration parameters
+ * @param colorPort The Sensor to measure
+ * @return int representing % of light reflected over calibration
+ */
+int ReadLight(int colorPort);
+
+/**
+ * @brief  Read the calibrations file if exists
+ * @param N/A
+ * @return true if success false otherwise
+ */
+bool ReadCalibration();
 #endif // ev3_robot_h
 
 #ifdef __cplusplus

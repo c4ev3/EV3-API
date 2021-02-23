@@ -22,6 +22,7 @@
  */
 #include "ev3_robot.h"
 
+
 typedef struct {
 	short Pos_x;
 	short Pos_y;
@@ -49,6 +50,13 @@ typedef struct {
 	float GearMotor;
 	float GearWheel;
 	int Direction;
+	int minColorLeft;
+	int maxColorLeft;
+	int minColorRight;
+	int maxColorRight;
+	float lightLeftScale;
+	float lightRightScale;
+
 } RobotGlobals;
 
 
@@ -72,6 +80,8 @@ typedef struct {
 MenuEntry MenuButton[MAXLEVEL][NUMBUTTONS];
 
 int degreesStrip;
+
+char nomFileCalibration[] = "/home/root/lms2012/prjs/lightcalibration.cal";
 
 
 short GetPoseX(){
@@ -279,8 +289,6 @@ int PivotGyroLeftWheelAbs(int angle, int speed){
 }
 
 
-
-
 void SetStraightPID(float Kp, float Ki, float Kd){
 
 	StraightPid.Kp = Kp;	
@@ -329,6 +337,14 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	Robot.ColorRight = params->ColorRightPort;	
 	Robot.ColorCenter = params->ColorCenterPort;	
 	Robot.ColorAux = params->ColorAuxPort;
+	if (!ReadCalibration()){
+	Robot.minColorLeft =  params->minColorLeft;
+	Robot.maxColorLeft = params->maxColorLeft;
+	Robot.minColorRight = params->minColorRight;
+	Robot.maxColorRight = params->maxColorLeft;
+	}
+	Robot.lightLeftScale = (Robot.maxColorLeft - Robot.minColorLeft) / 100;
+	Robot.lightRightScale = (Robot.maxColorRight - Robot.minColorRight) / 100;
 
 	Robot.MotorLeft = params->LeftMotorPort;
 	Robot.MotorRight = params->RightMotorPort;
@@ -338,7 +354,7 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	Robot.GyroAux = params->GyroAuxPort;
 	
 	Robot.Kfriction = params->Kfriction;
-	
+		
 	if (Robot.Gyro > NA){ 
 	angle = ResetGyroSensor(Robot.Gyro);	
 	}
@@ -425,15 +441,17 @@ int initTravel; //Degrees traveled in accelaration ramp state
 
 int relativeTraveled;
 int remainTravel;
+float kp = StraightPid.Kp;
 
+if  (speedTravel < 0) kp = -kp;
 
-kAccel = (int)((speedTravel - speedInit) / RAMP_UP);
-kDaccel = (int)((speedTravel - speedEnd) / RAMP_DOWN);
+kAccel = ((speedTravel - speedInit) / RAMP_UP); // eliminado (int)
+kDaccel = ((speedTravel - speedEnd) / RAMP_DOWN);
 
 if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
 rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 rotationsRight = MotorRotationCount(Robot.MotorRight);
-initTravel = (int)((rotationsLeft + rotationsRight) / 2); 
+initTravel = abs((int)((rotationsLeft + rotationsRight) / 2)); 
 traveled = initTravel;
 
 
@@ -446,7 +464,7 @@ do{
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	uOut = (int)((error *  kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
 	oldErrorD = error;
 	
 	relativeTraveled = traveled - initTravel;
@@ -471,16 +489,16 @@ do{
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+	traveled = abs((int)((rotationsLeft + rotationsRight) / 2)); 	
 
 }while (traveled < distDegree);
 
 if (brake) Off(Robot.MotorDual);
 
 // To DO Use ramp function
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	return (int)((rotationsLeft + rotationsRight) / 2); 	
+rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+rotationsRight = MotorRotationCount(Robot.MotorRight);
+return (int)((rotationsLeft + rotationsRight) / 2); 	
 
 }
 
@@ -497,17 +515,19 @@ int oldErrorD= 0;
 int errorI = 0; //accumalated errors for integral part
 int speed = speedInit;
 int uOut = 0; // control for motors
-int kAccel;
+float kAccel;
 int ramp; //Degrees traveled in ramp state
 int relativeTraveled;
+float kp = StraightPid.Kp;
 
+if  (speedTravel < 0) kp = -kp;
 
-kAccel = (int)((speedTravel - speedInit) / RAMP_UP);
+kAccel = ((speedTravel - speedInit) / RAMP_UP);
 
 if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
 rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 rotationsRight = MotorRotationCount(Robot.MotorRight);
-ramp = (int)((rotationsLeft + rotationsRight) / 2); 
+ramp = abs((int)((rotationsLeft + rotationsRight) / 2)); 
 traveled = ramp;
 //RotateMotorRampNoWait()
 do{
@@ -518,12 +538,12 @@ do{
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	uOut = (int)((error *  kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
 	oldErrorD = error;
 	
 	relativeTraveled = traveled - ramp;
 	if (relativeTraveled < RAMP_UP) {
-		speed = speedInit + (relativeTraveled*kAccel);
+		speed = speedInit + (int)(relativeTraveled*kAccel);
 	} else speed = speedTravel;
 	/* 
 	 * Proportional part
@@ -539,16 +559,16 @@ do{
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+	traveled = abs((int)((rotationsLeft + rotationsRight) / 2)); 	
 
 }while (traveled <= distDegree);
 
 if (brake) Off(Robot.MotorDual);
 
 // To DO Use ramp function
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	return (int)((rotationsLeft + rotationsRight) / 2); 	
+rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+rotationsRight = MotorRotationCount(Robot.MotorRight);
+return (int)((rotationsLeft + rotationsRight) / 2); 	
 }
 
 int StraightbyGyroDegrees(int distDegree, int angle, int speed, bool resetCounters, bool brake){
@@ -564,8 +584,20 @@ int errorI = 0; //accumalated errors for integral part
 
 int uOut = 0; // control for motors
 
+int distDegreeAbs = abs(distDegree);
+
+float kp = StraightPid.Kp;
+
+
 
 if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
+
+if  (speed < 0) kp = -kp;
+
+if (distDegree < 0) {
+	speed = -speed;
+	kp = -kp;
+}
 
 do{
 	//desviation measurement
@@ -575,7 +607,7 @@ do{
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	uOut = (int)((error *  kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
 	oldErrorD = error;
 	
 	/* 
@@ -593,15 +625,15 @@ do{
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+	traveled = abs((int)((rotationsLeft + rotationsRight) / 2)); 	
 
-}while (traveled < distDegree);
+}while (traveled < distDegreeAbs);
 
 if (brake) Off(Robot.MotorDual);
 // To DO Use ramp function
-	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
-	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	return (int)((rotationsLeft + rotationsRight) / 2); 	
+rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+rotationsRight = MotorRotationCount(Robot.MotorRight);
+return (int)((rotationsLeft + rotationsRight) / 2); 	
 
 }
 
@@ -622,15 +654,17 @@ float kDaccel;
 int initTravel; //Degrees traveled in accelaration ramp state
 
 int remainTravel;
+float kp = StraightPid.Kp;
 
 
+if  (speedTravel < 0) kp = -kp;
 
 kDaccel = (int)((speedTravel - speedEnd) / RAMP_DOWN);
 
 if (resetCounters) ResetCount(Robot.MotorDual,RESET_ALL);
 rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 rotationsRight = MotorRotationCount(Robot.MotorRight);
-initTravel = (int)((rotationsLeft + rotationsRight) / 2); 
+initTravel = abs((int)((rotationsLeft + rotationsRight) / 2)); 
 traveled = initTravel;
 
 
@@ -643,7 +677,7 @@ do{
 	errorD = error - oldErrorD; // For Darivative part
 	errorI = errorI + error; //For Integral part
 	//PID control
-	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	uOut = (int)((error *  kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
 	oldErrorD = error;
 
 	remainTravel = distDegree - traveled;
@@ -665,7 +699,7 @@ do{
 
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
-	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+	traveled = abs((int)((rotationsLeft + rotationsRight) / 2)); 	
 
 }while (traveled < distDegree);
 
@@ -678,12 +712,12 @@ if (brake) {
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
 }
 
-int FollowLineDegrees(int distDegree, int lightsensor, int light, int speed, bool inOutSide, bool brake){
+int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 int rotationsRight = MotorRotationCount(Robot.MotorRight);
-int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
 int error;
 int errorD = 0; // error compensation for derivative part
 int oldErrorD= 0;
@@ -695,7 +729,8 @@ int uOut = 0; // control for motors
 OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 do{
 	//desviation measurement
-	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+	//lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(lightSensor);
 
 		error = light - lightNow; // For Proportional part
 	errorD = error - oldErrorD; // For Darivative part
@@ -738,30 +773,30 @@ return traveled;
 }
 
 
-int StraighLAGDegrees(int distDegree, int lightsensor, int light, int angle, int speed, bool inOutSide, bool brake){
+int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake){
 /*!< Based on LAGS Line Assisted Gyro Steering idea from Brickwolves Waring FLL Team*/
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 int rotationsRight = MotorRotationCount(Robot.MotorRight);
-int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
 int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
 int errorLight;
 int errorGyro;
-int error;
 int uOut = 0; // control for motors
+int angleObjetive = angle;
 
 OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 do{
 	//desviation measurement
-	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+	lightNow = ReadLight(lightSensor);
 	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
 	
 	errorLight = light - lightNow;
-	if (inOutSide) errorLight = - errorLight; // For Proportional part due to light
-	errorGyro = angle - angleNow;//
-	error = errorGyro + (errorLight * LightPid.Kp); // angle compensation due linefollower (errorLight * LightPid.Kp);
-	uOut = (int)(error *  StraightPid.Kp);	
+	errorLight *= edgeLine;         // For Proportional part due to light
+	angleObjetive = angle + (int)(errorLight * LightPid.Kp);
+	errorGyro = angleObjetive - angleNow;//
+	uOut = (int)(errorGyro *  StraightPid.Kp);	
 	/* 
 	 * Only Proportional part
 	 * 
@@ -829,7 +864,8 @@ do {
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	traveled = (int)((rotationsLeft + rotationsRight) / 2);
 
-	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+//	lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(lightSensor);
 
 	switch (state){
 
@@ -855,14 +891,90 @@ if (brake) {
 return traveled;		
 }
 
+int StraighbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake){
+/*!< Straigh move controlled by gyro and finished on line detection*/
+
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+int dunmmy;
+
+int lightNow ; //input from light sensor in light reflected mode
+
+int stripBorder=0; //distance from white detected
+int traveled;
+
+
+do {
+	//desviation measurement
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3GyroNormalAngle);
+	error = angle - angleNow; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  StraightPid.Kp) + (errorI * StraightPid.Ki) + (errorD * StraightPid.Kd ));
+	oldErrorD = error;
+		/* 
+	 * Proportional part
+	 * (error ^  StraightPid.Kp)
+	 * Integral part
+	 * (errorI * StraightPid.Ki
+	 * Derivative part
+	 * (errorD * StraightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2);
+
+	//lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(lightSensor);
+
+
+	if ((umbral > 50) && (lightNow > umbral)) break;
+	else if ((umbral < 50) && (lightNow < umbral)) break;
+	
+	/*switch (state){
+
+		case LINE_WHITE_DETECTED: if (lightNow <= BLACK_DETECTED) state = LINE_DETECTED;
+								 else if ((traveled - stripBorder) > degreesStrip) state = NO_LINE_DETECTED;
+							break;
+		
+		case NO_LINE_DETECTED: if (lightNow >= WHITE_DETECTED) {
+									stripBorder = traveled;
+									state = LINE_WHITE_DETECTED;
+									} 
+							break;
+	}*/
+} while (true);
+
+if (brake) {
+	Off(Robot.MotorDual);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+}
+// To DO Use ramp function
+return traveled;		
+}
+
 
 /* to line */
-int FollowLineDegreesToLine(int distDegree, int lightsensor, int light, int speed, bool inOutSide, int lineSensor, bool brake){
+int FollowLineDegreesToLine(int distDegree, int lightSensor, int light, int speed, bool inOutSide, int lineSensor, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 int rotationsRight = MotorRotationCount(Robot.MotorRight);
-int lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
+//int lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+int lightNow = ReadLight(lightSensor);
 int error;
 int errorD = 0; // error compensation for derivative part
 int oldErrorD= 0;
@@ -878,8 +990,8 @@ int stripBorder=0; //distance from white detected
 OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 do{
 	//desviation measurement
-	lightNow = ReadEV3ColorSensorReflectedLight(lightsensor);
-
+	//lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(lightSensor);
 	
 	error = light - lightNow; // For Proportional part
 	errorD = error - oldErrorD; // For Darivative part
@@ -906,8 +1018,9 @@ do{
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
     traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
 
-	lightlineNow = ReadEV3ColorSensorReflectedLight(lineSensor);
-
+	//lightlineNow = ReadEV3ColorSensorReflectedLight(lineSensor);
+    lightlineNow = ReadLight(lineSensor);
+  
 	switch (state){
 
 		case LINE_WHITE_DETECTED: if (lightlineNow <= BLACK_DETECTED) state = LINE_DETECTED;
@@ -933,6 +1046,65 @@ if (brake) {
 return traveled;	
 // To DO Use ramp or 
 }
+
+int FollowLineDegreesToUmbral(int distDegree, int followLightSensor, int light, int speed, int stopLightSensor, int umbral, bool inOutSide, bool resetCounters, bool brake){
+
+int traveled = 0;
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+//int lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+int lightNow = ReadLight(followLightSensor);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+
+int state = NO_LINE_DETECTED; // state for line transition detection, white = 1, black and previous white = 2, other 0
+int lightlineNow ; //input from light sensor in light reflected mode
+int stripBorder=0; //distance from white detected
+
+
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do{
+	//desviation measurement
+	//lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(followLightSensor);
+	
+	error = light - lightNow; // For Proportional part
+	errorD = error - oldErrorD; // For Darivative part
+	errorI = errorI + error; //For Integral part
+	//PID control
+	uOut = (int)((error *  LightPid.Kp) + (errorI * LightPid.Ki) + (errorD * LightPid.Kd ));
+	oldErrorD = error;
+		// To DO : Check limits on DI
+	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+    traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+
+	//lightlineNow = ReadEV3ColorSensorReflectedLight(lineSensor);
+    lightlineNow = ReadLight(stopLightSensor);
+
+	if ((umbral > 50) && (lightlineNow > umbral)) break;
+	else if ((umbral < 50) && (lightlineNow < umbral)) break;
+
+}while (true);
+
+if (brake) {
+	Off(Robot.MotorDual);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return (int)((rotationsLeft + rotationsRight) / 2); 	
+}
+// To DO Use ramp function
+return traveled;	
+// To DO Use ramp or 
+}
+
 
 
 void CreateMenuKeys(int level, int (*up)(), int (*right)(), int (*down)(), int (*left)(), char  *upText,char  *rightText,char  *downText,char  *leftText){
@@ -993,4 +1165,99 @@ void MenuButtons (){
 		}
 		
 	}
+}
+
+bool ReadCalibration() {
+	FILE *myFile;
+
+myFile = fopen(nomFileCalibration, "r");
+	if (myFile != NULL){
+		fscanf(myFile,"%d",&Robot.minColorLeft);
+		fscanf(myFile,"%d",&Robot.maxColorLeft);
+		fscanf(myFile,"%d",&Robot.minColorRight);
+		fscanf(myFile,"%d",&Robot.maxColorRight);
+		fclose(myFile);
+		PlayTone(TONE_C2,1000);
+		return(true);
+	}
+	return (false);	
+}
+
+void  CalibrateLight() {
+	RawReflect lightRawLeft;
+	RawReflect lightRawRight;
+
+	int i = 0;
+	int minLightLeft;
+	int maxLightLeft;
+	int minLightRight;
+	int maxLightRight;
+	FILE *myFile;
+
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);
+	minLightLeft = lightRawLeft.reflection;
+	maxLightLeft = lightRawLeft.reflection;
+	minLightRight = lightRawRight.reflection;
+	maxLightRight = lightRawRight.reflection;
+
+
+	OnFwdSync(Robot.MotorDual,10);
+	SetTimerMS(1,0);
+	while (TimerMS(1) < 3000){
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);
+	if (lightRawLeft.reflection < minLightLeft) minLightLeft = lightRawLeft.reflection;
+	if (lightRawRight.reflection < minLightRight) minLightRight = lightRawRight.reflection;
+	if (lightRawLeft.reflection > maxLightLeft) maxLightLeft = lightRawLeft.reflection;
+	if (lightRawRight.reflection > maxLightLeft) maxLightRight = lightRawRight.reflection;
+	i++;
+	}
+
+
+
+	Off(Robot.MotorDual);
+	Robot.minColorLeft = minLightLeft;
+	Robot.minColorRight = minLightRight;
+	Robot.maxColorLeft = maxLightLeft;
+	Robot.maxColorRight = maxLightRight;
+	Robot.lightLeftScale = (maxLightLeft - minLightLeft) / 100;
+	Robot.lightRightScale = (maxLightRight - minLightRight) / 100;
+
+	LcdTextf(1, 0, LcdRowToY(2), "Iteraciones %d", i);
+	LcdTextf(1, 0, LcdRowToY(3), "en %d", TimerMS(1) );
+	LcdTextf(1, 0, LcdRowToY(4), "Min izq Raw... %d", minLightLeft);
+	LcdTextf(1, 0, LcdRowToY(5), "Max izq Raw... %d", maxLightLeft);
+	LcdTextf(1, 0, LcdRowToY(6), "Min der Raw... %d", minLightRight);
+	LcdTextf(1, 0, LcdRowToY(7), "Max der Raw... %d", maxLightRight);
+	
+	myFile = fopen(nomFileCalibration, "w");
+	if (myFile != NULL){
+		fprintf(myFile,"%d",minLightLeft);
+		fprintf(myFile,"%d",maxLightLeft);
+		fprintf(myFile,"%d",minLightRight);
+		fprintf(myFile,"%d",maxLightRight);
+		fclose(myFile);
+	}
+
+}
+
+int ReadLight(int colorPort){
+RawReflect lightRaw;
+float lightScale;
+int minLight;
+
+
+		if (colorPort == Robot.ColorLeft){
+			minLight = Robot.minColorLeft;
+			lightScale = Robot.lightLeftScale;
+		}
+		else {
+			minLight = Robot.minColorRight;
+			lightScale = Robot.lightRightScale;
+		}
+		ReadEV3ColorSensorRawReflectedLight(colorPort, &lightRaw);
+		return (int)((lightRaw.reflection - minLight) / lightScale);
 }
