@@ -196,10 +196,10 @@ int SalidaMiguel_V(){
 	// Aqui empieza el rocknroll
 	OnFwdEx(my_robot.ArmBMotorPort,150,RESET_NONE);
 	Wait(2000);
-	MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, true,2000);
+	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 360, true,2000);
 	Wait(1000); // subir teleferico
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(350),-90,-40,5,true,true);
-    MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 720, true,2000);
+    MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, true,2000);
     Wait (5000);
 	Off(my_robot.ArmBMotorPort);
 	/*
