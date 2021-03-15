@@ -1,12 +1,13 @@
 ## Copyright (c) 2015 Ahmad Fatoum
 
 # define commands
-CROSS_COMPILE ?= C:/CSLite/bin/arm-none-linux-gnueabi-
+CROSS_COMPILE ?= arm-none-linux-gnueabi-
 PREFIX ?= $(CROSS_COMPILE)
 CC = $(PREFIX)gcc
 AR = $(PREFIX)ar
 SED = sed
-MKDIR = mkdir -p
+MKDIR = IF NOT Exist $(subst /,\,$(@D)) (mkdir $(subst /,\,$(@D)))
+# IF no exist myDirName (mkdir myDirName)
 INSTALL = cp
 RM = rm -rf
 
@@ -17,6 +18,7 @@ OBJDIR := .objs
 DESTDIR    ?= $(CURDIR)/installed
 INCLUDEDIR ?= $(DESTDIR)/include
 LIBDIR     ?= $(DESTDIR)/lib
+APIDIR ?= C:\GitHub\EV3-API
 
 # define files
 SRCS     = $(wildcard API/*.c API/**/*.c contrib/**/*.c)
@@ -24,19 +26,23 @@ OBJS     = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
 DEPFILES = $(patsubst %.c,$(OBJDIR)/%.d,$(SRCS))
 
 # define flags
+# ARM926EJ-S
+# -mcpu=arm926ej-s
+override CFLAGS += -mtune=arm926ej-s -mcpu=arm926ej-s
 override CFLAGS += -std=c99
 override CFLAGS += -fno-strict-aliasing -fwrapv
 override CFLAGS += -Wall -Wextra -Wpointer-sign -Wno-unused-parameter
 override CFLAGS += -D_GNU_SOURCE=1
-
+override CFLAGS += -fdata-sections -ffunction-sections
+#override CFLAGS += -Wl, -gc-sections
 # logging control
 ifeq ($(VERBOSE)$(V),)
   Q = @@
 else
-  Q =
+  Q = 
 endif
-
--include api-config.mk
+	
+# -include api-config.mk
 
 # library building
 
@@ -45,14 +51,15 @@ all: libev3api.a
 libev3api.a: $(OBJS)
 	@echo " [AR]  $@"
 	$(Q)$(AR) rcs $@ $^
-
+	
 $(OBJDIR)/%.o: %.c $(OBJDIR)/%.d
 	@echo " [CC]  $<"
-	@$(MKDIR) $(@D)
-	$(Q)$(CC) -isystem include -MMD -MP -Os $(CFLAGS) -isystem. -I API -c $< -o $@
-
+#	@$(MKDIR) $(subst /,\,$(@D))
+	@$(MKDIR)
+	$(Q)$(CC) -isystem include -MMD -MP -O3 -g0 $(CFLAGS) -isystem. -I API -c $< -o $@
+# $(Q)$(CC) -isystem include -MMD -MP -Os $(CFLAGS) -isystem. -I API -c $< -o $@	
 $(DEPFILES):
-	@$(MKDIR) $(@D)
+	@$(MKDIR) 	
 
 -include $(DEPFILES)
 
