@@ -37,3 +37,4 @@ projects/make/rt21/main.c
 projects/make/rt21/main.c
 Makefile
 API/lightcal.cal
+debug.log
