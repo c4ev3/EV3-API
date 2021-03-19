@@ -186,19 +186,27 @@ int SalidaMiguel_V(){
 	ResetPowerCounters();
 	SetLightPID(0.1,0.1,3.0);
 //	StraighLAGDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 0, 40, EDGELEFT, true);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(900),0,60,10,15,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(850),0,60,10,40,true,false); //900
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1050),0,40,10,false,true); //Empujar cuanta pasos
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(75),0,-40,-10,-10,true,true); //Retroceder 10 cm
 	//TurnGyroRightAbs(-90, 40);
 	TurnGyro(-90,40,30);
-    //FollowLineDegreesToLine(my_robot.ColorRightPort, -90, 50, true);
+    StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),-90,75,5,60,true,false);
+	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,60,80,false);
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(260), -90, 60, 5, false, true); //llegada a Boccia
+
+/*
+  
+   //FollowLineDegreesToLine(my_robot.ColorRightPort, -90, 50, true);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(600),-90,75,5,true,true);
 	//mision 8
-	PlayTone(TONE_B2,2000);
+	PlayTone(TONE_B2,2000); */
 	// Aqui empieza el rocknroll
 	OnFwdEx(my_robot.ArmBMotorPort,150,RESET_NONE);
-	Wait(2000);
-	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 360, true,2000);
-	Wait(1000); // subir teleferico
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(350),-90,-40,5,true,true);
+	//Wait(2000);
+	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, true,2000); //Calculates ratio por 63 grados de apertura del switch neumatico
+	Wait(1000); // subir teleferico y tirar bolas Boccia
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, true,2000);
     Wait (5000);
 	Off(my_robot.ArmBMotorPort);
