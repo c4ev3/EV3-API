@@ -117,9 +117,8 @@ int SalidaBanco(){
 	ResetEV3GyroSensor(IN_1, EV3GyroSoftwareOffset);
 	StraightbyGyroDegrees(CalculateTravelDegrees(470),0,60,true,true);
 	// StraightbyGyroDegrees(CalculateTravelDegrees(50),0,60,true,true);
-	PlayTone(TONE_F2,2000);
 	StraightbyGyroDegrees(CalculateTravelDegrees(470),0,-60,true,true);
-	PlayTone(TONE_B2,2000);
+	//PlayTone(TONE_B2,2000);
 		return 0;	
 } 
 
