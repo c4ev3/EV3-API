@@ -17,8 +17,8 @@
  * All Rights Reserved.
  *
  * \author Red Team FLL (redteamfll_at_gmail.com)
- * \date 2020-11-24
- * \version 1.0.0
+ * \date 2021-03-20
+ * \version 1.1.0
  */
 #include "ev3_robot.h"
 
@@ -315,6 +315,11 @@ int ResetGyroSensor(int port){
 void ResetPowerCounters(){ 
 	
 	ResetCount(Robot.MotorDual,RESET_ALL);
+}
+
+void ResetCounterMotor(int motorPort){
+
+	ResetCount(motorPort,RESET_ALL);
 }
 
 void RobotInit(ROBOT_PARAMS *params, bool Debug){
@@ -779,7 +784,7 @@ return traveled;
 }
 
 
-int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake){
+int StraightLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake){
 /*!< Based on LAGS Line Assisted Gyro Steering idea from Brickwolves Waring FLL Team*/
 
 int traveled = 0;
@@ -826,7 +831,7 @@ return traveled;
 
 }
 
-int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake){
+int StraightbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake){
 /*!< Straigh move controlled by gyro and finished on line detection*/
 
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -897,7 +902,7 @@ if (brake) {
 return traveled;		
 }
 
-int StraighbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake){
+int StraightbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake){
 /*!< Straigh move controlled by gyro and finished on line detection*/
 
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -1265,4 +1270,45 @@ int minLight;
 		}
 		ReadEV3ColorSensorRawReflectedLight(colorPort, &lightRaw);
 		return (int)((lightRaw.reflection - minLight) / lightScale);
+}
+
+int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
+	     
+	bool busy = false;
+	int mipower;
+	int stallPower = 8;
+	
+	RotateMotorNoWaitEx(ArmMotorPort, speed, angle, 0, false, brake);
+	Wait(MS_100); //Wait 100mS to motor start
+
+  	while (true)
+  		{
+		Wait(MS_2); // 2ms between checks
+		mipower = abs(MotorPower(ArmMotorPort));
+		if (mipower < stallPower) break;
+		OutputTest(ArmMotorPort, &busy);
+		if (!busy) break;
+	}
+	return MotorRotationCount(ArmMotorPort);
+}
+
+int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime){
+	     
+	bool busy = false;
+
+	unsigned long elapsedTime;
+	
+	RotateMotorNoWaitEx(ArmMotorPort, speed, angle, 0, false, brake);
+	SetTimerMS(1,0);
+	 
+  	while (true)
+  		{
+		Wait(MS_2); // 2ms between checks
+		elapsedTime = TimerMS(1);
+		if (elapsedTime > safetyTime) break;
+		OutputTest(ArmMotorPort, &busy);
+		if (!busy) break;
+	}
+	Float(ArmMotorPort);
+	return MotorRotationCount(ArmMotorPort);
 }

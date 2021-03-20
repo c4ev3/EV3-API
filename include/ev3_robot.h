@@ -27,8 +27,8 @@
  * ----------------------------------------------------------------------------
  *
  * \author Red Team FLL (redteamfll_at_gmail.com)
- * \date 2020-11-24
- * \version 1.0.0
+ * \date 2021-03-20
+ * \version 1.1.0
  */
 
 
@@ -265,6 +265,13 @@ int ResetGyroSensor(int port);
 void ResetPowerCounters();
 
 /**
+ * @brief Reset the counters of one motor
+ * @param motorPort motor to be reset
+ * @return N/A.
+ */
+void ResetCounterMotor(int motorPort);
+
+/**
  * @brief Initialize all robot variables, set POSE to (0,0,0),  * reset gyrosensor and reset tacho counters.
  * Use robot definition file my_robot.h
  * @param params pointer to struct which contains main design params of the robot 
@@ -366,7 +373,7 @@ int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, boo
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake);
+int StraightLAGDegrees(int distDegree, int lightSensor, int light, int angle, int speed, int edgeLine, bool brake);
 
 /**
  * @brief Navigate straigh with gyro until a line is found, typical lines in FLL are a sandwich white-black-line
@@ -378,7 +385,7 @@ int StraighLAGDegrees(int distDegree, int lightSensor, int light, int angle, int
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake);
+int StraightbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake);
 
 
 /**
@@ -392,7 +399,7 @@ int StraighbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake);
+int StraightbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake);
 
 /**
  * @brief Navigate straigh line follower gyro until a line border is found, typical lines in FLL are a sandwich white-black-line
@@ -420,7 +427,7 @@ int FollowLineDegreesToUmbral(int distDegree, int followLightSensor, int light, 
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
+int StraightbyDegreesToLine(int lightSensor, int speed, bool brake);
 
 /**
  * @brief Navigate  following a line border to a cross line
@@ -435,17 +442,6 @@ int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
  * @return distance traveled in degrees.
  */
 int FollowLineDegreesToLine(int distDegree, int lightSensor, int light, int speed, bool inOutSide, int lineSensor, bool brake);
-
-/**
- * @brief Navigate straigh with rotations control until a line is found, typical lines in FLL are a sandwich white-black-line
- * The robot stop at the white to black border detection
- * 
- * @param lightSensor Light Sensor Port used
- * @param speed Speed of the robot 0 - 100
- * @param brake if true stop the motors at the end
- * @return distance traveled in degrees.
- */
-int StraighbyDegreesToLine(int lightSensor, int speed, bool brake);
 
 /**
  * @brief Navigate  following a line border to a cross line
@@ -513,6 +509,27 @@ int ReadLight(int colorPort);
  * @return true if success false otherwise
  */
 bool ReadCalibration();
+
+/**
+ * @brief  Move the motor selectionated until angle or blocked
+ * @param ArmMotorPort the motor to move
+ * @param speed speed of motor rotation
+ * @param angle angle to rotate
+ * @param brake final state of motor
+ * @return current angle of motor
+ */
+int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake);
+
+/**
+ * @brief  Move the motor selectionated until angle or time elapsed
+ * @param ArmMotorPort the motor to move
+ * @param speed speed of motor rotation
+ * @param safetyTime time max of motor on
+ * @param brake final state of motor
+ * @return current angle of motor
+ */
+int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime);
+
 #endif // ev3_robot_h
 
 #ifdef __cplusplus

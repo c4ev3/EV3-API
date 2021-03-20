@@ -184,6 +184,11 @@ int SalidaMiguel_G(){
 int SalidaMiguel_V(){
 	ResetPowerCounters();
 	SetLightPID(0.1,0.1,3.0);
+	//ToDo
+	// Reset Gyro Sensor
+	//Reset contadores brazos auxiliares
+	//Motor bomba en continuo desde el principio
+
 //	StraighLAGDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 0, 40, EDGELEFT, true);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(850),0,60,10,40,true,false); //900
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1050),0,40,10,false,true); //Empujar cuanta pasos
@@ -191,8 +196,8 @@ int SalidaMiguel_V(){
 	//TurnGyroRightAbs(-90, 40);
 	TurnGyro(-90,40,30);
     StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),-90,75,5,60,true,false);
-	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,60,80,false);
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(260), -90, 60, 5, false, true); //llegada a Boccia
+	StraighbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,60,80,false);
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(260), -90, 60, 5, true, true); //llegada a Boccia
 
 /*
   
@@ -206,8 +211,8 @@ int SalidaMiguel_V(){
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, true,2000); //Calculates ratio por 63 grados de apertura del switch neumatico
 	Wait(1000); // subir teleferico y tirar bolas Boccia
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
-    MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, true,2000);
-    Wait (5000);
+    MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, true,2000);
+    Wait (10000); // 10 segundos antes de parar
 	Off(my_robot.ArmBMotorPort);
 	/*
 	TurnGyroRightAbs(-180, 40);
