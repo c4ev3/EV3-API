@@ -1292,7 +1292,7 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
 	return MotorRotationCount(ArmMotorPort);
 }
 
-int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime){
+int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long safetyTime, bool brake){
 	     
 	bool busy = false;
 

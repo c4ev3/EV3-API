@@ -528,7 +528,7 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake);
  * @param brake final state of motor
  * @return current angle of motor
  */
-int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime);
+int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long safetyTime, bool brake);
 
 #endif // ev3_robot_h
 

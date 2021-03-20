@@ -70,7 +70,7 @@ int TurnToBlack(int direction, int lightSensor, int threshold, bool brake){ //En
 	return(angleNow);
 }
 
-int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
+int MyMoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
 	     
 	bool busy = false;
 	int mipower;
@@ -90,7 +90,7 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
 	return MotorRotationCount(my_robot.ArmAMotorPort);
 }
 
-int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime){
+int MyMoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, unsigned long safetyTime){
 	     
 	bool busy = false;
 
@@ -182,10 +182,12 @@ int SalidaMiguel_G(){
 }
  
 int SalidaMiguel_V(){
+	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
+	ResetCountersMotor(my_robot.ArmAMotorPort);
 	SetLightPID(0.1,0.1,3.0);
 	//ToDo
-	// Reset Gyro Sensor
+	
 	//Reset contadores brazos auxiliares
 	//Motor bomba en continuo desde el principio
 
@@ -209,6 +211,7 @@ int SalidaMiguel_V(){
 	OnFwdEx(my_robot.ArmBMotorPort,150,RESET_NONE);
 	//Wait(2000);
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, true,2000); //Calculates ratio por 63 grados de apertura del switch neumatico
+	ResetCountersMotor(my_robot.ArmAMotorPort);
 	Wait(1000); // subir teleferico y tirar bolas Boccia
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, true,2000);
