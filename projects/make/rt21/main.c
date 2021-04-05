@@ -41,6 +41,10 @@ bool isCenterButtonPressed() {
     return ButtonIsDown(BTNCENTER);
 }
 
+void waitButton() {
+	while (!isCenterButtonPressed()){}
+
+}
 int TurnToBlack(int direction, int lightSensor, int threshold, bool brake){ //En desarrollo
 	
 	
@@ -116,9 +120,19 @@ int SalidaBanco(){
 	SetLightPID(0.75,0.01,3.0);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
-	StraightbyGyroDegrees(CalculateTravelDegrees(470),0,60,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(380),0,75,10,20,true,true);
+	StraightbyGyroDegrees(CalculateTravelDegrees(110),0,20,true,true);
+	//golpe de cadera para ajustar con el motor C
+	OutputTimeSync(OUT_BC, 50, SPIN_LEFT, 0);
+	Wait(500);
+
+	/* 
+	//opcion solo motor izquierdo
+	OnFwdReg(my_robot.RightMotorPort, 60);
+	Wait(500);
+	Off(my_robot.RightMotorPort);*/
 	// StraightbyGyroDegrees(CalculateTravelDegrees(50),0,60,true,true);
-	StraightbyGyroDegrees(CalculateTravelDegrees(470),0,-60,true,true);
+	StraightbyGyroDegrees(CalculateTravelDegrees(240),0,-60,true,true);
 	//PlayTone(TONE_B2,2000);
 		return 0;	
 } 
@@ -194,9 +208,8 @@ int SalidaMiguel_V(){
 
 //	StraighLAGDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 0, 40, EDGELEFT, true);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(850),0,75,10,40,true,false); //900
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1050),0,40,10,false,true); //Empujar cuanta pasos
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(85),0,-40,-10,-10,true,true); //Retroceder 10 cm
-	//TurnGyroRightAbs(-90, 40);
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1045),0,40,10,false,true); //Empujar cuennta pasos
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(75),0,-20,-10,-10,true,true); //Retroceder 10 cm
 	TurnGyro(-90,40,30);
 	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE); // inicio bombeo aire
     StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),-90,75,5,60,true,false);
@@ -206,13 +219,12 @@ int SalidaMiguel_V(){
 	//OnFwdEx(my_robot.ArmBMotorPort,150,RESET_NONE);
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, 2000, true); //Calculates ratio por 63 grados de apertura del switch neumatico
 	ResetCounterMotor(my_robot.ArmAMotorPort);
-	Wait(1000); // subir teleferico y tirar bolas Boccia
+	Wait(2500); // subir teleferico y tirar bolas Boccia
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, 2000, true);
     Wait (10000); // 10 segundos antes de parar
 	Off(my_robot.ArmBMotorPort);
 	return 0;
-
 }
 
 int SalidaCarmen(){
@@ -225,59 +237,38 @@ int SalidaCarmen(){
 	ResetCounterMotor(my_robot.ArmBMotorPort);
 	SetLightPID(0.1,0.1,3.0);
 	 
-  
-
-
-
-
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1070),0,75,10,0,true,true); //1080
-	int brazo = MoveArmTimeProtected(my_robot.ArmBMotorPort, -100, 200, 2000, true);  //180
-	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",brazo);
-	//Wait(2000);
-	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(460),0,75,10,0,true,true);// 460 hasta prueba ponemos 300 y luego hasta linea negra
-	StraightbyGyroDegreesWithAccel(CalculateTravelDegrees(300),0,75,10,true,false);
+  	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1000),0,75,20,20,true,false); //1080
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1110),0,20,10,false,true);
+	/* Soltamos el bloqueador del pendulo 
+	dejamos caer por gravedad quitando el pestillo el gancho de coger el corazon */
+    int brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 100, 2000, true); 
+//	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",brazo);
+	// Wait(2000);
+    //StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),0,75,10,10,true,false);//300
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,75,10,40,true,false);//300
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort,0,40,10,false);
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,5,true,true);
-	OnFwdEx(my_robot.ArmBMotorPort,-100,RESET_NONE);
-	Wait(4000);
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,10,true,true);
+	TurnGyro(0,40,30);
+	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE);
+	Wait(5000);
 	Off(my_robot.ArmBMotorPort); //fin rueda
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(150),0,-75,-10,0,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(80),0,-30,-10,-10,true,true);
 	//si eso giro del brazo a para coger corazon
+	waitButton();
 	TurnGyro(-30,40,30);
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 2000, true); 
+	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 2000, true); 
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(240),-30,75,10,0,true,true);
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 200, 2000, true); 
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 250, 1500, true); 
+	StraightbyGyroDegrees(CalculateTravelDegrees(40),-30,-20,true,true);
+	TurnGyro(-62,40,30);
+	StraightbyGyroDegrees(CalculateTravelDegrees(10),-62, 10,true,true);
+	// en el circulo
+	ResetCounterMotor(my_robot.ArmAMotorPort);
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 1500, true); //brazo arriba
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(100),-62,-20,-10,-10,true,true);
+	TurnGyro(0,40,30); 
 
 
-
-	
-	
-
-
-	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1000),0,-75,-10,0,true,true);
-	/*SetStraightPID(5.0f, 0.0f, 0.0f);
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(320),0,60,10,true,true);
-	SetStraightPID(2.0f, 0.0f, 0.0f);
-	//misionneumaticos
-	PlayTone(TONE_B2,2000);
-	Wait(2000);
-	// fin neumticos
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(440),0,60,10,15,true,true);
-	//misioncintas
-	PlayTone(TONE_B2,2000);
-	Wait(2000);
-	//fin mision cintas
-	//StraightbyGyroDegreesToLine(my_robot.ColorLeftPort, 0, 30, true);
-	TurnGyroRightAbs(-90, 40);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(217),-90,40,10,15,true,true);
-	//mision maquina remo
-	PlayTone(TONE_B2,2000);
-	Wait(2000);
-	// fin maquina remo
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(400),-90,60,10,40,true,true);
-	TurnGyroRightAbs(-180, 40);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1000),-180,60,10,10,true,true);
-*/
 return 0;
 }
 
@@ -457,10 +448,12 @@ int Aux3() {
 return 0;	
 }
 int Aux4() {
-	ResetPowerCounters();
-	SetLightPID(1.0,0.01,3.0);
-	FollowLineDegrees( CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, true);
-
+	//ResetPowerCounters();
+	//SetLightPID(1.0,0.01,3.0);
+	//FollowLineDegrees( CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, true);
+OnFwdReg(my_robot.RightMotorPort, 30);
+Wait(500);
+Off(my_robot.RightMotorPort);
 return 0;	
 }
 
