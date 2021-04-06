@@ -146,7 +146,7 @@ int SalidaMiguel_G(){
 	SetLightPID(0.75,0.0001,1.0);
 	SetLightPID(0.5,0.001,2.0);
 	ResetRotationCount(my_robot.ArmAMotorPort);
-	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 20, 40, 3000, true);
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 40, 1000, true);
 	StraightbyGyroDegreesWithRamps(750,0,60,10,15,true,true); //avanzar
 	TurnGyro(-90, 40, 30); //giro -90
 	StraightbyGyroDegrees(360,-90,60,true,false); //avanzar 950, head -90 vel 60
@@ -167,15 +167,17 @@ int SalidaMiguel_G(){
 	armAngle=MoveArmStallProtected(my_robot.ArmAMotorPort, -100, 500, false); 
 	ResetRotationCount(my_robot.ArmAMotorPort); */
 	TurnGyro(-135, 30, 30); // girar hasta canasta
-	StraightbyGyroDegrees(120,-135,30,true,true); //avanzar hasta canasta
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -60, 40, 1000, true);
+	//waitButton();
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(40),-135,30,10,true,true); //avanzar hasta canasta
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	TurnGyro(-135, 30, 30); //ajustar angulo
-	// Prueba canasta
-	Wait(3000);
+	//waitButton();// Prueba canasta
+	//Wait(3000);
 
-	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 1100, 4000,true); //subir brazo izq
-	ResetRotationCount(my_robot.ArmAMotorPort);
-	armAngle=MoveArmStallProtected(my_robot.ArmAMotorPort, -60, false, 1100); 
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, 1050, 4000,true); //subir brazo izq
+	//ResetRotationCount(my_robot.ArmAMotorPort);
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -80, 1000, 4000, true); //false, 1100); 
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	//bajar brazo der
 	Float(my_robot.ArmAMotorPort);
@@ -254,19 +256,25 @@ int SalidaCarmen(){
 	Off(my_robot.ArmBMotorPort); //fin rueda
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(80),0,-30,-10,-10,true,true);
 	//si eso giro del brazo a para coger corazon
-	waitButton();
-	TurnGyro(-30,40,30);
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 360, 1500, true); 
+	//waitButton();
+	TurnGyro(-38,30,30); // Giro para encarar la rueda de arrastre
 	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 2000, true); 
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(240),-30,75,10,0,true,true);
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 250, 1500, true); 
-	StraightbyGyroDegrees(CalculateTravelDegrees(40),-30,-20,true,true);
-	TurnGyro(-62,40,30);
-	StraightbyGyroDegrees(CalculateTravelDegrees(10),-62, 10,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(220),-38,40,10,10,true,true); //avanzo hasta rueda
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, 1500, true); //pillo rueda
+	StraightbyGyroDegrees(CalculateTravelDegrees(40),-38,-20,true,true);//retrocedo un poco
+	//waitButton();
+	TurnGyro(-72,40,30);// para poner en el circulo
+	Wait(500); // pausa para freno
+	StraightbyGyroDegrees(CalculateTravelDegrees(20),-72, 10,true,true); //Ajusto al circulo
 	// en el circulo
 	ResetCounterMotor(my_robot.ArmAMotorPort);
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 1500, true); //brazo arriba
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(100),-62,-20,-10,-10,true,true);
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 200, 1500, true); //brazo arriba
+	StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, -10,true,true);
+	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(180),-68,-40,-10,-10,true,true);
 	TurnGyro(0,40,30); 
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,true,true);
+
 
 
 return 0;
@@ -451,9 +459,21 @@ int Aux4() {
 	//ResetPowerCounters();
 	//SetLightPID(1.0,0.01,3.0);
 	//FollowLineDegrees( CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, true);
-OnFwdReg(my_robot.RightMotorPort, 30);
-Wait(500);
-Off(my_robot.RightMotorPort);
+//OnFwdReg(my_robot.RightMotorPort, 30);
+//Wait(500);
+//Off(my_robot.RightMotorPort);
+int armAngle;
+LcdClean();
+	ResetCounterMotor(my_robot.ArmAMotorPort);
+	ResetRotationCount(my_robot.ArmAMotorPort);
+armAngle = MotorRotationCount(my_robot.ArmAMotorPort);	
+LcdTextf(1, 0, LcdRowToY(2), "Inicio real: %d",armAngle);
+armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 20, 360, 4000, true);
+
+LcdTextf(1, 0, LcdRowToY(4), "Sube 360, real: %d",armAngle);
+armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -20, 360, 4000, true);
+LcdTextf(1, 0, LcdRowToY(6), "Baja 360, real: %d",armAngle);
+Wait(5000);
 return 0;	
 }
 
