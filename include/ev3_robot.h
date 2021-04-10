@@ -530,6 +530,19 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake);
  */
 int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long safetyTime, bool brake);
 
+
+/**
+ * @brief Navigate a distance in degrees following a line border
+ * 
+ * @param distDegree Distance to travel in degrees
+ * @param lightSensor Light Sensor Port used
+ * @param light light threshold for border detection
+ * @param speed Speed of the robot 0 - 100
+ * @param inOutSide Which border of the line is followed
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int FollowLineDegreesdevel(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake);
 #endif // ev3_robot_h
 
 #ifdef __cplusplus

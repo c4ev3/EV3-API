@@ -27,7 +27,12 @@ ROBOT_PARAMS my_robot = {
 	.minColorRight = 36,
 	.maxColorRight = 352
 };
+/**
+Some useful notes:
+Big Cremallera max 1000grados --> 27studs --->216mmm 
+37grados/stud 
 
+*/
 bool isUpButtonPressed() {
     return ButtonIsDown(BTNUP);
 }
@@ -145,39 +150,47 @@ int SalidaMiguel_G(){
 	ResetCounterMotor(my_robot.ArmAMotorPort);
 	SetLightPID(0.75,0.0001,1.0);
 	SetLightPID(0.5,0.001,2.0);
+	SetLightPID(0.15,0.0001,1.0);
+	SetStraightPID(1.5f, 0.0f, 0.0f);
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 40, 1000, true);
-	StraightbyGyroDegreesWithRamps(750,0,60,10,15,true,true); //avanzar
+	// Nueva Salida
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(355),0,60,10,10,true,true); //avanzar
+	TurnGyro(-90, 30, 40);
+	
+	TurnGyro(-90, 35, 20); //giro -90
+	StraightbyGyroDegreesToUmbral(my_robot.ColorRightPort, -90, 20, 10, false);
+	//
+	StraightbyGyroDegreesWithAccel(CalculateTravelDegrees(50),-90,40,10,true,false);
+	//waitButton();
+	//(distancia, sensor color,umbral,angulo,vel,lado_linea, freno)
+	StraightLAGDegrees(CalculateTravelDegrees(500), my_robot.ColorRightPort, 50, -90, 40, EDGELEFT, true);
+	waitButton();
+	/*
+	StraightbyGyroDegreesWithRamps(750,0,60,10,10,true,true); //avanzar
 	TurnGyro(-90, 40, 30); //giro -90
 	StraightbyGyroDegrees(360,-90,60,true,false); //avanzar 950, head -90 vel 60
 //	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90, 30, 15, true); //Avanzar hasta linea blanca
     //TurnToBlack(TO_RIGHT, my_robot.ColorRightPort, 50, true);
 	ResetPowerCounters();
 	FollowLineDegrees(750, my_robot.ColorRightPort, 50, 40, true, true);
-	//ResetPowerCounters();
-	TurnGyro(-90, 40, 30); //giro -90
+	//ResetPowerCounters(); */
+	TurnGyro(-90, 35, 20); //giro -90
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90, 20, 10, true);
-	//int StraightbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake);
-	//FollowLineDegreesToUmbral(CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, my_robot.ColorLeftPort, 85, true, true, true);
-	
-	//FollowLineDegreesToLine(CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, my_robot.ColorLeftPort, true);
-	//TurnGyro(-65, 30, 30); //prueba conjunta
-	/*armAngle=MoveArmStallProtected(my_robot.ArmAMotorPort, 100, 500, true); //subir brazo izq
-	ResetRotationCount(my_robot.ArmAMotorPort);
-	armAngle=MoveArmStallProtected(my_robot.ArmAMotorPort, -100, 500, false); 
-	ResetRotationCount(my_robot.ArmAMotorPort); */
+
 	TurnGyro(-135, 30, 30); // girar hasta canasta
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -60, 40, 1000, true);
-	//waitButton();
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(40),-135,30,10,true,true); //avanzar hasta canasta
+
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(50),-135,30,10,true,true); //avanzar hasta canasta
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	TurnGyro(-135, 30, 30); //ajustar angulo
 	//waitButton();// Prueba canasta
 	//Wait(3000);
 
-	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, 1050, 4000,true); //subir brazo izq
-	//ResetRotationCount(my_robot.ArmAMotorPort);
-	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -80, 1000, 4000, true); //false, 1100); 
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, 1000, 4000,true); //subir brazo izq
+
+	Wait(100);
+	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -80, 703, 4000, true); //false, 1100); //Altura para el lanazador de coccia
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	//bajar brazo der
 	Float(my_robot.ArmAMotorPort);
@@ -194,7 +207,7 @@ int SalidaMiguel_G(){
 	//StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(160),0,60,10,true,true);
 	//mision 8
 	PlayTone(TONE_B2,NOTE_WHOLE);
-	Wait(5000);
+
 	//TurnGyroRightAbs(-180, 40);
 	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(700),-180,65,10,15,true,true);
 	return 0;	
@@ -450,9 +463,23 @@ int Aux2() {
 return 0;	
 }
 int Aux3() {
+	LcdClean();
 	ResetPowerCounters();
 	SetLightPID(2.0,0.01,1.0);
-	FollowLineDegrees( CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, true, true);
+	SetLightPID(2,0.001,0.0);
+	SetLightPID(0.5,0.001,0.01);
+	SetLightPID(2,5,1);
+	//TurnToBlack();
+	TurnToBlack(TO_RIGHT, my_robot.ColorRightPort, 50, true);
+	SetTimerMS(1,0);
+	
+	int itera = FollowLineDegreesdevel( CalculateTravelDegrees(1000), my_robot.ColorRightPort, 50, 40, EDGELEFT, true);
+	long tiempo = TimerMS(1);
+
+	LcdTextf(1, 0, LcdRowToY(2), "Itera: %d",itera);
+	LcdTextf(1, 0, LcdRowToY(4), "Tiempo: %ld",tiempo);
+
+	Wait(6000);
 return 0;	
 }
 int Aux4() {
@@ -468,10 +495,10 @@ LcdClean();
 	ResetRotationCount(my_robot.ArmAMotorPort);
 armAngle = MotorRotationCount(my_robot.ArmAMotorPort);	
 LcdTextf(1, 0, LcdRowToY(2), "Inicio real: %d",armAngle);
-armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 20, 360, 4000, true);
+armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 20, 1000, 4000, true);
 
 LcdTextf(1, 0, LcdRowToY(4), "Sube 360, real: %d",armAngle);
-armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -20, 360, 4000, true);
+armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, -20, 1000, 4000, true);
 LcdTextf(1, 0, LcdRowToY(6), "Baja 360, real: %d",armAngle);
 Wait(5000);
 return 0;	

@@ -1312,3 +1312,71 @@ int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long s
 	Float(ArmMotorPort);
 	return MotorRotationCount(ArmMotorPort);
 }
+
+int FollowLineDegreesdevel(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake){
+
+int traveled = 0;
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+int lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+int error;
+int errorD = 0; // error compensation for derivative part
+int oldErrorD= 0;
+int errorI = 0; //accumalated errors for integral part
+
+int uOut = 0; // control for motors
+int i = 0;
+unsigned long currentime, ellapsedtime, previoustime;
+SetTimerMS(1,0);
+previoustime = 0;
+OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+do{
+	//desviation measurement
+	//lightNow = ReadEV3ColorSensorReflectedLight(lightSensor);
+	lightNow = ReadLight(lightSensor);
+	currentime = TimerMS(1);
+	ellapsedtime = currentime - previoustime;
+
+	error = light - lightNow; // For Proportional part
+	errorD = (error - oldErrorD)/ellapsedtime; // For Darivative part
+	errorI += error*ellapsedtime; //For Integral part
+	//PID control
+	uOut = (int)((error *  LightPid.Kp) + (errorI * LightPid.Ki) + (errorD * LightPid.Kd ));
+	oldErrorD = error;
+	previoustime = currentime;
+	if (uOut > 50) uOut = 50;
+	if (uOut < -50) uOut = -50;
+	
+	/* 
+	 * Proportional part
+	 * (error ^  LightPid.Kp)
+	 * Integral part
+	 * (errorI * LightPid.Ki
+	 * Derivative part
+	 * (errorD * LightPid.Kd )
+	 *  Note; Delta t is considered in Ki, Kd values Ki*Delta t and Kd/Delta t
+	 */
+
+	// To DO : Check limits on DI
+	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+
+	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
+	//Wait(20);   
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	traveled = (int)((rotationsLeft + rotationsRight) / 2); 	
+	i++;
+}while (traveled <= distDegree);
+
+if (brake) {
+	Off(Robot.MotorDual);
+	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+	rotationsRight = MotorRotationCount(Robot.MotorRight);
+	return i;
+	//return (int)((rotationsLeft + rotationsRight) / 2); 	
+
+}
+// To DO Use ramp function
+return i;	 	
+
+}
