@@ -128,6 +128,9 @@ void PoseInit(){
 	Robot.Pose.Head = 0;
 }
 
+void PowerFloat (){
+SetOutputEx(Robot.MotorDual, OUT_FLOAT, 0);
+}
 
 int TurnGyro(int angle, int speed, int threshold){
 	
@@ -354,8 +357,8 @@ void RobotInit(ROBOT_PARAMS *params, bool Debug){
 	LcdTextf(1, 0, LcdRowToY(6), "Min der ... %d", Robot.minColorRight);
 	LcdTextf(1, 0, LcdRowToY(7), "Max der ... %d", Robot.maxColorRight);
 	
-	Robot.lightLeftScale = (Robot.maxColorLeft - Robot.minColorLeft) / 100;
-	Robot.lightRightScale = (Robot.maxColorRight - Robot.minColorRight) / 100;
+	Robot.lightLeftScale = (Robot.maxColorLeft - Robot.minColorLeft) / 100.0f;
+	Robot.lightRightScale = (Robot.maxColorRight - Robot.minColorRight) / 100.0f;
 
 	Robot.MotorLeft = params->LeftMotorPort;
 	Robot.MotorRight = params->RightMotorPort;
@@ -723,7 +726,7 @@ if (brake) {
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
 }
 
-int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake){
+int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, int edgeSide, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -761,7 +764,8 @@ do{
 	 */
 
 	// To DO : Check limits on DI
-	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+	//if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+	uOut *= edgeSide;
 
 	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 
@@ -920,7 +924,9 @@ int lightNow ; //input from light sensor in light reflected mode
 
 int stripBorder=0; //distance from white detected
 int traveled;
+float kp = StraightPid.Kp;
 
+if  (speed < 0) kp = -kp;
 
 do {
 	//desviation measurement
@@ -950,8 +956,8 @@ do {
 	lightNow = ReadLight(lightSensor);
 
 
-	if ((umbral > 50) && (lightNow > umbral)) break;
-	else if ((umbral < 50) && (lightNow < umbral)) break;
+	if ((umbral >= 50) && (lightNow >= umbral)) break;
+	if ((umbral < 50) && (lightNow < umbral)) break;
 	
 	/*switch (state){
 
@@ -976,6 +982,38 @@ if (brake) {
 // To DO Use ramp function
 return traveled;		
 }
+
+int RevToUmbral(int lightSensor, int speed, int umbral, bool brake){
+int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+int rotationsRight = MotorRotationCount(Robot.MotorRight);
+
+int lightNow ; //input from light sensor in light reflected mode
+
+int traveled;
+
+
+OnRevEx(Robot.MotorDual, speed, 0);
+
+	do {
+		rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+		rotationsRight = MotorRotationCount(Robot.MotorRight);
+		traveled = (int)((rotationsLeft + rotationsRight) / 2);
+		lightNow = ReadLight(lightSensor);
+
+
+		if ((umbral >= 50) && (lightNow >= umbral)) break;
+		if ((umbral < 50) && (lightNow < umbral)) break;
+	
+	} while (true);
+
+if (brake) Off(Robot.MotorDual);
+	 	
+rotationsLeft = MotorRotationCount(Robot.MotorLeft);
+rotationsRight = MotorRotationCount(Robot.MotorRight);
+return (int)((rotationsLeft + rotationsRight) / 2);
+	
+}
+
 
 
 /* to line */
@@ -1058,7 +1096,7 @@ return traveled;
 // To DO Use ramp or 
 }
 
-int FollowLineDegreesToUmbral(int distDegree, int followLightSensor, int light, int speed, int stopLightSensor, int umbral, bool inOutSide, bool resetCounters, bool brake){
+int FollowLineToUmbral(int followLightSensor, int light, int speed, int stopLightSensor, int umbral, int edgeSide, bool resetCounters, bool brake){
 
 int traveled = 0;
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -1090,8 +1128,8 @@ do{
 	uOut = (int)((error *  LightPid.Kp) + (errorI * LightPid.Ki) + (errorD * LightPid.Kd ));
 	oldErrorD = error;
 		// To DO : Check limits on DI
-	if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
-
+	//if (inOutSide) uOut = -uOut; // In case of follow south/east border line then reverse
+    uOut *= edgeSide;
 	OutputTimeSync(Robot.MotorDual, speed, uOut, 0);
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	rotationsLeft = MotorRotationCount(Robot.MotorLeft);
@@ -1100,8 +1138,8 @@ do{
 	//lightlineNow = ReadEV3ColorSensorReflectedLight(lineSensor);
     lightlineNow = ReadLight(stopLightSensor);
 
-	if ((umbral > 50) && (lightlineNow > umbral)) break;
-	else if ((umbral < 50) && (lightlineNow < umbral)) break;
+	if ((umbral >= 50) && (lightlineNow >= umbral)) break;
+	if ((umbral < 50) && (lightlineNow < umbral)) break;
 
 }while (true);
 
@@ -1206,15 +1244,21 @@ void  CalibrateLight() {
 
 	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
 	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);
-	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
-	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);
+	/*ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
+	ReadEV3ColorSensorRawReflectedLight(Robot.ColorRight, &lightRawRight);*/
+	
+	/* minLightLeft = lightRawLeft.reflection;
+	maxLightLeft = lightRawLeft.reflection;
+	minLightRight = lightRawRight.reflection;
+	maxLightRight = lightRawRight.reflection;*/
+	
 	minLightLeft = lightRawLeft.reflection;
 	maxLightLeft = lightRawLeft.reflection;
 	minLightRight = lightRawRight.reflection;
 	maxLightRight = lightRawRight.reflection;
 
 
-	OnFwdSync(Robot.MotorDual,10);
+	OnFwdSync(Robot.MotorDual,8);
 	SetTimerMS(1,0);
 	while (TimerMS(1) < 3000){
 	ReadEV3ColorSensorRawReflectedLight(Robot.ColorLeft, &lightRawLeft);
@@ -1233,15 +1277,15 @@ void  CalibrateLight() {
 	Robot.minColorRight = minLightRight;
 	Robot.maxColorLeft = maxLightLeft;
 	Robot.maxColorRight = maxLightRight;
-	Robot.lightLeftScale = (maxLightLeft - minLightLeft) / 100;
-	Robot.lightRightScale = (maxLightRight - minLightRight) / 100;
+	Robot.lightLeftScale = (maxLightLeft - minLightLeft) / 100.0f;
+	Robot.lightRightScale = (maxLightRight - minLightRight) / 100.0f;
 
-	LcdTextf(1, 0, LcdRowToY(2), "Iteraciones %d", i);
-	LcdTextf(1, 0, LcdRowToY(3), "en %d", TimerMS(1) );
-	LcdTextf(1, 0, LcdRowToY(4), "Min izq Raw... %d", minLightLeft);
-	LcdTextf(1, 0, LcdRowToY(5), "Max izq Raw... %d", maxLightLeft);
-	LcdTextf(1, 0, LcdRowToY(6), "Min der Raw... %d", minLightRight);
-	LcdTextf(1, 0, LcdRowToY(7), "Max der Raw... %d", maxLightRight);
+	LcdTextf(1, 0, LcdRowToY(2), "Iteraciones %d in %d", i, TimerMS(1));
+	LcdTextf(1, 0, LcdRowToY(3), "Raw   min    max");
+	LcdTextf(1, 0, LcdRowToY(4), "Left %d - %d", minLightLeft, maxLightLeft);
+	LcdTextf(1, 0, LcdRowToY(5), "Right... %d -%d", minLightRight, maxLightRight);
+	LcdTextf(1, 0, LcdRowToY(6), "Scale Left %f", Robot.lightLeftScale );
+	LcdTextf(1, 0, LcdRowToY(7), "Scale Right... %f", Robot.lightRightScale );
 	
 	myFile = fopen(nomFileCalibration, "wb");
 	if (myFile != NULL){
@@ -1250,8 +1294,9 @@ void  CalibrateLight() {
 		fwrite(&minLightRight, sizeof(int), 1, myFile);
 		fwrite(&maxLightRight, sizeof(int), 1, myFile);
 		fclose(myFile);
+	LcdTextf(1, 0, LcdRowToY(8), "Saved!");	
 	}
-
+	Wait(2000);
 }
 
 int ReadLight(int colorPort){

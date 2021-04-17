@@ -192,6 +192,12 @@ void PoseInit();
 int TurnGyro(int angle, int speed, int threshold);
 
 /**
+ * @brief Let the power motors in Float State, and reset the counters, dont need parameters
+ *
+ *  */
+void PowerFloat ();
+
+/**
  * @brief Rotate the robot on the central axis to the right (more degrees than current)
  * at constant speed, until the target angle is less than 30 degrees, then the speed is reduced to MIN_SPEED_SPIN
  * @param angle Target angle
@@ -355,11 +361,11 @@ int StraightbyGyroDegreesWithBrake(int distDegree, int angle, int speedTravel, i
  * @param lightSensor Light Sensor Port used
  * @param light light threshold for border detection
  * @param speed Speed of the robot 0 - 100
- * @param inOutSide Which border of the line is followed
+ * @param edgeSide Which border of the line is followed EDGERIGHT || EDGELEFT
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake);
+int FollowLineDegrees(int distDegree, int lightSensor, int light, int speed, int edgeSide, bool brake);
 
 /**
  * @brief Navigate a distance in degrees with gyro and line follower, the gyro PID is tuned with line follower for more precision
@@ -402,21 +408,32 @@ int StraightbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brak
 int StraightbyGyroDegreesToUmbral(int lightSensor, int angle, int speed, int umbral, bool brake);
 
 /**
+ * @brief Navigate in reverse direction until light sensor detects the umbral
+ * without use of gyrosensor  
+ * @param lightSensor Light Sensor Port used
+ * @param speed Speed of the robot 0 - 100
+ * @param umbral Threshold to detect white or black line, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
+ * @param brake if true stop the motors at the end
+ * @return distance traveled in degrees.
+ */
+int RevToUmbral(int lightSensor, int speed, int umbral, bool brake);
+
+
+/**
  * @brief Navigate straigh line follower gyro until a line border is found, typical lines in FLL are a sandwich white-black-line
  * The robot stop at the white to black border detection
  * 
- * @param distDegree Distance to travel in degrees
  * @param followlightSensor Light Sensor Port used
  * @param light threshold for border line detection in follower
  * @param speed Speed of the robot 0 - 100
  * @param stopLightSensor Light Sensor port used for stop
  * @param umbral Threshold to detect white or black line, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
- * @param inOutSide Which border of the line is followed
+ * @param edgeSide Which border of the line is followed
  * @param resetCounters Id true the counter of power motors will be reset
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
-int FollowLineDegreesToUmbral(int distDegree, int followLightSensor, int light, int speed, int stopLightSensor, int umbral, bool inOutSide, bool resetCounters, bool brake);
+int FollowLineToUmbral(int followLightSensor, int light, int speed, int stopLightSensor, int umbral, int edgeSide, bool resetCounters, bool brake);
 
 /**
  * @brief Navigate straigh with rotations control until a line is found, typical lines in FLL are a sandwich white-black-line
