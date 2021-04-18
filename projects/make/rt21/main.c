@@ -157,7 +157,7 @@ int MyMoveArmTimeProtected(int ArmMotorPort, int speed, int angle, bool brake, u
 	Float(ArmMotorPort);
 	return MotorRotationCount(my_robot.ArmAMotorPort);
 }
-int SalidaColumpio(){
+int SalidaTobogan(){
 
 	SetLightPID(0.75,0.01,3.0);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
@@ -609,8 +609,12 @@ int main (int argc, char **argv)  {
 	Wait(2000);
 	RobotInit(&my_robot, 1);
 
-    CreateMenuKeys(0, SalidaMiguel_V, SalidaCarmen, SalidaMiguel_G, SalidaBanco, "Salida M Vera","Salida Carmen","Salida M Gomez","Salida Banco");
-	CreateMenuKeys(1, SalidaColumpio, Aux1, Aux2, Salida1, "Salida Columpio","Reset Sensor Giro","Calibrate Color","Comprobar cal");
+    CreateMenuKeys(0, SalidaCarmen, SalidaMiguel_G, SalidaBanco, SalidaTobogan, "CARMEN","GOMEZ","BANCO","TOBOGAN");
+	CreateMenuKeys(1, SalidaMiguel_V, Aux1, Aux2, Salida1, "VERA","Reset Sensor Giro","Calibrate Color","Comprobar cal");
+
+
+//    CreateMenuKeys(0, SalidaMiguel_V, SalidaCarmen, SalidaMiguel_G, SalidaBanco, "Salida M Vera","Salida Carmen","Salida M Gomez","Salida Banco");
+//	CreateMenuKeys(1, SalidaColumpio, Aux1, Aux2, Salida1, "Salida Columpio","Reset Sensor Giro","Calibrate Color","Comprobar cal");
 
 	MenuButtons();
 	LcdClean();
