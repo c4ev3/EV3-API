@@ -2,7 +2,6 @@
 #include <ev3.h>
 #include <ev3_robot.h>
 
-int vreloj = 10;
 /** Here the mechanical and design propierties of the robot must be defined
 */
 ROBOT_PARAMS my_robot = {
@@ -180,16 +179,8 @@ int SalidaBanco(){
 	//golpe de cadera para ajustar con el motor C
 	OutputTimeSync(OUT_BC, 50, SPIN_LEFT, 0);
 	Wait(500);
-
-	/* 
-	//opcion solo motor izquierdo
-	OnFwdReg(my_robot.RightMotorPort, 60);
-	Wait(500);
-	Off(my_robot.RightMotorPort);*/
-	// StraightbyGyroDegrees(CalculateTravelDegrees(50),0,60,true,true);
 	StraightbyGyroDegrees(CalculateTravelDegrees(240),0,-60,true,true);
-	//PlayTone(TONE_B2,2000);
-		return 0;	
+	return 0;	
 } 
 
 int SalidaMiguel_G(){
@@ -204,9 +195,9 @@ int SalidaMiguel_G(){
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
 	ResetCounterMotor(my_robot.ArmAMotorPort);
-	SetLightPID(0.75,0.0001,1.0);
+	/* SetLightPID(0.75,0.0001,1.0);
 	SetLightPID(0.5f,0.001f,2.0f);
-	//SetLightPID(0.15,0.0001,1.0);
+	SetLightPID(0.15,0.0001,1.0);*/
     SetLightPID(0.3f,0.001f,3.0f);
 
 	SetStraightPID(1.5f, 0.0f, 0.0f);
@@ -214,15 +205,10 @@ int SalidaMiguel_G(){
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 40, 1000, true);
 	// Nueva Salida
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(360),0,60,10,10,true,true); //avanzar
-	/*int rotationsLeft = MotorRotationCount(my_robot.LeftMotorPort);
-	int rotationsRight = MotorRotationCount(my_robot.RightMotorPort);
-	int traveled = abs((int)((rotationsLeft + rotationsRight) / 2));*/
-	//LcdTextf(1, 0, LcdRowToY(2), "Avance %d %d", avanzar, traveled);
 	TurnGyro(-90, 30, 40);
 	TurnGyro(-90, 35, 20); //giro -90
 	StraightbyGyroDegreesWithAccel(CalculateTravelDegrees(51),-90,40,10,true,false); // Avanzamos hasta encontrar la linea
 	FollowLineDegrees(CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 30, EDGELEFT, true);
-	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(600),-90,60,20,20,true,false);
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90, 15, 8, true);
 	// Aqui queda hecha la prueba cooperativa
 	
@@ -233,8 +219,6 @@ int SalidaMiguel_G(){
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(50),-135,30,10,true,true); //avanzar hasta canasta
 	ResetRotationCount(my_robot.ArmAMotorPort);
 	TurnGyro(-135, 30, 30); //ajustar angulo
-	//waitButton();// Prueba canasta ver que el robot encara bien la canasta
-	//Wait(3000);
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, 2795, 4000,true); //subir brazo izq (1000)
 	ResetCounterMotor(my_robot.ArmAMotorPort);
 	Wait(100);
@@ -247,24 +231,11 @@ int SalidaMiguel_G(){
 	// fin canasta
 	
 	// ir a boccia
-
-	//StraightbyGyroDegreesWithAccel(CalculateTravelDegrees(50),-90,40,10,true,true);
-	//Wait(5000);
-
 	//waitButton();
-	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",armAngle);
-	// Fin prueba canasta
-	//Camino Bocchia
 	ResetPowerCounters();
-	//StraightbyGyroDegrees(CalculateTravelDegrees(230),-135,-10,true,true);  //retroceder
 	angle = ReadEV3GyroSensorAngle(my_robot.GyroPort, EV3_GYRO_SENSOR_ANGLE_MODE);
-	LcdTextf(1, 0, LcdRowToY(3), "angulo_c...%d",angle);
 	RevToUmbral(my_robot.ColorLeftPort,30,12,false);
 	RevToUmbral(my_robot.ColorLeftPort,15,90,false);
-
-	//StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, angle, -15, 8, false);
-	//StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, angle, -15, 90, true);
-	//Estrategia giro 15 y siguelineas	
 
 	TurnGyro(15, 60, 40); //girar a 0 hacia otras pruebas // hay que ver la histeresis del sensor de giro
 	Wait(200);
@@ -273,11 +244,7 @@ int SalidaMiguel_G(){
 	StraightbyGyroDegreesToUmbral(my_robot.ColorRightPort,15,20,10, true);
 	TurnGyro(0, 40, 30);
 	FollowLineToUmbral(my_robot.ColorRightPort, 50, 30, my_robot.ColorLeftPort, 10, EDGELEFT,true, false);
-	//FollowLineToUmbral(my_robot.ColorRightPort, 50, 30, my_robot.ColorLeftPort, 10, EDGELEFT,true, true);
-	//waitButton();
-	//FollowLineDegrees(CalculateTravelDegrees(150), my_robot.ColorRightPort, 50, 30, EDGELEFT, true);
 	TurnGyro(0, 40, 30);
-	//StraightbyGyroDegreesToUmbral(my_robot.ColorRightPort,15,20,10, false);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(180), 0, 20,10,false, true);
 	angle = ReadEV3GyroSensorAngle(my_robot.GyroPort, EV3_GYRO_SENSOR_ANGLE_MODE);
 	LcdTextf(1, 0, LcdRowToY(5), "angulo_fin...%d",angle);	
@@ -285,7 +252,7 @@ int SalidaMiguel_G(){
 	TurnGyro(-15,30,30);
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, 300, 4000,true); 
 	armAngle=MoveArmTimeProtected(my_robot.ArmAMotorPort, 80, -300, 4000,true);
-	 TurnGyro(0,30,30);
+    TurnGyro(0,30,30);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),0,-60,-10,-15,true,true); 
 	TurnGyro(15, 30, 30);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(900),15,-60,-10,-15,true,true); 
@@ -313,7 +280,6 @@ int SalidaMiguel_V(){
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,60,80,false);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(260), -90, 75, 5, true, true); //llegada a Boccia
 	// Aqui empieza el rocknroll
-	//OnFwdEx(my_robot.ArmBMotorPort,150,RESET_NONE);
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, 2000, true); //Calculates ratio por 63 grados de apertura del switch neumatico
 	ResetCounterMotor(my_robot.ArmAMotorPort);
 	Wait(2500); // subir teleferico y tirar bolas Boccia
@@ -323,6 +289,37 @@ int SalidaMiguel_V(){
 	Off(my_robot.ArmBMotorPort);
 	return 0;
 }
+
+int SalidaLarguero(){
+	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
+	ResetPowerCounters();
+	ResetCounterMotor(my_robot.ArmAMotorPort);
+	SetLightPID(0.1,0.1,3.0);
+	
+	//veersion sin contador de pasos
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(200),0,75,10,40,true,false);
+	TurnGyro(-15,40,30);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),-15,75,10,40,true,false);
+	TurnGyro(0,40,30);
+	TurnGyro(0,40,30);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(250),0,60,10,10,true,false);
+	TurnGyro(-90,40,30);
+	TurnGyro(-90,40,30);
+
+	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE); // inicio bombeo aire
+    StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),-90,75,5,60,true,false);
+	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,60,80,false);
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(260), -90, 75, 5, true, true); //llegada a Boccia
+	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, 2000, true); //Calculates ratio por 63 grados de apertura del switch neumatico
+	ResetCounterMotor(my_robot.ArmAMotorPort);
+	Wait(2500); // subir teleferico y tirar bolas Boccia
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
+    MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, 2000, true);
+    Wait (10000); // 10 segundos antes de parar
+	Off(my_robot.ArmBMotorPort);
+	return 0;
+}
+
 
 int SalidaCarmen(){
 
@@ -347,7 +344,7 @@ int SalidaCarmen(){
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,10,true,true);
 	TurnGyro(0,40,30);
 	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE);
-	Wait(5000);
+	Wait(7000);
 	Off(my_robot.ArmBMotorPort); //fin rueda
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(80),0,-30,-10,-10,true,true);
 	//si eso giro del brazo a para coger corazon
@@ -361,7 +358,7 @@ int SalidaCarmen(){
 	//waitButton();
 	TurnGyro(-72,40,30);// para poner en el circulo
 	Wait(500); // pausa para freno
-	StraightbyGyroDegrees(CalculateTravelDegrees(20),-72, 10,true,true); //Ajusto al circulo
+	StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, 10,true,true); //Ajusto al circulo
 	// en el circulo
 	ResetCounterMotor(my_robot.ArmAMotorPort);
 	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 200, 1500, true); //brazo arriba
@@ -470,15 +467,6 @@ unsigned long elapsedTime3;
 	LcdTextf(1, 0, LcdRowToY(9), "tIME pc... %lu", elapsedTime3);
 	Wait(3000);
 	}
-	//SetLightPID(0.75,0.01,3.0);
-	/* 2,0,3 para 40 speed*/
-	/*SetLightPID(1.5,0.01,3.0); para 40 */
-	//7ResetPowerCounters();
-
-	//FollowLineDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 40, true, true);
-	//FollowLineDegreesToLine(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 75, true, my_robot.ColorRightPort, true);
-
-
 	PlayTone(TONE_B2,2000);
 return 0;	
 }
@@ -490,25 +478,6 @@ int Salida2() {
 	ResetPowerCounters();
 
 	FollowLineDegreesToLine(CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, my_robot.ColorLeftPort, true);
-
-	//StraighLAGDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, ReadEV3ColorSensorReflectedLight(my_robot.ColorLeftPort),0, 60, true, true);
-	/*
-		int head, angulo;
-			
-	angulo = TurnGyro(-90, 40,45);
-	head = GetPoseHead();
-
-	
-*/
-
-	/*int distancia;
-		LcdClean();
-		StraightbyGyroDegreesToLine(my_robot.ColorRightPort, 0, 60, false);
-		StraightbyGyroDegreesToLine(my_robot.ColorRightPort, 0, 30, false);
- 		TurnGyroLeftAbs(-90,30);
-		 distancia = StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(500),-90,70,30,50,true, true);
-		vreloj ++;
-	LcdTextf(1, 0, LcdRowToY(2), "Velocidad: %d",vreloj);*/
 	PlayTone(TONE_A2,1000);
 return 0;	
 }
@@ -547,7 +516,6 @@ int Aux3() {
 	LcdClean();
 	ResetPowerCounters();
 	RevToUmbral(my_robot.ColorLeftPort,15,8,false);
-	//StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, 0, -15, 8, true);
 	return 0;
 	
 	SetLightPID(2.0,0.01,1.0);
@@ -568,12 +536,6 @@ int Aux3() {
 return 0;	
 }
 int Aux4() {
-	//ResetPowerCounters();
-	//SetLightPID(1.0,0.01,3.0);
-	//FollowLineDegrees( CalculateTravelDegrees(600), my_robot.ColorRightPort, 50, 40, false, true);
-//OnFwdReg(my_robot.RightMotorPort, 30);
-//Wait(500);
-//Off(my_robot.RightMotorPort);
 int armAngle;
 LcdClean();
 	ResetCounterMotor(my_robot.ArmAMotorPort);
@@ -606,11 +568,11 @@ int main (int argc, char **argv)  {
 	ResetEV3GyroSensor(IN_1, EV3GyroSoftwareOffset);
 	LcdTextf(1, 0, LcdRowToY(2), "Gyro reseteado...");
 
-	Wait(2000);
+	Wait(1000);
 	RobotInit(&my_robot, 1);
 
     CreateMenuKeys(0, SalidaCarmen, SalidaMiguel_G, SalidaBanco, SalidaTobogan, "CARMEN","GOMEZ","BANCO","TOBOGAN");
-	CreateMenuKeys(1, SalidaMiguel_V, Aux1, Aux2, Salida1, "VERA","Reset Sensor Giro","Calibrate Color","Comprobar cal");
+	CreateMenuKeys(1, SalidaMiguel_V, Aux1, Aux2, SalidaLarguero, "VERA","Reset Sensor Giro","Calibrate Color","Larguero");
 
 
 //    CreateMenuKeys(0, SalidaMiguel_V, SalidaCarmen, SalidaMiguel_G, SalidaBanco, "Salida M Vera","Salida Carmen","Salida M Gomez","Salida Banco");

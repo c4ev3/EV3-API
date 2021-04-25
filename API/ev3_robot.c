@@ -830,9 +830,7 @@ if (brake) {
 	rotationsRight = MotorRotationCount(Robot.MotorRight);
 	return (int)((rotationsLeft + rotationsRight) / 2); 	
 }
-// To DO Use ramp function
 return traveled;	
-
 }
 
 int StraightbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brake){
@@ -958,19 +956,7 @@ do {
 
 	if ((umbral >= 50) && (lightNow >= umbral)) break;
 	if ((umbral < 50) && (lightNow < umbral)) break;
-	
-	/*switch (state){
 
-		case LINE_WHITE_DETECTED: if (lightNow <= BLACK_DETECTED) state = LINE_DETECTED;
-								 else if ((traveled - stripBorder) > degreesStrip) state = NO_LINE_DETECTED;
-							break;
-		
-		case NO_LINE_DETECTED: if (lightNow >= WHITE_DETECTED) {
-									stripBorder = traveled;
-									state = LINE_WHITE_DETECTED;
-									} 
-							break;
-	}*/
 } while (true);
 
 if (brake) {

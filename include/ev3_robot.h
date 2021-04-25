@@ -395,13 +395,14 @@ int StraightbyGyroDegreesToLine(int lightSensor, int angle, int speed, bool brak
 
 
 /**
- * @brief Navigate straigh with gyro until a line is found, typical lines in FLL are a sandwich white-black-line
- * The robot stop at the white to black border detection
+ * @brief Navigate straigh with gyro until a umbral light is found,
+ * if the threshold desired is greater or equal than 50, the umbral detected must be higher than value provided
+ * if the threshold desired is less than 50, the umbral detected must be lower than value provided 
  * 
  * @param lightSensor Light Sensor Port used
  * @param angle Head of the robot to go straight
  * @param speed Speed of the robot 0 - 100
- * @param umbral Threshold to detect white or black line, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
+ * @param umbral Threshold to detect white or black transition, if umbral is below 50,it is detecting black mode, otherwise is white detect mode
  * @param brake if true stop the motors at the end
  * @return distance traveled in degrees.
  */
