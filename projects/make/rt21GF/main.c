@@ -32,7 +32,7 @@ Big Cremallera max 1000grados --> 27studs --->216mmm
 37grados/stud 
 
 */
-int lateralarmado = 0;
+int lateralarmado = 0; // used for postition control of lateral right arm in Carmen_GF
 
 bool isUpButtonPressed() {
     return ButtonIsDown(BTNUP);
@@ -413,19 +413,22 @@ int SalidaCarmen_GF(){
 	SetStraightPID(2.0f, 0.0f, 0.0f);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
-	ResetCounterMotor(my_robot.ArmAMotorPort);
+	//ResetCounterMotor(my_robot.ArmAMotorPort); Si borramos perdemos la referencia OJOOOOOO
 	ResetCounterMotor(my_robot.ArmBMotorPort);
 	SetLightPID(0.1,0.1,3.0);
 	 
   	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1000),0,75,20,20,true,false); //1080
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1170),0,20,10,false,true);//1110 Toledo
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1120),0,20,10,false,true);//1110 Toledo
 	/* Soltamos el lateral
 	dejamos caer por gravedad quitando el pestillo el gancho de coger el corazon */
-    int brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, MotorRotationCount(my_robot.ArmAMotorPort), 5000, true); 
+    int brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, MotorRotationCount(my_robot.ArmAMotorPort), 5000, true); 
 //	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",brazo);
 	// Wait(2000);
-    //StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),0,75,10,10,true,false);//300
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,75,10,40,true,false);//300
+    StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(290),0,75,10,10,true,true);//
+	TurnGyro(0,40,30);
+	waitButton();
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 600 , 5000, true); 
+	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,75,10,40,true,false);//Toledo
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort,0,40,10,false);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,10,true,true);
 	TurnGyro(0,40,30);
@@ -434,23 +437,23 @@ int SalidaCarmen_GF(){
 	Off(my_robot.ArmBMotorPort); //fin rueda
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(80),0,-30,-10,-10,true,true);
 	//si eso giro del brazo a para coger corazon
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 360, 1500, true); 
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1700-brazo, 3000, true); 
 	//waitButton();
-	TurnGyro(-38,30,30); // Giro para encarar la rueda de arrastre
+	//TurnGyro(-38,30,30); // Giro para encarar la rueda de arrastre
 	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 2000, true); 
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(220),-38,40,10,10,true,true); //avanzo hasta rueda
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, 1500, true); //pillo rueda
-	StraightbyGyroDegrees(CalculateTravelDegrees(40),-38,-20,true,true);//retrocedo un poco
+	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(220),-38,40,10,10,true,true); //avanzo hasta rueda
+	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, 1500, true); //pillo rueda
+	//StraightbyGyroDegrees(CalculateTravelDegrees(40),-38,-20,true,true);//retrocedo un poco
 	//waitButton();
-	TurnGyro(-72,40,30);// para poner en el circulo
-	Wait(500); // pausa para freno
-	StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, 10,true,true); //Ajusto al circulo
+	//TurnGyro(-72,40,30);// para poner en el circulo
+	//Wait(500); // pausa para freno
+	//StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, 10,true,true); //Ajusto al circulo
 	// en el circulo
-	ResetCounterMotor(my_robot.ArmAMotorPort);
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 200, 1500, true); //brazo arriba
-	StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, -10,true,true);
+	//ResetCounterMotor(my_robot.ArmAMotorPort);
+	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 200, 1500, true); //brazo arriba
+	//StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, -10,true,true);
 	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(180),-68,-40,-10,-10,true,true);
-	TurnGyro(0,40,30); 
+	//TurnGyro(0,40,30); 
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,true,true);
 
 
@@ -640,7 +643,7 @@ int Armarbrazo() {
 	int final;
 	LcdClean();
 	ResetCounterMotor(my_robot.ArmAMotorPort);
-	lateralarmado=MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1000, 4000, true);
+	lateralarmado=MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1700, 4000, true);
 	final=MotorRotationCount(my_robot.ArmAMotorPort);
 	LcdTextf(1, 0, LcdRowToY(1), "Armado, real: %d",lateralarmado);
 	LcdTextf(1, 0, LcdRowToY(2), "Final, real: %d",final);

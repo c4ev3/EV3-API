@@ -1320,6 +1320,7 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
 		OutputTest(ArmMotorPort, &busy);
 		if (!busy) break;
 	}
+	if (busy) Float(ArmMotorPort);
 	return MotorRotationCount(ArmMotorPort);
 }
 
@@ -1340,7 +1341,7 @@ int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long s
 		OutputTest(ArmMotorPort, &busy);
 		if (!busy) break;
 	}
-	Float(ArmMotorPort);
+	if (busy) Float(ArmMotorPort);
 	return MotorRotationCount(ArmMotorPort);
 }
 
