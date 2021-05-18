@@ -313,11 +313,12 @@ int SalidaMiguel_V_GF(){
 	TurnGyro(-90,40,30);
     //StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),-90,75,5,60,true,false);
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort, -90,30,80,false);
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(230), -90, 60, 5, true, true); //llegada a Boccia //260-Toledo
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(220), -90, 60, 5, true, true); //llegada a Boccia //260-Toledo 230-try1
 	// Aqui empieza el rocknroll
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, 2000, true); //Calculates ratio por 63 grados de apertura del switch neumatico
 	ResetCounterMotor(my_robot.ArmAMotorPort);
-	Wait(2500); // subir teleferico y tirar bolas Boccia
+	Wait(3000); // subir teleferico y tirar bolas Boccia
+	TurnGyro(-90,40,30);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, 2000, true);
     Wait (10000); // 10 segundos antes de parar
@@ -409,6 +410,8 @@ return 0;
 
 int SalidaCarmen_GF(){
 
+	
+
 	LcdClean();
 	SetStraightPID(2.0f, 0.0f, 0.0f);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
@@ -417,25 +420,27 @@ int SalidaCarmen_GF(){
 	ResetCounterMotor(my_robot.ArmBMotorPort);
 	SetLightPID(0.1,0.1,3.0);
 	 
-  	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1000),0,75,20,20,true,false); //1080
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1120),0,20,10,false,true);//1110 Toledo
-	/* Soltamos el lateral
-	dejamos caer por gravedad quitando el pestillo el gancho de coger el corazon */
-    int brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, MotorRotationCount(my_robot.ArmAMotorPort), 5000, true); 
+  	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1120),0,75,20,10,true,true); //1080
+	//StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1120),0,20,10,false,true);//1110 Toledo
+	/* Bajamos volteador, muñeco*/
+    int brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 1700, 5000, true); //
 //	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",brazo);
 	// Wait(2000);
-    StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(290),0,75,10,10,true,true);//
+    Wait(500);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(290),0,75,10,10,true,true);//
+	Wait(500);
 	TurnGyro(0,40,30);
-	waitButton();
+	//waitButton();
 	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 600 , 5000, true); 
 	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,75,10,40,true,false);//Toledo
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort,0,40,10,false);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,10,true,true);
 	TurnGyro(0,40,30);
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 600 , 5000, true);
 	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE);
 	Wait(7000);
 	Off(my_robot.ArmBMotorPort); //fin rueda
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(80),0,-30,-10,-10,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,-30,-10,-10,true,true);
 	//si eso giro del brazo a para coger corazon
 	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1700-brazo, 3000, true); 
 	//waitButton();
@@ -454,7 +459,7 @@ int SalidaCarmen_GF(){
 	//StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, -10,true,true);
 	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(180),-68,-40,-10,-10,true,true);
 	//TurnGyro(0,40,30); 
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,false,true);
 
 
 

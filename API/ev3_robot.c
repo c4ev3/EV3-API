@@ -969,6 +969,31 @@ if (brake) {
 return traveled;		
 }
 
+bool FindUmbral (int lightSensor, int angle, int umbral){
+	int lightNow;
+	
+	OutputStepSyncEx(Robot.MotorDual, 8, SPIN_RIGHT, angle, true, OWNER_NONE);
+		do
+		{
+			lightNow = ReadLight(lightSensor);
+			if (((umbral >= 50) && (lightNow >= umbral))||((umbral < 50) && (lightNow < umbral))){
+				return OutputStop(Robot.MotorDual, true);
+			} 
+		} while (ReadEV3GyroSensorAngle < angle);
+
+	OutputStepSyncEx(Robot.MotorDual, 8, SPIN_LEFT, -angle, true, OWNER_NONE);
+		do
+		{
+			lightNow = ReadLight(lightSensor);
+			if (((umbral >= 50) && (lightNow >= umbral))||((umbral < 50) && (lightNow < umbral))){
+				return OutputStop(Robot.MotorDual, true);
+			} 
+		} while (ReadEV3GyroSensorAngle > angle);
+	
+	return false;
+
+}
+
 int RevToUmbral(int lightSensor, int speed, int umbral, bool brake){
 int rotationsLeft = MotorRotationCount(Robot.MotorLeft);
 int rotationsRight = MotorRotationCount(Robot.MotorRight);

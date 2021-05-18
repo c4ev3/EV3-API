@@ -561,6 +561,18 @@ int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long s
  * @return distance traveled in degrees.
  */
 int FollowLineDegreesdevel(int distDegree, int lightSensor, int light, int speed, bool inOutSide, bool brake);
+
+
+/**
+ * @brief Turn to the right then to the left, trying to find a light thershold
+ * 
+ * @param lightSensor Light Sensor Port used
+ * @param angle Max angle to turn trying to locate a umbral threshold
+ * @param umbral light threshold for border detection
+ * @return true if found, false otherwise
+ */
+bool FindUmbral (int lightSensor, int angle, int umbral);
+
 #endif // ev3_robot_h
 
 #ifdef __cplusplus
