@@ -185,7 +185,7 @@ void PoseInit();
  * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN
  * @param angle Target angle
  * @param speed  Max turning speed ( in %)
- * @param threshold  clareance in angle objective to stop motors
+ * @param threshold  distance to angle objective to reduce speed
  * @return last angle measured
  *
  *  */
@@ -193,14 +193,40 @@ int TurnGyro(int angle, int speed, int threshold);
 
 /**
  * @brief Rotate the robot on the central axis 
- * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN
+ * at constant speed, until the target angle is less than clearance degrees, then the motors are stopped
  * @param angle Target angle
  * @param speed  Max turning speed ( in %)
- * @param threshold  distance to angle objective to reduce speed
+ * @param clearance  clearance in angle objective to stop motors
  * @return last angle measured
  *
  *  */
-int  TurnGyroFast(int angle, int speed, int threshold);
+int  TurnGyroFast(int angle, int speed, int clearance);
+
+/**
+ * @brief Rotate the robot on the central axis 
+ * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN, until clearance angle, or
+ * time elapses
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @param threshold  distance to angle objective to reduce speed
+ * @param clearance  clearance in angle objective to stop motors
+ * @param milisecond time to do the action
+ * @return last angle measured
+ *
+ *  */
+int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, int milisecond);
+
+/**
+ * @brief Rotate the robot on the central axis 
+ * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN, until clearance angle
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @param threshold  distance to angle objective to reduce speed
+ * @param clearance  clearance in angle objective to stop motors
+ * @return last angle measured
+ *
+ *  */
+int TurnGyrowithClearance(int angle, int speed, int threshold, int clearance);
 
 /**
  * @brief Let the power motors in Float State, and reset the counters, dont need parameters

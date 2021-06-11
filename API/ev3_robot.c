@@ -132,7 +132,7 @@ void PowerFloat (){
 SetOutputEx(Robot.MotorDual, OUT_FLOAT, 0);
 }
 
-int  TurnGyroFast(int angle, int speed, int threshold){
+int  TurnGyroFast(int angle, int speed, int clearance){
 	
 	int direction = 1; /* default case turn to the right */
 	int oldDirection = -1; /* default case = inverted direction for start motor */
@@ -145,7 +145,7 @@ int  TurnGyroFast(int angle, int speed, int threshold){
 	if (distance > 0) oldDirection = -1;
 	else oldDirection = 1;
 
-	while (abs(distance) <= threshold){
+	while (abs(distance) <= clearance){
 
 		
 		if (distance > 0) direction = 1;
@@ -191,6 +191,73 @@ int TurnGyro(int angle, int speed, int threshold){
 			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
 		}
 	}
+	NewHeadPose();
+	return(angleNow);
+}
+
+int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, int milisecond){
+	
+	int direction = 1; /* default case turn to the right */
+	int distance;
+	int angleNow;
+	int oldDirection = -1;
+
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angle - angleNow;
+	if (distance > 0) oldDirection = -1;
+	else oldDirection = 1;
+	SetTimerMS(1,0);
+
+	while ((abs(distance) <= clearance )&&(TimerMS(1) < milisecond)){
+		
+		if (distance > 0) direction = 1;
+		else direction = -1;
+		
+		if ((speed > MIN_SPEED_SPIN)&&(abs(distance) <= threshold)) {
+			speed = MIN_SPEED_SPIN;
+			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		}
+		if (direction != oldDirection){
+			oldDirection = direction;
+			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		}
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+	}
+	Off(Robot.MotorDual);
+	NewHeadPose();
+	return(angleNow);
+}
+
+int TurnGyrowithClearance(int angle, int speed, int threshold, int clearance){
+	
+	int direction = 1; /* default case turn to the right */
+	int distance;
+	int angleNow;
+	int oldDirection = -1;
+
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angle - angleNow;
+	if (distance > 0) oldDirection = -1;
+	else oldDirection = 1;
+
+	while (abs(distance) <= clearance ){
+		
+		if (distance > 0) direction = 1;
+		else direction = -1;
+		
+		if ((speed > MIN_SPEED_SPIN)&&(abs(distance) <= threshold)) {
+			speed = MIN_SPEED_SPIN;
+			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		}
+		if (direction != oldDirection){
+			oldDirection = direction;
+			OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		}
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+	}
+	Off(Robot.MotorDual);
 	NewHeadPose();
 	return(angleNow);
 }
