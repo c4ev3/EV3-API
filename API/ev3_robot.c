@@ -132,6 +132,40 @@ void PowerFloat (){
 SetOutputEx(Robot.MotorDual, OUT_FLOAT, 0);
 }
 
+int  TurnGyroFast(int angle, int speed, int threshold){
+	
+	int direction = 1; /* default case turn to the right */
+	int oldDirection = -1; /* default case = inverted direction for start motor */
+	int distance;
+	int angleNow;
+
+	angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+	distance = angle - angleNow;
+
+	if (distance > 0) oldDirection = -1;
+	else oldDirection = 1;
+
+	while (abs(distance) <= threshold){
+
+		
+		if (distance > 0) direction = 1;
+		else direction = -1;
+		
+		if (oldDirection != direction){
+		oldDirection = direction;
+		OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
+		Wait(50);
+		}
+
+		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
+		distance = angle - angleNow;
+
+	}
+	Off(Robot.MotorDual);
+	NewHeadPose();
+	return(angleNow);	
+}
+
 int TurnGyro(int angle, int speed, int threshold){
 	
 	int direction = 1; /* default case turn to the right */

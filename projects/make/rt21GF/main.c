@@ -163,6 +163,23 @@ int SalidaTobogan(){
 	SetLightPID(0.75,0.01,3.0);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
+	StraightbyGyroDegreesWithRamps(220,0,30,10,5,true,true); //avanzar 200 grados
+	TurnGyro(-30, 30, 40);
+
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),-30,75,10,30,true,false);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(550),-30,30,30,10,false,true);
+	Wait(1000);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(590),-30,-75,-10,-20,true,true);
+	TurnGyroFast(0,40,5);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(100),0,-75,-10,-20,true,true);
+	return 0;	
+} 
+
+int SalidaToboganToledo(){
+
+	SetLightPID(0.75,0.01,3.0);
+	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
+	ResetPowerCounters();
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(440),0,75,10,10,true,true);
 	Wait(1000);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(590),0,-75,-10,-20,true,true);
@@ -170,7 +187,6 @@ int SalidaTobogan(){
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(100),34,-75,-10,-20,true,true);
 	return 0;	
 } 
-
 int SalidaBanco(){
 
 	SetLightPID(0.75,0.01,3.0);
@@ -324,6 +340,7 @@ int SalidaMiguel_V_GF(){
     Wait (10000); // 10 segundos antes de parar
 	Off(my_robot.ArmBMotorPort);
 	return 0;
+
 }
 
 int SalidaLarguero(){
@@ -410,8 +427,6 @@ return 0;
 
 int SalidaCarmen_GF(){
 
-	
-
 	LcdClean();
 	SetStraightPID(2.0f, 0.0f, 0.0f);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
@@ -427,12 +442,18 @@ int SalidaCarmen_GF(){
 //	LcdTextf(1, 0, LcdRowToY(1), "arm_fin...%d",brazo);
 	// Wait(2000);
     Wait(500);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(290),0,75,10,10,true,true);//
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(290),0,75,10,5,true,true);//
 	Wait(500);
 	TurnGyro(0,40,30);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(150),0,-40,-10,-10,true,true); // rueda colocada
+	TurnGyro(0,40,30);
+
+
 	//waitButton();
 	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 600 , 5000, true); 
 	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,75,10,40,true,false);//Toledo
+	StraightbyGyroDegreesWithAccel(CalculateTravelDegrees(100),0,40,10, true, false);
+	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort,0,40,80,false);
 	StraightbyGyroDegreesToUmbral(my_robot.ColorLeftPort,0,40,10,false);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(20),0,40,10,true,true);
 	TurnGyro(0,40,30);
@@ -440,26 +461,15 @@ int SalidaCarmen_GF(){
 	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE);
 	Wait(7000);
 	Off(my_robot.ArmBMotorPort); //fin rueda
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,-30,-10,-10,true,true);
-	//si eso giro del brazo a para coger corazon
-	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1700-brazo, 3000, true); 
-	//waitButton();
-	//TurnGyro(-38,30,30); // Giro para encarar la rueda de arrastre
-	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 200, 2000, true); 
-	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(220),-38,40,10,10,true,true); //avanzo hasta rueda
-	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 360, 1500, true); //pillo rueda
-	//StraightbyGyroDegrees(CalculateTravelDegrees(40),-38,-20,true,true);//retrocedo un poco
-	//waitButton();
-	//TurnGyro(-72,40,30);// para poner en el circulo
-	//Wait(500); // pausa para freno
-	//StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, 10,true,true); //Ajusto al circulo
-	// en el circulo
-	//ResetCounterMotor(my_robot.ArmAMotorPort);
-	//brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 60, 200, 1500, true); //brazo arriba
-	//StraightbyGyroDegrees(CalculateTravelDegrees(30),-72, -10,true,true);
-	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(180),-68,-40,-10,-10,true,true);
-	//TurnGyro(0,40,30); 
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,false,true);
+
+	//StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(300),0,-30,-10,-10,true,true);
+	//retroceso para colocar remo
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(90),0,-30,-10,-10,true,true);
+	TurnGyro(-15,20,5);
+	Wait(500);
+	brazo = MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 1700, 3000, true); //subir brazo
+	TurnGyro(0,20,5);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(1610),0,-75,-10,-10,false,true); // Vuelta a casa
 
 
 
@@ -667,16 +677,15 @@ int main (int argc, char **argv)  {
     InitEV3();
     SetAllSensors(EV3Gyro, EV3Color, EV3Color, NULL);
     ResetRotationCount(OUT_BC);
-	LcdTextf(1, 0, LcdRowToY(2), "Robot Activando...");
+	LcdTextf(1, 0, LcdRowToY(2), "RT 21GF Robot Activando...");
 	ResetEV3GyroSensor(IN_1, EV3GyroSoftwareOffset);
-	LcdTextf(1, 0, LcdRowToY(2), "Gyro reseteado...");
+	LcdTextf(1, 0, LcdRowToY(2), "RT 21GF Sensor Gyro reseteado...");
 
 	Wait(1000);
 	RobotInit(&my_robot, 1);
 
     CreateMenuKeys(0, SalidaCarmen_GF, SalidaMiguel_G, SalidaBanco, SalidaTobogan, "CARMEN","GOMEZ","BANCO","TOBOGAN");
 	CreateMenuKeys(1, SalidaMiguel_V_GF, Aux1, Aux2, Armarbrazo, "VERA","Reset Sensor Giro","Calibrate Color","Armar Brazo");
-
 
 //    CreateMenuKeys(0, SalidaMiguel_V, SalidaCarmen, SalidaMiguel_G, SalidaBanco, "Salida M Vera","Salida Carmen","Salida M Gomez","Salida Banco");
 //	CreateMenuKeys(1, SalidaColumpio, Aux1, Aux2, Salida1, "Salida Columpio","Reset Sensor Giro","Calibrate Color","Comprobar cal");

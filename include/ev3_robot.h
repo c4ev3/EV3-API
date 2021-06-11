@@ -185,11 +185,22 @@ void PoseInit();
  * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN
  * @param angle Target angle
  * @param speed  Max turning speed ( in %)
- * @param threshold  distance to angle objective to reduce speed
+ * @param threshold  clareance in angle objective to stop motors
  * @return last angle measured
  *
  *  */
 int TurnGyro(int angle, int speed, int threshold);
+
+/**
+ * @brief Rotate the robot on the central axis 
+ * at constant speed, until the target angle is less than threshold degrees, then the speed is reduced to MIN_SPEED_SPIN
+ * @param angle Target angle
+ * @param speed  Max turning speed ( in %)
+ * @param threshold  distance to angle objective to reduce speed
+ * @return last angle measured
+ *
+ *  */
+int  TurnGyroFast(int angle, int speed, int threshold);
 
 /**
  * @brief Let the power motors in Float State, and reset the counters, dont need parameters
