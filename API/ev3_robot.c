@@ -145,7 +145,7 @@ int  TurnGyroFast(int angle, int speed, int clearance){
 	if (distance > 0) oldDirection = -1;
 	else oldDirection = 1;
 
-	while (abs(distance) <= clearance){
+	while (abs(distance) > clearance){
 
 		
 		if (distance > 0) direction = 1;
@@ -154,7 +154,7 @@ int  TurnGyroFast(int angle, int speed, int clearance){
 		if (oldDirection != direction){
 		oldDirection = direction;
 		OutputTimeSync(Robot.MotorDual, speed, SPIN_RIGHT*direction, 0);
-		Wait(50);
+		
 		}
 
 		angleNow = ReadEV3GyroSensorAngle(Robot.Gyro, EV3_GYRO_SENSOR_ANGLE_MODE);
@@ -195,7 +195,7 @@ int TurnGyro(int angle, int speed, int threshold){
 	return(angleNow);
 }
 
-int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, int milisecond){
+int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, unsigned long milisecond){
 	
 	int direction = 1; /* default case turn to the right */
 	int distance;
@@ -208,7 +208,7 @@ int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearanc
 	else oldDirection = 1;
 	SetTimerMS(1,0);
 
-	while ((abs(distance) <= clearance )&&(TimerMS(1) < milisecond)){
+	while ((abs(distance) > clearance )&&(TimerMS(1) < milisecond)){
 		
 		if (distance > 0) direction = 1;
 		else direction = -1;
@@ -241,7 +241,7 @@ int TurnGyrowithClearance(int angle, int speed, int threshold, int clearance){
 	if (distance > 0) oldDirection = -1;
 	else oldDirection = 1;
 
-	while (abs(distance) <= clearance ){
+	while (abs(distance) > clearance ){
 		
 		if (distance > 0) direction = 1;
 		else direction = -1;
@@ -1438,14 +1438,14 @@ int MoveArmStallProtected(int ArmMotorPort, int speed, int angle, bool brake){
 	RotateMotorNoWaitEx(ArmMotorPort, speed, angle, 0, false, brake);
 	Wait(MS_100); //Wait 100mS to motor start
 
-  	while (true)
-  		{
+  	do{
 		Wait(MS_2); // 2ms between checks
 		mipower = abs(MotorPower(ArmMotorPort));
-		if (mipower < stallPower) break;
+		//if (mipower < stallPower) break;
 		OutputTest(ArmMotorPort, &busy);
-		if (!busy) break;
-	}
+		//if (!busy) break;
+	}while ((mipower>stallPower)&&(busy));
+
 	if (busy) Float(ArmMotorPort);
 	return MotorRotationCount(ArmMotorPort);
 }
@@ -1458,15 +1458,17 @@ int MoveArmTimeProtected(int ArmMotorPort, int speed, int angle, unsigned long s
 	
 	RotateMotorNoWaitEx(ArmMotorPort, speed, angle, 0, false, brake);
 	SetTimerMS(1,0);
+	//elapsedTime = TimerMS(1);
+	//OutputTest(ArmMotorPort, &busy);
 	 
-  	while (true)
-  		{
+  	do{
 		Wait(MS_2); // 2ms between checks
 		elapsedTime = TimerMS(1);
-		if (elapsedTime > safetyTime) break;
+		//if (elapsedTime > safetyTime) break;
 		OutputTest(ArmMotorPort, &busy);
-		if (!busy) break;
-	}
+		//if (!busy) break;
+	}while ((elapsedTime < safetyTime)&&(busy));
+
 	if (busy) Float(ArmMotorPort);
 	return MotorRotationCount(ArmMotorPort);
 }

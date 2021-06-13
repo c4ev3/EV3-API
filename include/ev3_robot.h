@@ -214,7 +214,7 @@ int  TurnGyroFast(int angle, int speed, int clearance);
  * @return last angle measured
  *
  *  */
-int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, int milisecond);
+int TurnGyrowithClearanceTimer(int angle, int speed, int threshold, int clearance, unsigned long milisecond);
 
 /**
  * @brief Rotate the robot on the central axis 
