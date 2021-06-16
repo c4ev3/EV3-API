@@ -19,6 +19,9 @@
  */
 
 #include "ev3_output.h"
+#include "ev3.h"
+#include "ev3_button.core.h"
+
 
 static int __RAMP_UP_PCT = 10;
 static int __RAMP_UP_DEGREES = 0;
