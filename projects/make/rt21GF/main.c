@@ -164,15 +164,15 @@ int SalidaTobogan(){
 	SetLightPID(0.75,0.01,3.0);
 	ResetEV3GyroSensor(my_robot.GyroPort, EV3GyroSoftwareOffset);
 	ResetPowerCounters();
-	StraightbyGyroDegreesWithRamps(220,0,30,10,5,true,true); //avanzar 200 grados
-	TurnGyro(-30, 30, 40);
+	StraightbyGyroDegreesWithRamps(220,0,30,10,10,true,true); //avanzar 200 grados
+	TurnGyro(-33, 10, 26);
 
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),-30,75,10,30,true,false);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(550),-30,30,30,10,false,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(450),-33,75,10,30,true,false);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(550),-33,30,30,10,false,true);
 	Wait(1000);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(590),-30,-75,-10,-20,true,true);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(590),-33,-75,-10,-20,true,true);
 	TurnGyroFast(0,40,5);
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(100),0,-75,-10,-20,true,true);
+	StraightbyGyroDegrees(CalculateTravelDegrees(100),0,-75,true,true);
 	return 0;	
 } 
 
@@ -394,12 +394,10 @@ int SalidaMiguel_V(){
 	MoveArmTimeProtected(my_robot.ArmAMotorPort, 100, 525, 2000, true); //Calculates ratio por 63 grados de apertura del switch neumatico
 	ResetCounterMotor(my_robot.ArmAMotorPort);
 	Wait(2500); // subir teleferico y tirar bolas Boccia
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
-	TurnGyro(-90,10,20);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(360),-90,-60,-10,-5,true,true); //Retrocedemos hasta el arco
+//	TurnGyro(-90,10,20);
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, 2000, true);
-    Wait (2000); // 10 segundos antes de parar
-	StraightbyGyroDegrees(CalculateTravelDegrees(1000),-90,10,true,false);
-	Wait(2000);
+  	Wait(10000);
 	Off(my_robot.ArmBMotorPort);
 	return 0;
 }
@@ -414,11 +412,11 @@ int SalidaMiguel_V_GF(){
 
 //	StraighLAGDegrees(CalculateTravelDegrees(600), my_robot.ColorLeftPort, 50, 0, 40, EDGELEFT, true);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(850),0,75,10,40,true,false); //900
-	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1060),0,40,10,false,true); //Empujar cuenta pasos
+	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(1070),0,40,10,false,true); //Empujar cuenta pasos
 	OnFwdEx(my_robot.ArmBMotorPort,100,RESET_NONE); // inicio bombeo aire
 	//tocar a partir de aqui
-	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(70),0,-20,-10,-10,true,true); //Retroceder 7,5  cm
-	TurnGyro(-90,40,30);
+	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(65),0,-20,-10,-10,true,true); //Retroceder 7,5  cm
+	TurnGyrowithClearanceTimer(-90,40,30,1,1500);
 	StraightbyGyroDegreesWithRamps(CalculateTravelDegrees(470),-90,60,10,40,true,false);//100 100
 	//FollowLineDegrees(CalculateTravelDegrees(370), my_robot.ColorRightPort, 10, 40, EDGERIGHT, false);
 	//waitButton();
@@ -432,9 +430,13 @@ int SalidaMiguel_V_GF(){
 	Wait(3000); // subir teleferico y tirar bolas Boccia
 	TurnGyro(-90,40,30);
 	StraightbyGyroDegreesWithBrake(CalculateTravelDegrees(360),-90,-60,-5,true,true); //Retrocedemos hasta el arco
+	TurnGyro(-90,10,20);
     MoveArmTimeProtected(my_robot.ArmAMotorPort, -100, 525, 2000, true);
-    Wait (10000); // 10 segundos antes de parar
+	Wait (2000); // 10 segundos antes de parar
+	StraightbyGyroDegrees(CalculateTravelDegrees(1000),-90,-10,true,false);
+    Wait (2000); // 10 segundos antes de parar
 	Off(my_robot.ArmBMotorPort);
+	Off(OUT_BC);
 	return 0;
 
 }
